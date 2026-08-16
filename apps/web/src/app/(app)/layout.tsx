@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/get-session";
 import { AppSidebar } from "@/components/app-sidebar";
+import { PageHeaderTitle } from "@/components/page-header-title";
 import {
   SidebarInset,
   SidebarProvider,
@@ -24,9 +25,10 @@ export default async function AppLayout({
     <SidebarProvider>
       <AppSidebar user={session.user} />
       <SidebarInset>
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-4">
+        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background/95 px-4 backdrop-blur-sm">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-4" />
+          <PageHeaderTitle />
         </header>
         <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">{children}</div>
       </SidebarInset>

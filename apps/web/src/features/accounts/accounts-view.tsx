@@ -134,34 +134,33 @@ export function AccountsView({
           </EmptyContent>
         </Empty>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead className="text-right">Balance</TableHead>
-              <TableHead className="w-0" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+        <>
+          <ul className="divide-y divide-border md:hidden">
             {accounts.map((account) => (
-              <TableRow key={account._id}>
-                <TableCell className="font-medium text-foreground">
-                  {account.name}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {ACCOUNT_TYPE_LABELS[account.type]}
-                </TableCell>
-                <TableCell
-                  className={cn(
-                    "text-right font-mono tabular-nums",
-                    account.balance < 0 ? "text-negative" : "text-foreground",
-                  )}
-                >
-                  {formatCurrency(account.balance, account.currency)}
-                </TableCell>
-                <TableCell>
-                  <div className="flex justify-end gap-1">
+              <li
+                key={account._id}
+                className="flex items-center justify-between gap-3 py-3"
+              >
+                <div className="flex min-w-0 flex-col">
+                  <span className="truncate text-sm font-medium text-foreground">
+                    {account.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {ACCOUNT_TYPE_LABELS[account.type]}
+                  </span>
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  <span
+                    className={cn(
+                      "font-mono text-sm tabular-nums",
+                      account.balance < 0
+                        ? "text-negative"
+                        : "text-foreground",
+                    )}
+                  >
+                    {formatCurrency(account.balance, account.currency)}
+                  </span>
+                  <div className="-mr-2 flex gap-1">
                     <AccountFormDialog
                       account={account}
                       trigger={
@@ -173,11 +172,58 @@ export function AccountsView({
                     />
                     <DeleteAccountAlert account={account} />
                   </div>
-                </TableCell>
-              </TableRow>
+                </div>
+              </li>
             ))}
-          </TableBody>
-        </Table>
+          </ul>
+
+          <Table className="hidden md:table">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead className="text-right">Balance</TableHead>
+                <TableHead className="w-0" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {accounts.map((account) => (
+                <TableRow key={account._id}>
+                  <TableCell className="font-medium text-foreground">
+                    {account.name}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {ACCOUNT_TYPE_LABELS[account.type]}
+                  </TableCell>
+                  <TableCell
+                    className={cn(
+                      "text-right font-mono tabular-nums",
+                      account.balance < 0 ? "text-negative" : "text-foreground",
+                    )}
+                  >
+                    {formatCurrency(account.balance, account.currency)}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex justify-end gap-1">
+                      <AccountFormDialog
+                        account={account}
+                        trigger={
+                          <Button variant="ghost" size="icon-sm">
+                            <PenLine />
+                            <span className="sr-only">
+                              Edit {account.name}
+                            </span>
+                          </Button>
+                        }
+                      />
+                      <DeleteAccountAlert account={account} />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </>
       )}
     </div>
   );

@@ -147,7 +147,7 @@ export function RecordsView({
           }}
           onBlur={() => setQ(qInput)}
           placeholder="Search description..."
-          className="w-48"
+          className="w-full sm:w-48"
         />
       </div>
 
@@ -183,7 +183,78 @@ export function RecordsView({
         </Empty>
       ) : (
         <>
-          <Table>
+          <ul className="divide-y divide-border md:hidden">
+            {data.items.map((tx) => {
+              const category = tx.categoryId
+                ? categoryMap.get(tx.categoryId)
+                : undefined;
+              const account = accountMap.get(tx.accountId);
+              const toAccount = tx.toAccountId
+                ? accountMap.get(tx.toAccountId)
+                : undefined;
+              return (
+                <li key={tx._id} className="flex flex-col gap-1.5 py-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 flex-col">
+                      <span className="truncate text-sm text-foreground">
+                        {tx.description ||
+                          category?.name ||
+                          (tx.type === "transfer" ? "Transfer" : tx.type)}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatDate(tx.date)}
+                        {category && ` · ${category.name}`}
+                      </span>
+                    </div>
+                    <span
+                      className={cn(
+                        "shrink-0 font-mono text-sm tabular-nums",
+                        tx.type === "expense" && "text-negative",
+                        tx.type === "income" && "text-positive",
+                      )}
+                    >
+                      {tx.type === "expense"
+                        ? "-"
+                        : tx.type === "income"
+                          ? "+"
+                          : ""}
+                      {formatCurrency(tx.amount, currency)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="truncate text-xs text-muted-foreground">
+                      {account?.name ?? "—"}
+                      {toAccount && ` → ${toAccount.name}`}
+                    </span>
+                    <div className="-mr-2 flex shrink-0 gap-1">
+                      <TransactionFormDialog
+                        transaction={tx}
+                        filters={filters}
+                        accountsInitialData={accounts}
+                        categoriesInitialData={categories}
+                        trigger={
+                          <Button variant="ghost" size="icon-sm">
+                            <PenLine />
+                            <span className="sr-only">Edit record</span>
+                          </Button>
+                        }
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => deleteTransaction.mutate(tx._id)}
+                      >
+                        <Trash2 />
+                        <span className="sr-only">Delete record</span>
+                      </Button>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+
+          <Table className="hidden md:table">
             <TableHeader>
               <TableRow>
                 <TableHead>Date</TableHead>

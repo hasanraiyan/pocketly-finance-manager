@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { SessionUser } from "@/lib/get-session";
 
-const NAV_ITEMS = [
+export const NAV_ITEMS = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Accounts", url: "/accounts", icon: Wallet },
   { title: "Records", url: "/records", icon: Receipt },
