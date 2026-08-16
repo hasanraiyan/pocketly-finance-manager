@@ -16,7 +16,7 @@ import {
 } from '@nestjs/swagger';
 import { fromNodeHeaders } from 'better-auth/node';
 import type { Request } from 'express';
-import { auth } from '../auth/auth.config';
+import { getAuth } from '../auth/auth.config';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import type { UserDocument } from './schemas/user.schema';
 import { DeleteAccountDto } from './dto/delete-account.dto';
@@ -61,7 +61,7 @@ export class UsersController {
     // Erase the identity itself (email/password, sessions) last -- if this
     // fails, the caller still has a valid session to retry, rather than a
     // dangling Better Auth identity with no Pocketly profile behind it.
-    await auth.api.deleteUser({
+    await getAuth().api.deleteUser({
       headers: fromNodeHeaders(request.headers),
       body: {},
     });

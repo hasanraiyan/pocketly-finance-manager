@@ -16,14 +16,19 @@ async function main() {
   const mongod = await MongoMemoryServer.create();
   process.env.MONGODB_URI = mongod.getUri();
 
-  const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+  const moduleRef = await Test.createTestingModule({
+    imports: [AppModule],
+  }).compile();
   const app = moduleRef.createNestApplication();
   await app.init();
 
   const document = buildOpenApiDocument(app);
 
   const rootDir = join(__dirname, '..');
-  writeFileSync(join(rootDir, 'openapi.json'), JSON.stringify(document, null, 2));
+  writeFileSync(
+    join(rootDir, 'openapi.json'),
+    JSON.stringify(document, null, 2),
+  );
 
   const postmanDir = join(rootDir, 'postman');
   mkdirSync(postmanDir, { recursive: true });
@@ -32,9 +37,19 @@ async function main() {
     convert(
       { type: 'json', data: document },
       { folderStrategy: 'Tags' },
-      (err: Error | null, result: { result: boolean; reason?: string; output: { data: unknown }[] }) => {
+      (
+        err: Error | null,
+        result: {
+          result: boolean;
+          reason?: string;
+          output: { data: unknown }[];
+        },
+      ) => {
         if (err) return reject(err);
-        if (!result.result) return reject(new Error(result.reason ?? 'Postman conversion failed'));
+        if (!result.result)
+          return reject(
+            new Error(result.reason ?? 'Postman conversion failed'),
+          );
         writeFileSync(
           join(postmanDir, 'pocketly-api.postman_collection.json'),
           JSON.stringify(result.output[0].data, null, 2),
@@ -47,12 +62,12 @@ async function main() {
   await app.close();
   await mongod.stop();
 
-  // eslint-disable-next-line no-console
-  console.log('Wrote openapi.json and postman/pocketly-api.postman_collection.json');
+  console.log(
+    'Wrote openapi.json and postman/pocketly-api.postman_collection.json',
+  );
 }
 
 main().catch((err) => {
-  // eslint-disable-next-line no-console
   console.error(err);
   process.exit(1);
 });

@@ -5,9 +5,9 @@ import { CategoriesService } from '../categories/categories.service';
 import { TransactionsService } from '../transactions/transactions.service';
 import { UserDocument } from '../users/schemas/user.schema';
 import {
+  getMcpResourceClientActions,
   mcpIssuer,
   mcpJwksUrl,
-  mcpResourceClientActions,
   mcpResourceUri,
 } from '../auth/auth.config';
 
@@ -40,7 +40,7 @@ export async function requireScope(
   token: string,
   scope: McpScope,
 ): Promise<{ ok: true } | { ok: false; message: string }> {
-  const payload = await mcpResourceClientActions
+  const payload = await getMcpResourceClientActions()
     .verifyAccessToken(token, {
       verifyOptions: { audience: mcpResourceUri, issuer: mcpIssuer },
       scopes: [scope],

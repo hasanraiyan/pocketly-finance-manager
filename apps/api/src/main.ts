@@ -12,8 +12,8 @@ import {
 import express from 'express';
 import {
   apiBaseURL,
-  auth,
-  mcpResourceClientActions,
+  getAuth,
+  getMcpResourceClientActions,
   mcpResourceUri,
 } from './auth/auth.config';
 import { AppModule } from './app.module';
@@ -27,6 +27,8 @@ async function bootstrap() {
   // /api/auth, so they never race Better Auth for the request stream.
   const app = await NestFactory.create(AppModule, { bodyParser: false });
   app.use(requestIdMiddleware);
+
+  const auth = getAuth();
 
   const corsOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:3000')
     .split(',')
@@ -64,7 +66,7 @@ async function bootstrap() {
     _req: express.Request,
     res: express.Response,
   ) => {
-    void mcpResourceClientActions
+    void getMcpResourceClientActions()
       .getProtectedResourceMetadata({
         resource: mcpResourceUri,
         authorization_servers: [apiBaseURL],

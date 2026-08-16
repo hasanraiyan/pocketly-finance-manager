@@ -4,6 +4,7 @@ import { Throttle } from '@nestjs/throttler';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import type { UserDocument } from '../users/schemas/user.schema';
 import { ExportQueryDto } from './dto/export.dto';
+import { ExportQueuedDto } from './dto/export-response.dto';
 import { ExportsService } from './exports.service';
 
 @ApiTags('exports')
@@ -17,6 +18,7 @@ export class ExportsController {
   // 5 export requests per minute per user — PDF generation is expensive
   @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @ApiAcceptedResponse({
+    type: ExportQueuedDto,
     description:
       'Export job queued. The PDF will be generated in the background and emailed to the user.',
   })

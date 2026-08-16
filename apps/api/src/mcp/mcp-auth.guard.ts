@@ -9,9 +9,9 @@ import { Model } from 'mongoose';
 import { Request, Response } from 'express';
 import {
   apiBaseURL,
+  getMcpResourceClientActions,
   mcpIssuer,
   mcpJwksUrl,
-  mcpResourceClientActions,
   mcpResourceUri,
 } from '../auth/auth.config';
 import { UsersService } from '../users/users.service';
@@ -55,7 +55,7 @@ export class McpAuthGuard implements CanActivate {
       throw new UnauthorizedException('Missing bearer token');
     }
 
-    const payload = await mcpResourceClientActions
+    const payload = await getMcpResourceClientActions()
       .verifyAccessToken(token, {
         verifyOptions: { audience: mcpResourceUri, issuer: mcpIssuer },
         jwksUrl: mcpJwksUrl,

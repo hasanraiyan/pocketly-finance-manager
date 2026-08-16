@@ -1,11 +1,14 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts", "mjs"],
+  "moduleFileExtensions": ["js", "json", "ts", "tsx", "mjs"],
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest",
+    "^.+\\.(t|j)sx?$": "ts-jest",
     "^.+\\.mjs$": "ts-jest"
   },
-  "transformIgnorePatterns": []
+  "transformIgnorePatterns": [],
+  "moduleNameMapper": {
+    "^@react-pdf/renderer$": "<rootDir>/mocks/react-pdf-renderer.js"
+  }
 }

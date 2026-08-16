@@ -3,12 +3,17 @@ import { Model } from 'mongoose';
 import { McpAuthGuard } from './mcp-auth.guard';
 import { McpRevocation } from './schemas/mcp-revocation.schema';
 import { UsersService } from '../users/users.service';
-import { mcpResourceClientActions } from '../auth/auth.config';
+import { getMcpResourceClientActions } from '../auth/auth.config';
 
-jest.mock('../auth/auth.config', () => ({
-  mcpResourceClientActions: { verifyAccessToken: jest.fn() },
-  mcpResourceUri: 'http://localhost:4000/mcp',
-}));
+// Returns the same verifyAccessToken mock on every call, mirroring the real
+// getMcpResourceClientActions()'s memoized-singleton behaviour.
+jest.mock('../auth/auth.config', () => {
+  const verifyAccessToken = jest.fn();
+  return {
+    getMcpResourceClientActions: () => ({ verifyAccessToken }),
+    mcpResourceUri: 'http://localhost:4000/mcp',
+  };
+});
 
 function mockResponse() {
   return { setHeader: jest.fn() };
@@ -29,8 +34,8 @@ describe('McpAuthGuard', () => {
   let usersService: { findByAuthUserId: jest.Mock };
   let revocationModel: { exists: jest.Mock };
   let guard: McpAuthGuard;
-  const verifyAccessToken =
-    mcpResourceClientActions.verifyAccessToken as jest.Mock;
+  const verifyAccessToken = getMcpResourceClientActions()
+    .verifyAccessToken as jest.Mock;
 
   beforeEach(() => {
     verifyAccessToken.mockReset();

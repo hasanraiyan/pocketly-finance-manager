@@ -1,11 +1,22 @@
-/**
- * Falls back to localhost in dev. Set NEXT_PUBLIC_SITE_URL to the real
- * production domain once Pocketly is deployed -- metadataBase, canonical
- * URLs, the sitemap, and robots.txt all derive from this.
- */
-export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
-).replace(/\/$/, "");
+function resolveSiteUrl(): string {
+  const customUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL;
+  if (customUrl) {
+    return customUrl.replace(/\/$/, "");
+  }
+
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`.replace(/\/$/, "");
+  }
+
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`.replace(/\/$/, "");
+  }
+
+  return "http://localhost:3000";
+}
+
+export const SITE_URL = resolveSiteUrl();
 
 export const SITE_NAME = "Pocketly";
 

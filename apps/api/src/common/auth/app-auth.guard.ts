@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { fromNodeHeaders } from 'better-auth/node';
 import { Request } from 'express';
-import { auth } from '../../auth/auth.config';
+import { getAuth } from '../../auth/auth.config';
 import { UsersService } from '../../users/users.service';
 import { IS_PUBLIC_KEY } from './public.decorator';
 
@@ -26,7 +26,7 @@ export class AppAuthGuard implements CanActivate {
     if (isPublic) return true;
 
     const request = context.switchToHttp().getRequest<Request>();
-    const result = await auth.api.getSession({
+    const result = await getAuth().api.getSession({
       headers: fromNodeHeaders(request.headers),
     });
 

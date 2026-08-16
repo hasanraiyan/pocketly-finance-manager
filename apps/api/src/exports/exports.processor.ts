@@ -177,7 +177,7 @@ export class ExportProcessor extends WorkerHost {
 
     // 8. Email the PDF
     const filename = `pocketly-${period}-${format(new Date(), 'yyyy-MM-dd')}.pdf`;
-    this.mailer.sendPdfReport({
+    await this.mailer.sendPdfReport({
       to: email,
       periodLabel,
       pdfBuffer,
