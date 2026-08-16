@@ -17,7 +17,7 @@ const trustedOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:3000')
  * Owns identity (email/password, sessions, multi-device revocation) in its
  * own MongoDB collections -- separate from the app-domain `User` Mongoose
  * model (name/currency/timezone), which is our own profile linked to
- * Better Auth's user id via `User.authUserId`. See JwtAuthGuard for how the
+ * Better Auth's user id via `User.authUserId`. See AppAuthGuard for how the
  * two are stitched together on every request.
  *
  * `transaction: false` because a standalone (non-replica-set) MongoDB
@@ -31,6 +31,11 @@ export const auth = betterAuth({
   trustedOrigins,
   emailAndPassword: {
     enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      // TODO: wire up a real email provider (Resend/SMTP) before launch.
+      // Logging the link keeps the reset flow fully testable until then.
+      console.log(`[auth] Password reset requested for ${user.email}: ${url}`);
+    },
   },
   plugins: [bearer()],
 });

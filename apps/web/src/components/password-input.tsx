@@ -12,6 +12,7 @@ import {
 export function PasswordInput({
   id,
   autoComplete,
+  placeholder,
   minLength,
   required,
   value,
@@ -19,6 +20,7 @@ export function PasswordInput({
 }: {
   id: string;
   autoComplete?: string;
+  placeholder?: string;
   minLength?: number;
   required?: boolean;
   value: string;
@@ -32,6 +34,7 @@ export function PasswordInput({
         id={id}
         type={visible ? "text" : "password"}
         autoComplete={autoComplete}
+        placeholder={placeholder}
         minLength={minLength}
         required={required}
         value={value}
