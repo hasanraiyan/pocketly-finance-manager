@@ -30,6 +30,17 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { ErrorState } from "@/components/error-state";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -156,6 +167,63 @@ function MobileFilterPopover({
         </div>
       </PopoverContent>
     </Popover>
+  );
+}
+
+/**
+ * Deleting a record moves money around, and the trash sits a few pixels
+ * from edit, so it asks first -- same guard the accounts list uses. The
+ * summary line is there so you can tell you're deleting the row you meant.
+ */
+function DeleteRecordAlert({
+  transaction,
+  label,
+  currency,
+  onConfirm,
+}: {
+  transaction: Transaction;
+  label: string;
+  currency: string;
+  onConfirm: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const sign =
+    transaction.type === "expense"
+      ? "-"
+      : transaction.type === "income"
+        ? "+"
+        : "";
+
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger render={<Button variant="ghost" size="icon-sm" />}>
+        <Trash2 />
+        <span className="sr-only">Delete {label}</span>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete this record?</AlertDialogTitle>
+          <AlertDialogDescription>
+            {label} · {sign}
+            {formatCurrency(transaction.amount, currency)} on{" "}
+            {formatDate(transaction.date)}. Your balances update right away,
+            and you can undo it straight after.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            variant="destructive"
+            onClick={() => {
+              setOpen(false);
+              onConfirm();
+            }}
+          >
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
@@ -345,14 +413,16 @@ export function RecordsView({
               const toAccount = tx.toAccountId
                 ? accountMap.get(tx.toAccountId)
                 : undefined;
+              const label =
+                tx.description ||
+                category?.name ||
+                (tx.type === "transfer" ? "Transfer" : tx.type);
               return (
                 <li key={tx._id} className="flex flex-col gap-1.5 py-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 flex-col">
                       <span className="truncate text-sm text-foreground">
-                        {tx.description ||
-                          category?.name ||
-                          (tx.type === "transfer" ? "Transfer" : tx.type)}
+                        {label}
                       </span>
                       <span className="text-xs text-muted-foreground">
                         {formatDate(tx.date)}
@@ -392,14 +462,12 @@ export function RecordsView({
                           </Button>
                         }
                       />
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={() => deleteTransaction.mutate(tx._id)}
-                      >
-                        <Trash2 />
-                        <span className="sr-only">Delete record</span>
-                      </Button>
+                      <DeleteRecordAlert
+                        transaction={tx}
+                        label={label}
+                        currency={currency}
+                        onConfirm={() => deleteTransaction.mutate(tx._id)}
+                      />
                     </div>
                   </div>
                 </li>
@@ -426,6 +494,10 @@ export function RecordsView({
                 const toAccount = tx.toAccountId
                   ? accountMap.get(tx.toAccountId)
                   : undefined;
+                const label =
+                  tx.description ||
+                  category?.name ||
+                  (tx.type === "transfer" ? "Transfer" : tx.type);
                 return (
                   <TableRow key={tx._id}>
                     <TableCell className="text-muted-foreground">
@@ -433,11 +505,7 @@ export function RecordsView({
                     </TableCell>
                     <TableCell className="text-foreground">
                       <div className="flex flex-col">
-                        <span>
-                          {tx.description ||
-                            category?.name ||
-                            (tx.type === "transfer" ? "Transfer" : tx.type)}
-                        </span>
+                        <span>{label}</span>
                         {category && (
                           <span className="text-xs text-muted-foreground">
                             {category.name}
@@ -477,14 +545,12 @@ export function RecordsView({
                             </Button>
                           }
                         />
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          onClick={() => deleteTransaction.mutate(tx._id)}
-                        >
-                          <Trash2 />
-                          <span className="sr-only">Delete record</span>
-                        </Button>
+                        <DeleteRecordAlert
+                          transaction={tx}
+                          label={label}
+                          currency={currency}
+                          onConfirm={() => deleteTransaction.mutate(tx._id)}
+                        />
                       </div>
                     </TableCell>
                   </TableRow>

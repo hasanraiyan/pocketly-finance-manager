@@ -33,8 +33,9 @@ export default function RecordsLoading() {
 
       <div className="hidden items-center justify-between gap-3 md:flex">
         <div className="flex gap-2">
-          {["w-12", "w-20", "w-18", "w-20"].map((width) => (
-            <Blank key={width} className={`h-8 rounded-full ${width}`} />
+          {/* All, Expense, Income, Transfer */}
+          {["w-12", "w-20", "w-18", "w-20"].map((width, i) => (
+            <Blank key={i} className={`h-8 rounded-full ${width}`} />
           ))}
         </div>
         <div className="flex items-center gap-3">

@@ -44,7 +44,8 @@ export default function PlanningLoading() {
                 <TextBlank className="w-32" />
                 <TextBlank className="w-10" />
               </div>
-              <Blank className="h-1 w-full" />
+              {/* The empty track, drawn but not yet filled. */}
+              <div className="h-1 w-full bg-muted" />
             </CardContent>
           </Card>
         ))}
