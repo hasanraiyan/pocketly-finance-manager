@@ -1,6 +1,7 @@
 "use client";
 
 import { createAuthClient } from "better-auth/react";
+import { oauthProviderClient } from "@better-auth/oauth-provider/client";
 import {
   getStoredAuthToken,
   setStoredAuthToken,
@@ -23,6 +24,11 @@ export const authBaseUrl =
  */
 export const authClient = createAuthClient({
   baseURL: authBaseUrl,
+  // Adds authClient.oauth2.* (getConsents, deleteConsent, publicClient) --
+  // used by the Settings page's "Connected apps" list, so a user can see
+  // and revoke MCP clients (Claude Code, Claude Desktop, ...) they've
+  // authorized.
+  plugins: [oauthProviderClient()],
   fetchOptions: {
     credentials: "include",
     auth: {

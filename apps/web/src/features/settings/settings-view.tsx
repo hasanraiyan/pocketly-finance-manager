@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { PenLine, Plus, Tags, Trash2 } from "lucide-react";
+import { Cable, PenLine, Plus, Tags, Trash2, Unplug } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { clearStoredAuthToken } from "@/lib/auth-token";
 import { Button } from "@/components/ui/button";
@@ -40,6 +40,11 @@ import {
   type Category,
 } from "@/features/categories/hooks";
 import { useUpdateProfile, useDeleteMyAccount } from "./hooks";
+import {
+  useDisconnectOAuthClient,
+  useOAuthConnections,
+  type OAuthConnection,
+} from "./connections-hooks";
 
 const TIMEZONES =
   typeof Intl.supportedValuesOf === "function"
@@ -261,6 +266,114 @@ function CategoriesCard({
   );
 }
 
+const SCOPE_LABELS: Record<string, string> = {
+  "pocketly:read": "View your data",
+  "pocketly:write": "Create, edit, and delete on your behalf",
+  openid: "Confirm your identity",
+  profile: "Read your name",
+  email: "Read your email address",
+  offline_access: "Stay connected between sessions",
+};
+
+function DisconnectAppButton({ connection }: { connection: OAuthConnection }) {
+  const [open, setOpen] = useState(false);
+  const disconnect = useDisconnectOAuthClient();
+
+  return (
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger render={<Button variant="ghost" size="icon-sm" />}>
+        <Unplug />
+        <span className="sr-only">Disconnect {connection.clientName}</span>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            Disconnect {connection.clientName}?
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            It won&apos;t be able to reconnect without going through consent
+            again. Access already issued to it may take up to an hour to
+            fully expire.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            variant="destructive"
+            onClick={() => {
+              setOpen(false);
+              disconnect.mutate(connection.id);
+            }}
+          >
+            Disconnect
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+function ConnectedAppsCard() {
+  const { data: connections, isError, isFetching, refetch } =
+    useOAuthConnections();
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Connected apps</CardTitle>
+        <CardDescription>
+          AI tools and other apps you&apos;ve given access to your Pocketly
+          data via MCP.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {isError ? (
+          <ErrorState
+            title="Couldn't load your connected apps"
+            onRetry={() => refetch()}
+            retrying={isFetching}
+          />
+        ) : !connections || connections.length === 0 ? (
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Cable />
+              </EmptyMedia>
+              <EmptyTitle>Nothing connected yet</EmptyTitle>
+              <EmptyDescription>
+                Connect an MCP client (like Claude) to your Pocketly data to
+                see it here.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <ul className="divide-y divide-border">
+            {connections.map((connection) => (
+              <li
+                key={connection.id}
+                className="flex items-center justify-between gap-3 py-3"
+              >
+                <div className="flex min-w-0 flex-col">
+                  <span className="truncate text-sm text-foreground">
+                    {connection.clientName}
+                  </span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {connection.scopes
+                      .map((scope) => SCOPE_LABELS[scope])
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </span>
+                </div>
+                <DisconnectAppButton connection={connection} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function DangerZoneCard() {
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -362,6 +475,7 @@ export function SettingsView({
         initialData={categoriesInitialData}
         initialLoadFailed={categoriesLoadFailed}
       />
+      <ConnectedAppsCard />
       <DangerZoneCard />
     </div>
   );
