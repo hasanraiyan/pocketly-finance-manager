@@ -213,29 +213,30 @@ export function RecordsView({
             Every income, expense, and transfer you&apos;ve logged.
           </p>
         </div>
-        <TransactionFormDialog
-          filters={filters}
-          accountsInitialData={accounts}
-          categoriesInitialData={categories}
-          trigger={
-            <Button className="hidden md:inline-flex">
-              <Plus />
-              Add record
-            </Button>
-          }
-        />
-        <ExportDialog
-          trigger={
-            <Button
-              variant="outline"
-              className="hidden md:inline-flex"
-              aria-label="Export PDF"
-            >
-              <Download />
-              Export PDF
-            </Button>
-          }
-        />
+        <div className="hidden items-center gap-2 md:flex">
+          <ExportDialog
+            trigger={
+              <Button
+                variant="outline"
+                aria-label="Export PDF"
+              >
+                <Download />
+                Export PDF
+              </Button>
+            }
+          />
+          <TransactionFormDialog
+            filters={filters}
+            accountsInitialData={accounts}
+            categoriesInitialData={categories}
+            trigger={
+              <Button>
+                <Plus />
+                Add record
+              </Button>
+            }
+          />
+        </div>
       </div>
 
       {/* The empty-state CTA below already covers "add your first record" --
