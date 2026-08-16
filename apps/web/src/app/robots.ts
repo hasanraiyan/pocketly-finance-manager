@@ -16,6 +16,7 @@ export default function robots(): MetadataRoute.Robots {
         "/planning",
         "/settings",
         "/mcp-connect",
+        "/mcp-guide",
         "/reset-password",
       ],
     },

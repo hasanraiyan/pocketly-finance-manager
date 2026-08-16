@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Cable, PenLine, Plus, Tags, Trash2, Unplug } from "lucide-react";
+import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { clearStoredAuthToken } from "@/lib/auth-token";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,14 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { Field, FieldLabel } from "@/components/ui/field";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import {
   AlertDialog,
@@ -327,6 +335,15 @@ function ConnectedAppsCard() {
           AI tools and other apps you&apos;ve given access to your Pocketly
           data via MCP.
         </CardDescription>
+        <CardAction>
+          <Button
+            variant="outline"
+            size="sm"
+            render={<Link href="/mcp-guide" />}
+          >
+            Connect a client
+          </Button>
+        </CardAction>
       </CardHeader>
       <CardContent>
         {isError ? (
