@@ -472,23 +472,23 @@ function NotificationsCard() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bell className="size-4" />
-          Push Notifications & Devices
+          Notifications & Reminders
         </CardTitle>
         <CardDescription>
-          Receive real-time budget threshold warnings and daily streak reminders even when the website is closed.
+          Get real-time budget warnings and daily reminders to stay on top of your money.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-border p-3">
           <div className="flex flex-col gap-1">
             <span className="text-xs font-medium text-foreground">
-              Browser Push (FCM)
+              Instant alerts & reminders
             </span>
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               Status:{" "}
               {permissionStatus === "granted" ? (
                 <span className="font-medium text-emerald-600 dark:text-emerald-400">
-                  Active & Connected (Granted)
+                  Enabled
                 </span>
               ) : permissionStatus === "denied" ? (
                 <span className="font-medium text-destructive">
@@ -514,7 +514,7 @@ function NotificationsCard() {
                 ) : (
                   <Bell className="mr-1.5 size-3.5" />
                 )}
-                Enable on this device
+                Enable notifications
               </Button>
             ) : (
               <Button
@@ -528,14 +528,14 @@ function NotificationsCard() {
                 ) : (
                   <Bell className="mr-1.5 size-3.5" />
                 )}
-                Send Test Alert
+                Send test reminder
               </Button>
             )}
           </div>
         </div>
 
         <p className="text-[11px] text-muted-foreground">
-          📱 <strong>Mobile App Sync:</strong> Connecting this web browser registers an FCM device token. When you log in with the upcoming Android / iOS app, your notifications will automatically sync across all your devices.
+          Works seamlessly on desktop and mobile even when Pocketly is closed.
         </p>
       </CardContent>
     </Card>

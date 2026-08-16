@@ -114,7 +114,7 @@ export function NotificationCenter() {
               <span className="font-medium text-foreground">Stay on track</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Enable push alerts for budget warnings & daily reminders when the tab is closed.
+              Turn on notifications for budget alerts and daily reminders even when Pocketly is closed.
             </p>
             <Button
               size="sm"
@@ -124,7 +124,7 @@ export function NotificationCenter() {
               disabled={isRegistering}
             >
               {isRegistering ? <Spinner className="mr-1 size-3" /> : <Bell className="mr-1 size-3" />}
-              Enable Push Notifications
+              Turn on notifications
             </Button>
           </div>
         )}

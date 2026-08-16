@@ -148,7 +148,7 @@ export function usePushNotificationManager() {
       });
 
       toast.add({
-        title: "Push Notifications Enabled 🎉",
+        title: "Notifications Enabled 🎉",
         description: "You'll receive reminders and budget warnings even when Pocketly is closed.",
         type: "success",
         timeout: 5000,
@@ -158,8 +158,8 @@ export function usePushNotificationManager() {
         setPermissionStatus(Notification.permission);
       }
       toast.add({
-        title: "Push notification setup error",
-        description: err?.message || "Please check your browser notification permissions.",
+        title: "Couldn't enable notifications",
+        description: err?.message || "Please allow notifications in your browser settings.",
         type: "error",
       });
     } finally {
