@@ -2,7 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/get-session";
 import {
+  Apple,
   LineChart,
+  Play,
   Receipt,
   RefreshCcw,
   Target,
@@ -11,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site-config";
 
 const LEDGER_ENTRIES: Array<{
   description: string;
@@ -76,8 +79,27 @@ export default async function Home() {
     redirect("/dashboard");
   }
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: SITE_NAME,
+    url: SITE_URL,
+    description: SITE_DESCRIPTION,
+    applicationCategory: "FinanceApplication",
+    operatingSystem: "Web",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+  };
+
   return (
     <div className="flex flex-1 flex-col bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <header className="flex items-center justify-between border-b border-border/70 px-6 py-6 sm:px-12">
         <span className="font-heading text-xl text-foreground">Pocketly</span>
         <nav className="flex items-center gap-4 text-sm">
@@ -114,6 +136,20 @@ export default async function Home() {
               >
                 I already have an account
               </Button>
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <span className="font-mono text-[0.65rem] tracking-widest text-muted-foreground uppercase">
+                Coming soon
+              </span>
+              <span className="inline-flex items-center gap-1.5 border border-border px-3 py-1.5 font-mono text-[0.65rem] tracking-wide text-muted-foreground uppercase">
+                <Play className="size-3.5" />
+                Google Play
+              </span>
+              <span className="inline-flex items-center gap-1.5 border border-border px-3 py-1.5 font-mono text-[0.65rem] tracking-wide text-muted-foreground uppercase">
+                <Apple className="size-3.5" />
+                App Store
+              </span>
             </div>
           </div>
 
