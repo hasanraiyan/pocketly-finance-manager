@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/get-session";
@@ -154,51 +155,62 @@ export default async function Home() {
           </div>
 
           <div className="lg:justify-self-end">
-            <div className="w-full max-w-sm -rotate-1 rounded-2xl border border-border bg-card p-6 shadow-sm transition-transform duration-300 hover:rotate-0">
-              <div className="mb-4 flex items-center justify-between border-b border-dashed border-border pb-3">
-                <span className="font-mono text-[0.65rem] tracking-widest text-muted-foreground uppercase">
-                  Sample entries
-                </span>
-                <span className="font-heading text-sm text-foreground">
-                  Pocketly
-                </span>
-              </div>
-              <ul className="flex flex-col">
-                {LEDGER_ENTRIES.map((entry, i) => (
-                  <li
-                    key={entry.description}
-                    className="animate-ledger-row flex items-center justify-between py-2"
-                    style={{ animationDelay: `${i * 90}ms` }}
-                  >
-                    <div className="flex flex-col">
-                      <span className="text-sm text-foreground">
-                        {entry.description}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {entry.date}
-                      </span>
-                    </div>
-                    <span
-                      className={cn(
-                        "font-mono text-sm tabular-nums",
-                        entry.type === "expense"
-                          ? "text-negative"
-                          : "text-positive",
-                      )}
+            <div className="relative w-full max-w-md">
+              {/* Older pages in the ledger, peeking out behind the current one */}
+              <div
+                aria-hidden
+                className="absolute inset-x-6 top-4 -z-10 h-full rotate-3 rounded-2xl border border-border/60 bg-card/50"
+              />
+              <div
+                aria-hidden
+                className="absolute inset-x-3 top-2 -z-10 h-full -rotate-1 rounded-2xl border border-border/80 bg-card/75"
+              />
+              <div className="-rotate-1 rounded-2xl border border-border bg-card p-6 shadow-sm transition-transform duration-300 hover:rotate-0">
+                <div className="mb-4 flex items-center justify-between border-b border-dashed border-border pb-3">
+                  <span className="font-mono text-[0.65rem] tracking-widest text-muted-foreground uppercase">
+                    Sample entries
+                  </span>
+                  <span className="font-heading text-sm text-foreground">
+                    Pocketly
+                  </span>
+                </div>
+                <ul className="flex flex-col">
+                  {LEDGER_ENTRIES.map((entry, i) => (
+                    <li
+                      key={entry.description}
+                      className="animate-ledger-row flex items-center justify-between py-2"
+                      style={{ animationDelay: `${i * 90}ms` }}
                     >
-                      {entry.type === "expense" ? "-" : "+"}
-                      {formatCurrency(entry.amount, "INR")}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <div className="flex items-center justify-between border-t border-border pt-3">
-                <span className="font-mono text-xs tracking-wide text-muted-foreground uppercase">
-                  Balance
-                </span>
-                <span className="font-mono text-base tabular-nums text-foreground">
-                  {formatCurrency(LEDGER_BALANCE, "INR")}
-                </span>
+                      <div className="flex flex-col">
+                        <span className="text-sm text-foreground">
+                          {entry.description}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {entry.date}
+                        </span>
+                      </div>
+                      <span
+                        className={cn(
+                          "font-mono text-sm tabular-nums",
+                          entry.type === "expense"
+                            ? "text-negative"
+                            : "text-positive",
+                        )}
+                      >
+                        {entry.type === "expense" ? "-" : "+"}
+                        {formatCurrency(entry.amount, "INR")}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex items-center justify-between border-t border-border pt-3">
+                  <span className="font-mono text-xs tracking-wide text-muted-foreground uppercase">
+                    Balance
+                  </span>
+                  <span className="font-mono text-base tabular-nums text-foreground">
+                    {formatCurrency(LEDGER_BALANCE, "INR")}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -213,7 +225,8 @@ export default async function Home() {
             <h2 className="max-w-lg font-heading text-2xl text-foreground sm:text-3xl">
               Money moves in a loop. So does Pocketly.
             </h2>
-            <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-4">
+            {/* Below lg: stages wrap onto their own lines like a short list. */}
+            <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-4 lg:hidden">
               {LOOP_STAGES.map((stage, i) => (
                 <span key={stage} className="flex items-center gap-3">
                   <span className="font-mono text-sm tracking-wide text-foreground uppercase">
@@ -240,6 +253,25 @@ export default async function Home() {
                 Repeat
               </span>
             </div>
+
+            {/* At lg+: one ruled line spanning the full width, like a ledger's running total row. */}
+            <div className="mt-10 hidden items-center lg:flex">
+              {LOOP_STAGES.map((stage) => (
+                <Fragment key={stage}>
+                  <span className="shrink-0 font-mono text-sm tracking-wide text-foreground uppercase">
+                    {stage}
+                  </span>
+                  <span
+                    aria-hidden
+                    className="mx-4 h-px flex-1 border-t border-dashed border-border"
+                  />
+                </Fragment>
+              ))}
+              <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 font-mono text-sm tracking-wide text-accent-foreground uppercase">
+                <RefreshCcw className="size-3.5" />
+                Repeat
+              </span>
+            </div>
           </div>
         </section>
 
@@ -251,9 +283,12 @@ export default async function Home() {
           <h2 className="max-w-lg font-heading text-2xl text-foreground sm:text-3xl">
             Everything a ledger needs. Nothing it doesn&apos;t.
           </h2>
-          <ul className="mt-10 divide-y divide-border border-t border-border">
+          <ul className="mt-10 grid border-t border-l border-border sm:grid-cols-2">
             {CAPABILITIES.map((item) => (
-              <li key={item.title} className="flex items-start gap-5 py-6">
+              <li
+                key={item.title}
+                className="flex items-start gap-5 border-r border-b border-border p-6 sm:p-8"
+              >
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
                   <item.icon className="size-5" />
                 </span>
