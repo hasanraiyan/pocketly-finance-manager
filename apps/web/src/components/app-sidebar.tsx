@@ -28,6 +28,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -110,7 +111,9 @@ export function AppSidebar({ user }: { user: SessionUser }) {
             </span>
           </DropdownMenuTrigger>
           <DropdownMenuContent side="top" align="start">
-            <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>
               <LogOut />
