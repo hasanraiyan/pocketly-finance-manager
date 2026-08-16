@@ -18,10 +18,11 @@ async function resolveClientName(clientId: string): Promise<string> {
   const { data } = await authClient.oauth2.publicClient({
     query: { client_id: clientId },
   });
-  // The client's inferred response type doesn't resolve `name` correctly
-  // for this endpoint; asserting the shape the server actually returns
-  // (OAuthClient.name?: string) instead of fighting that inference.
-  const name = (data as { name?: string } | null)?.name;
+  // The public-client endpoint returns RFC 7591-style field names
+  // (client_name, not name) -- confirmed by reading schemaToOAuth's
+  // mapping directly, since the client's inferred response type doesn't
+  // resolve this correctly on its own.
+  const name = (data as { client_name?: string } | null)?.client_name;
   return name ?? clientId;
 }
 

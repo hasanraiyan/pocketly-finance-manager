@@ -34,8 +34,10 @@ function ConsentForm() {
       credentials: "include",
     })
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { name?: string } | null) => {
-        if (data?.name) setClientName(data.name);
+      // RFC 7591-style field name -- confirmed by reading the server's
+      // response mapping (schemaToOAuth) directly: `client_name`, not `name`.
+      .then((data: { client_name?: string } | null) => {
+        if (data?.client_name) setClientName(data.client_name);
       })
       .catch(() => {
         // Non-fatal -- falls back to showing the raw client id below.
