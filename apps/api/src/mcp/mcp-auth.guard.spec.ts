@@ -8,10 +8,18 @@ jest.mock('../auth/auth.config', () => ({
   mcpResourceUri: 'http://localhost:4000/mcp',
 }));
 
+function mockResponse() {
+  return { setHeader: jest.fn() };
+}
+
 function contextWithAuthHeader(header?: string): ExecutionContext {
   const request = { headers: { authorization: header } };
+  const response = mockResponse();
   return {
-    switchToHttp: () => ({ getRequest: () => request }),
+    switchToHttp: () => ({
+      getRequest: () => request,
+      getResponse: () => response,
+    }),
   } as unknown as ExecutionContext;
 }
 
@@ -56,8 +64,12 @@ describe('McpAuthGuard', () => {
     usersService.findByAuthUserId.mockResolvedValue(user);
 
     const request = { headers: { authorization: 'Bearer good-token' } };
+    const response = mockResponse();
     const context = {
-      switchToHttp: () => ({ getRequest: () => request }),
+      switchToHttp: () => ({
+        getRequest: () => request,
+        getResponse: () => response,
+      }),
     } as unknown as ExecutionContext;
 
     await expect(guard.canActivate(context)).resolves.toBe(true);

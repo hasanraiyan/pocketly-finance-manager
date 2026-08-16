@@ -4,8 +4,16 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Request } from 'express';
-import { mcpResourceClientActions, mcpResourceUri } from '../auth/auth.config';
+import { Request, Response } from 'express';
+import {
+  apiBaseURL,
+  mcpIssuer,
+  mcpJwksUrl,
+  mcpResourceClientActions,
+  mcpResourceUri,
+} from '../auth/auth.config';
+
+const RESOURCE_METADATA_URL = `${apiBaseURL}/.well-known/oauth-protected-resource/mcp`;
 import { UsersService } from '../users/users.service';
 import { UserDocument } from '../users/schemas/user.schema';
 
@@ -26,6 +34,15 @@ export class McpAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
+    const response = context.switchToHttp().getResponse<Response>();
+    // Required by the MCP spec so clients can discover where to find
+    // protected-resource metadata from a bare 401, not just on first
+    // connect -- see RESOURCE_METADATA_URL.
+    response.setHeader(
+      'WWW-Authenticate',
+      `Bearer resource_metadata="${RESOURCE_METADATA_URL}"`,
+    );
+
     const token = this.extractBearerToken(request);
     if (!token) {
       throw new UnauthorizedException('Missing bearer token');
@@ -33,9 +50,13 @@ export class McpAuthGuard implements CanActivate {
 
     const payload = await mcpResourceClientActions
       .verifyAccessToken(token, {
-        verifyOptions: { audience: mcpResourceUri },
+        verifyOptions: { audience: mcpResourceUri, issuer: mcpIssuer },
+        jwksUrl: mcpJwksUrl,
       })
-      .catch(() => null);
+      .catch((error: unknown) => {
+        console.error('[mcp] Access token verification failed:', error);
+        return null;
+      });
     if (!payload?.sub) {
       throw new UnauthorizedException('Invalid or expired access token');
     }

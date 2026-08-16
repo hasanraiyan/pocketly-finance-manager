@@ -60,19 +60,30 @@ async function bootstrap() {
     '/api/auth/.well-known/openid-configuration',
     toNodeHandler(oauthProviderOpenIdConfigMetadata(auth)),
   );
+  const serveProtectedResourceMetadata = (
+    _req: express.Request,
+    res: express.Response,
+  ) => {
+    void mcpResourceClientActions
+      .getProtectedResourceMetadata({
+        resource: mcpResourceUri,
+        authorization_servers: [apiBaseURL],
+      })
+      .then((metadata) => res.json(metadata));
+  };
   app.use(
     '/.well-known/oauth-protected-resource',
-    (_req: express.Request, res: express.Response) => {
-      void mcpResourceClientActions
-        .getProtectedResourceMetadata({
-          resource: mcpResourceUri,
-          authorization_servers: [apiBaseURL],
-        })
-        .then((metadata) => res.json(metadata));
-    },
+    serveProtectedResourceMetadata,
+  );
+  // Path-aware variant (RFC 9728) for a resource with a path component
+  // (/mcp) -- confirmed needed: the plugin's own WWW-Authenticate header on
+  // a failed verification points here specifically, not the bare form.
+  app.use(
+    '/.well-known/oauth-protected-resource/mcp',
+    serveProtectedResourceMetadata,
   );
 
-  app.use('/api/auth/*splat', toNodeHandler(auth));
+  app.use('/api/auth', toNodeHandler(auth));
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));

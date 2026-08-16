@@ -4,7 +4,12 @@ import { BudgetsService } from '../budgets/budgets.service';
 import { CategoriesService } from '../categories/categories.service';
 import { TransactionsService } from '../transactions/transactions.service';
 import { UserDocument } from '../users/schemas/user.schema';
-import { mcpResourceClientActions, mcpResourceUri } from '../auth/auth.config';
+import {
+  mcpIssuer,
+  mcpJwksUrl,
+  mcpResourceClientActions,
+  mcpResourceUri,
+} from '../auth/auth.config';
 
 export type McpScope = 'pocketly:read' | 'pocketly:write';
 
@@ -37,8 +42,9 @@ export async function requireScope(
 ): Promise<{ ok: true } | { ok: false; message: string }> {
   const payload = await mcpResourceClientActions
     .verifyAccessToken(token, {
-      verifyOptions: { audience: mcpResourceUri },
+      verifyOptions: { audience: mcpResourceUri, issuer: mcpIssuer },
       scopes: [scope],
+      jwksUrl: mcpJwksUrl,
     })
     .catch(() => null);
   if (!payload) {

@@ -28,6 +28,20 @@ const webBaseURL = process.env.WEB_BASE_URL ?? 'http://localhost:3000';
 export const mcpResourceUri = `${apiBaseURL}/mcp`;
 
 /**
+ * `oauthProviderResourceClient(auth)` derives default `jwksUrl`/`issuer`
+ * values from the auth instance, and both come out wrong: `jwksUrl` omits
+ * Better Auth's basePath entirely (confirmed: "Jwks failed: Cannot GET
+ * /jwks"), and its `issuer` fallback is bare `baseURL` with no basePath
+ * either -- but tokens are actually signed with `iss` = `baseURL+basePath`
+ * (confirmed by decoding a real issued token), so relying on that fallback
+ * fails every verification with a silent issuer mismatch ("invalid access
+ * token"). Both are passed explicitly to every verifyAccessToken call
+ * below instead.
+ */
+export const mcpJwksUrl = `${apiBaseURL}/api/auth/jwks`;
+export const mcpIssuer = `${apiBaseURL}/api/auth`;
+
+/**
  * Owns identity (email/password, sessions, multi-device revocation) in its
  * own MongoDB collections -- separate from the app-domain `User` Mongoose
  * model (name/currency/timezone), which is our own profile linked to
