@@ -42,12 +42,19 @@ function Button({
   className,
   variant = "default",
   size = "default",
+  nativeButton,
+  render,
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
   return (
     <ButtonPrimitive
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      // `render` swaps the underlying element (e.g. next/link's <a>), which
+      // isn't a native <button> -- default nativeButton to false whenever a
+      // render override is present, so callers don't have to remember it.
+      nativeButton={nativeButton ?? !render}
+      render={render}
       {...props}
     />
   )
