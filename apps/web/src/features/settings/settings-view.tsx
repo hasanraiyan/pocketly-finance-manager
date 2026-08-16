@@ -31,6 +31,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { ErrorState } from "@/components/error-state";
 import { CategoryFormDialog } from "@/features/categories/category-form-dialog";
 import {
   useCategories,
@@ -201,8 +202,16 @@ function CategoryList({
   );
 }
 
-function CategoriesCard({ initialData }: { initialData: Category[] }) {
-  const { data: categories } = useCategories(initialData);
+function CategoriesCard({
+  initialData,
+  initialLoadFailed = false,
+}: {
+  initialData: Category[];
+  initialLoadFailed?: boolean;
+}) {
+  const { data: categories, isError, isFetching, refetch } =
+    useCategories(initialData);
+  const showError = initialLoadFailed || isError;
   const income = useMemo(
     () => categories.filter((c) => c.type === "income"),
     [categories],
@@ -222,7 +231,13 @@ function CategoriesCard({ initialData }: { initialData: Category[] }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {categories.length === 0 ? (
+        {showError ? (
+          <ErrorState
+            title="Couldn't load your categories"
+            onRetry={() => refetch()}
+            retrying={isFetching}
+          />
+        ) : categories.length === 0 ? (
           <Empty>
             <EmptyHeader>
               <EmptyMedia variant="icon">
@@ -311,12 +326,18 @@ function DangerZoneCard() {
 export function SettingsView({
   currency,
   timezone,
+  profileLoadFailed = false,
   categoriesInitialData,
+  categoriesLoadFailed = false,
 }: {
   currency: string;
   timezone: string;
+  profileLoadFailed?: boolean;
   categoriesInitialData: Category[];
+  categoriesLoadFailed?: boolean;
 }) {
+  const router = useRouter();
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -325,8 +346,19 @@ export function SettingsView({
           Your profile, categories, and account.
         </p>
       </div>
-      <ProfileCard currency={currency} timezone={timezone} />
-      <CategoriesCard initialData={categoriesInitialData} />
+      {profileLoadFailed ? (
+        <ErrorState
+          title="Couldn't load your profile"
+          description="We couldn't confirm your saved currency and timezone, so editing is disabled for now to avoid overwriting them with the wrong values."
+          onRetry={() => router.refresh()}
+        />
+      ) : (
+        <ProfileCard currency={currency} timezone={timezone} />
+      )}
+      <CategoriesCard
+        initialData={categoriesInitialData}
+        initialLoadFailed={categoriesLoadFailed}
+      />
       <DangerZoneCard />
     </div>
   );

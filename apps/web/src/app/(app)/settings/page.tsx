@@ -14,7 +14,9 @@ export default async function SettingsPage() {
     <SettingsView
       currency={profile?.currency ?? "INR"}
       timezone={profile?.timezone ?? "UTC"}
+      profileLoadFailed={Boolean(profileRes.error)}
       categoriesInitialData={categoriesRes.data?.data.items ?? []}
+      categoriesLoadFailed={Boolean(categoriesRes.error)}
     />
   );
 }
