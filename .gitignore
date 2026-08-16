@@ -1,0 +1,34 @@
+node_modules/
+.pnpm-store/
+
+# next.js
+.next/
+out/
+
+# nest
+dist/
+
+# turbo
+.turbo/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# os
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# misc
+coverage/
