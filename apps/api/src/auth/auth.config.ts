@@ -69,12 +69,6 @@ function buildAuth() {
     secret: process.env.BETTER_AUTH_SECRET,
     baseURL: apiBaseURL,
     trustedOrigins,
-    socialProviders: {
-      google: {
-        clientId: process.env.GOOGLE_CLIENT_ID as string,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      },
-    },
     emailAndPassword: {
       enabled: true,
       // Better Auth requires this to return a Promise; there's no real async
@@ -96,22 +90,6 @@ function buildAuth() {
       // already wipes financial data before this runs, so no beforeDelete
       // hook or email-verification step is needed here.
       deleteUser: { enabled: true },
-    },
-    account: {
-      accountLinking: {
-        enabled: true,
-        trustedProviders: ['google'],
-        // Better Auth otherwise refuses to link Google onto an existing
-        // email/password account unless that account's email is already
-        // verified -- confirmed by reading link-account.mjs directly (it
-        // silently returns `{ error: "account not linked" }`, no thrown
-        // error, no session, but still a 200 on the callback -- looked
-        // exactly like a working request that just never signed you in).
-        // This app has no email-verification flow at all, so every
-        // email/password account is permanently unverified; requiring it
-        // here would make Google linking impossible for 100% of users.
-        requireLocalEmailVerified: false,
-      },
     },
     plugins: [
       bearer(),
