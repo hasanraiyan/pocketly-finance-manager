@@ -8,6 +8,7 @@ import { usePocketlyClient } from "@/lib/use-pocketly-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/password-input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
@@ -20,10 +21,15 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (!agreedToTerms) {
+      setError("You need to accept the Terms and Privacy Policy to continue.");
+      return;
+    }
     setSubmitting(true);
     const { error: authError } = await authClient.signUp.email({
       name,
@@ -97,8 +103,37 @@ export default function SignUpPage() {
                   onChange={setPassword}
                 />
               </Field>
+              <Field orientation="horizontal">
+                <Checkbox
+                  id="agree-terms"
+                  checked={agreedToTerms}
+                  onCheckedChange={(checked) =>
+                    setAgreedToTerms(checked === true)
+                  }
+                />
+                <FieldLabel
+                  htmlFor="agree-terms"
+                  className="text-xs font-normal text-muted-foreground"
+                >
+                  I agree to the{" "}
+                  <Link
+                    href="/terms"
+                    className="text-foreground underline underline-offset-4"
+                  >
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    href="/privacy"
+                    className="text-foreground underline underline-offset-4"
+                  >
+                    Privacy Policy
+                  </Link>
+                  .
+                </FieldLabel>
+              </Field>
               {error && <FieldError>{error}</FieldError>}
-              <Button type="submit" disabled={submitting}>
+              <Button type="submit" disabled={submitting || !agreedToTerms}>
                 {submitting && <Spinner className="size-3.5" />}
                 Create account
               </Button>
