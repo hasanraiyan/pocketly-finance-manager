@@ -25,6 +25,7 @@ This writes `apps/api/openapi.json` and `apps/api/postman/pocketly-api.postman_c
 | Resource | Routes |
 | --- | --- |
 | Health | `GET /health` (public) |
+| Users | `GET /users/me`, `DELETE /users/me` (requires `{ "confirm": true }` body — irreversible, deletes all financial data and the Clerk identity) |
 | Accounts | `GET/POST /accounts`, `GET/PATCH/DELETE /accounts/:id` |
 | Categories | `GET/POST /categories`, `GET/PATCH/DELETE /categories/:id` |
 | Transactions | `GET/POST /transactions` (filters: `type`, `accountId`, `categoryId`, `from`, `to`, `q`; cursor pagination via `cursor`/`limit`), `GET/PATCH/DELETE /transactions/:id`, `PATCH /transactions/:id/restore` |

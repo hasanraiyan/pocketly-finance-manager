@@ -15,6 +15,52 @@
         ]
       }
     },
+    "/users/me": {
+      "get": {
+        "operationId": "UsersController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "clerk": []
+          }
+        ],
+        "tags": [
+          "users"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_deleteAccount",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAccountDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "clerk": []
+          }
+        ],
+        "tags": [
+          "users"
+        ]
+      }
+    },
     "/accounts": {
       "post": {
         "operationId": "AccountsController_create",
@@ -916,6 +962,19 @@
       }
     },
     "schemas": {
+      "DeleteAccountDto": {
+        "type": "object",
+        "properties": {
+          "confirm": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          }
+        },
+        "required": [
+          "confirm"
+        ]
+      },
       "CreateAccountDto": {
         "type": "object",
         "properties": {

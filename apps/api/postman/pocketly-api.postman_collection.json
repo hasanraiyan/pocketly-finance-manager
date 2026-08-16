@@ -1,7 +1,7 @@
 {
   "item": [
     {
-      "id": "06984e8d-c902-413c-b489-551732bbd6cb",
+      "id": "72dc4f3c-d5b8-40e3-bd76-1b63cb54dc4d",
       "name": "health",
       "description": {
         "content": "",
@@ -9,7 +9,7 @@
       },
       "item": [
         {
-          "id": "61fa8d5d-d596-49a1-8c62-77b5bd142191",
+          "id": "00b28500-d362-40f9-a656-a1d26c1c4d49",
           "name": "App Controller health",
           "request": {
             "name": "App Controller health",
@@ -29,7 +29,7 @@
           },
           "response": [
             {
-              "id": "580ef4d4-9c94-4e86-b1e1-3ef2a81533b3",
+              "id": "e8c2dbf6-0711-434f-b624-4997bfd5a096",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -66,7 +66,189 @@
       "event": []
     },
     {
-      "id": "e9be6fba-4ade-4e6d-9089-965286367c15",
+      "id": "3d6e33a1-fa39-4e96-a3fd-52f64c8ddcb6",
+      "name": "users",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "63240865-4e52-4331-a88c-ba4eac120642",
+          "name": "Users Controller get Profile",
+          "request": {
+            "name": "Users Controller get Profile",
+            "description": {},
+            "url": {
+              "path": [
+                "users",
+                "me"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "946e23f5-94a2-4431-b577-7ea4d3d986b1",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "users",
+                    "me"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "84df8a2a-0cf4-40b9-9fc6-78f04dd62974",
+          "name": "Users Controller delete Account",
+          "request": {
+            "name": "Users Controller delete Account",
+            "description": {},
+            "url": {
+              "path": [
+                "users",
+                "me"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "DELETE",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirm\": \"<boolean>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "5f2ac851-c020-42bf-b165-98a4c40ac87b",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "users",
+                    "me"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"confirm\": \"<boolean>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "236abf3f-0933-4932-91fd-0c449c6aa537",
       "name": "accounts",
       "description": {
         "content": "",
@@ -74,7 +256,7 @@
       },
       "item": [
         {
-          "id": "8d239658-0593-4b33-9070-c54714c9ecf0",
+          "id": "f0544c85-2610-4ad8-8ccf-556a228abb55",
           "name": "Accounts Controller create",
           "request": {
             "name": "Accounts Controller create",
@@ -117,7 +299,7 @@
           },
           "response": [
             {
-              "id": "0520000f-7a15-4846-a6c8-c5a6d491c224",
+              "id": "6a061893-4109-471f-bdf7-8c863eaec4e4",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -169,7 +351,7 @@
           }
         },
         {
-          "id": "6c9bad24-5aa5-4de9-8178-79cd1de3cdef",
+          "id": "3d201092-ac63-4e0d-9eff-6f0876455407",
           "name": "Accounts Controller find All",
           "request": {
             "name": "Accounts Controller find All",
@@ -197,7 +379,7 @@
           },
           "response": [
             {
-              "id": "59bc54f3-ee07-47b8-b952-72756b06bfa9",
+              "id": "f4bb4fa5-25e8-4792-8609-d5085f224c24",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -241,7 +423,7 @@
           }
         },
         {
-          "id": "d55c5fc0-f30c-4ba1-ba72-b678697dbc6a",
+          "id": "4dd32390-fb5d-4c7c-a76a-48b410073321",
           "name": "Accounts Controller find One",
           "request": {
             "name": "Accounts Controller find One",
@@ -278,7 +460,7 @@
           },
           "response": [
             {
-              "id": "d01b13f8-2884-4368-aeef-9b667804073f",
+              "id": "2cdfe8ff-666a-4efb-ad72-a01b694464ab",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -331,7 +513,7 @@
           }
         },
         {
-          "id": "b94fe6c8-1456-4447-bfa3-86e15ba23fcc",
+          "id": "de5e9c50-ab1a-4ea8-b842-b1c6e7989b5c",
           "name": "Accounts Controller update",
           "request": {
             "name": "Accounts Controller update",
@@ -383,7 +565,7 @@
           },
           "response": [
             {
-              "id": "2a26af16-b42b-4420-8b2e-3adf976edf3f",
+              "id": "05f5c634-b91f-48e2-9beb-f63fc363dbce",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -444,7 +626,7 @@
           }
         },
         {
-          "id": "92514a6b-40ee-4098-8737-ac7159f26604",
+          "id": "0bc11bc9-3c43-4701-b893-47fc36bdec31",
           "name": "Accounts Controller remove",
           "request": {
             "name": "Accounts Controller remove",
@@ -481,7 +663,7 @@
           },
           "response": [
             {
-              "id": "f6712e67-6b95-4b74-9f7f-c720f23f2a9f",
+              "id": "b7fbf8a6-00e2-4922-8920-a96ee8a6ec82",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -537,7 +719,7 @@
       "event": []
     },
     {
-      "id": "5c86d5b2-809e-442f-9897-a4daf4dcaefa",
+      "id": "6df00454-5fc3-4dee-bb49-13d99a1323bc",
       "name": "categories",
       "description": {
         "content": "",
@@ -545,7 +727,7 @@
       },
       "item": [
         {
-          "id": "f6be6c41-bc32-4e7c-9031-d416e8bd8547",
+          "id": "028c568c-2011-496a-81ed-458c06012aed",
           "name": "Categories Controller create",
           "request": {
             "name": "Categories Controller create",
@@ -588,7 +770,7 @@
           },
           "response": [
             {
-              "id": "305e045a-e1b2-45ac-9c19-fbd229084477",
+              "id": "05ea5bd8-e74d-40f9-9a62-876cc3d8250f",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -640,7 +822,7 @@
           }
         },
         {
-          "id": "ca6195bd-474f-4468-89f6-f25929688f20",
+          "id": "6eb88f52-886e-4c23-80ab-1d644cc3af63",
           "name": "Categories Controller find All",
           "request": {
             "name": "Categories Controller find All",
@@ -668,7 +850,7 @@
           },
           "response": [
             {
-              "id": "045bca6c-1b05-4f48-9a5f-c063cbf82efc",
+              "id": "5e1c032c-3dc1-4d88-9c87-b02aaf847603",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -712,7 +894,7 @@
           }
         },
         {
-          "id": "68b60d96-d8b0-4568-aa0d-3361bf6ed9e2",
+          "id": "0e9e85fb-c40f-40d3-a591-0a238bc287f5",
           "name": "Categories Controller find One",
           "request": {
             "name": "Categories Controller find One",
@@ -749,7 +931,7 @@
           },
           "response": [
             {
-              "id": "21d95314-0c1c-48cc-b7c3-920db093b438",
+              "id": "912c90ef-ab94-49f7-8208-a18c40290cc5",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -802,7 +984,7 @@
           }
         },
         {
-          "id": "e37f8e9d-6398-4e51-853c-9e3c1394a03a",
+          "id": "17982e0e-67ba-4a8d-81bc-82b02d68a370",
           "name": "Categories Controller update",
           "request": {
             "name": "Categories Controller update",
@@ -854,7 +1036,7 @@
           },
           "response": [
             {
-              "id": "3e9369a3-8aa6-492a-b738-1870734e7e83",
+              "id": "b3555e85-9fe7-4990-92bf-f33ccbac65fb",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -915,7 +1097,7 @@
           }
         },
         {
-          "id": "4d708e7a-97db-4fd8-8d84-a4491f247021",
+          "id": "2cc30f7a-2f03-4f6b-8eae-3c136237f06a",
           "name": "Categories Controller remove",
           "request": {
             "name": "Categories Controller remove",
@@ -952,7 +1134,7 @@
           },
           "response": [
             {
-              "id": "5e47a542-eed0-46ea-8a6b-97efa2311d34",
+              "id": "20eb2eff-5f88-41a0-8abd-738c2f049fc8",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1008,7 +1190,7 @@
       "event": []
     },
     {
-      "id": "9633fb38-e7ca-4bf7-92c2-f301a28320ef",
+      "id": "82fac521-0316-4780-ab86-8b56209d3df7",
       "name": "transactions",
       "description": {
         "content": "",
@@ -1016,7 +1198,7 @@
       },
       "item": [
         {
-          "id": "476c6bcd-411d-4bd1-8925-a2d3ce701ad9",
+          "id": "e0837406-d608-459c-bd7c-feae0f4875b8",
           "name": "Transactions Controller create",
           "request": {
             "name": "Transactions Controller create",
@@ -1059,7 +1241,7 @@
           },
           "response": [
             {
-              "id": "43242f2e-aad2-4b98-bdc6-8b02f849e3b9",
+              "id": "25cdb521-d570-42f1-a004-f570cb37119a",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1111,7 +1293,7 @@
           }
         },
         {
-          "id": "4d7c5241-87d2-470b-b2e7-5d0398f6b21e",
+          "id": "0ff1658f-cf55-428f-9e1f-d5ad8d7a539a",
           "name": "Transactions Controller find All",
           "request": {
             "name": "Transactions Controller find All",
@@ -1180,7 +1362,7 @@
           },
           "response": [
             {
-              "id": "3621a9bc-dac2-4e82-8fe2-12dc99cd35f7",
+              "id": "ea4cf372-3127-40e8-82d0-0765c7d742f0",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1257,7 +1439,7 @@
           }
         },
         {
-          "id": "e9fc60f2-1edd-49f8-8ffa-1d12452c93c2",
+          "id": "793c6bb7-5099-4b55-8e6d-27ea0935ec05",
           "name": "Transactions Controller find One",
           "request": {
             "name": "Transactions Controller find One",
@@ -1294,7 +1476,7 @@
           },
           "response": [
             {
-              "id": "87ae68d8-5f64-4a70-9113-c26a07bcb674",
+              "id": "c5f3c056-c05d-4035-8f74-13c54d0cf0f5",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1347,7 +1529,7 @@
           }
         },
         {
-          "id": "30bcd793-79d2-482a-9c75-673f515f1cb8",
+          "id": "21e14457-b29a-4aa8-bcb4-b99889cf8574",
           "name": "Transactions Controller update",
           "request": {
             "name": "Transactions Controller update",
@@ -1399,7 +1581,7 @@
           },
           "response": [
             {
-              "id": "86df7d4e-fbe7-4d94-8c72-7a1304b96066",
+              "id": "5e620967-ff68-4261-a28b-f125f003d48e",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1460,7 +1642,7 @@
           }
         },
         {
-          "id": "38204e36-3648-487a-b867-c295207096b4",
+          "id": "d151f256-6145-419b-a434-a28fc892f7cd",
           "name": "Transactions Controller remove",
           "request": {
             "name": "Transactions Controller remove",
@@ -1497,7 +1679,7 @@
           },
           "response": [
             {
-              "id": "b03f0cf4-35a5-49ba-8c16-560c357178a4",
+              "id": "58b17853-3008-4299-9942-3ff1338b2d78",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1550,7 +1732,7 @@
           }
         },
         {
-          "id": "a966e4f7-ce08-43ff-9f92-4e7b6fce4164",
+          "id": "77d9a6ca-6432-4b3c-8b6e-68c3c5efc80e",
           "name": "Transactions Controller restore",
           "request": {
             "name": "Transactions Controller restore",
@@ -1588,7 +1770,7 @@
           },
           "response": [
             {
-              "id": "a84a709a-ba10-47fb-9621-9fa0a0be1aa6",
+              "id": "1a8e0a2b-da9b-48ea-bec9-8a83be72693e",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1645,7 +1827,7 @@
       "event": []
     },
     {
-      "id": "e2b573d3-80ab-4991-b2e1-87e898a691fd",
+      "id": "0d9d1c0f-4aa1-4e7a-a2fa-b4b5e9b5425e",
       "name": "budgets",
       "description": {
         "content": "",
@@ -1653,7 +1835,7 @@
       },
       "item": [
         {
-          "id": "e2fe8e72-1259-4d31-be50-c30225ebc35e",
+          "id": "f1ea33d9-f743-4b7b-a353-23ae7d4ff714",
           "name": "Budgets Controller create",
           "request": {
             "name": "Budgets Controller create",
@@ -1696,7 +1878,7 @@
           },
           "response": [
             {
-              "id": "f1827afe-f379-445c-9ed0-78a4a6546b8e",
+              "id": "f4bc9ab9-5388-4b68-9a73-cdafb89048db",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1748,7 +1930,7 @@
           }
         },
         {
-          "id": "7e89a781-e504-46a5-9606-2298b1a9cdc5",
+          "id": "6a44fa97-f7dc-419f-8891-de2a01324b97",
           "name": "Budgets Controller find All",
           "request": {
             "name": "Budgets Controller find All",
@@ -1776,7 +1958,7 @@
           },
           "response": [
             {
-              "id": "34a3b0ce-803f-44c7-bab6-dba8474bff71",
+              "id": "373ff4e9-c5fd-402d-80d4-a908324dd7dd",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1820,7 +2002,7 @@
           }
         },
         {
-          "id": "259b89d8-573b-4831-8632-c18cd8015057",
+          "id": "7be16e0c-8ba0-41d2-8e8d-b962431efa75",
           "name": "Budgets Controller find One",
           "request": {
             "name": "Budgets Controller find One",
@@ -1857,7 +2039,7 @@
           },
           "response": [
             {
-              "id": "a3a0d2da-7d95-4e22-a29b-c6490f45eae1",
+              "id": "b2bbb67e-707a-4d1b-a1f1-523df92e208d",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1910,7 +2092,7 @@
           }
         },
         {
-          "id": "5b818311-2e23-47ed-94ea-ced93347f5cc",
+          "id": "39f6d8eb-1b6d-4c74-be31-f4a8ec609403",
           "name": "Budgets Controller update",
           "request": {
             "name": "Budgets Controller update",
@@ -1962,7 +2144,7 @@
           },
           "response": [
             {
-              "id": "96ce853c-3e3a-42d3-b45c-a76da1680e98",
+              "id": "ed2988c3-1149-46d2-a902-ee9075ae3a7b",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2023,7 +2205,7 @@
           }
         },
         {
-          "id": "175e9a88-ae4f-40fd-8c00-4654facf39ca",
+          "id": "af408f61-4e6d-4931-9e6a-37789ceb7f6d",
           "name": "Budgets Controller remove",
           "request": {
             "name": "Budgets Controller remove",
@@ -2060,7 +2242,7 @@
           },
           "response": [
             {
-              "id": "8db4429b-5532-43e6-b202-885396c8c32f",
+              "id": "ce35933e-db22-4f15-856c-bdba2315332f",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2116,7 +2298,7 @@
       "event": []
     },
     {
-      "id": "f1124ce5-4c5f-4fa0-9573-895ca0602c32",
+      "id": "2c484ecf-6c56-4282-9510-ccf19a55804a",
       "name": "analysis",
       "description": {
         "content": "",
@@ -2124,7 +2306,7 @@
       },
       "item": [
         {
-          "id": "d8365e28-047c-46e1-9836-2a872c932b2a",
+          "id": "db3f4708-0df0-41ea-adc1-da4b7feba912",
           "name": "Analysis Controller get Overview",
           "request": {
             "name": "Analysis Controller get Overview",
@@ -2168,7 +2350,7 @@
           },
           "response": [
             {
-              "id": "0b7d91c2-4b02-40ce-93c3-386ea28992e0",
+              "id": "da0cd18e-6b7a-4b61-97c8-dcb839668637",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2225,7 +2407,7 @@
           }
         },
         {
-          "id": "918fda31-0544-420c-bb08-42c4afe19ef7",
+          "id": "5453d9a7-70aa-4470-8544-ced3b9a9996f",
           "name": "Analysis Controller get Category Breakdown",
           "request": {
             "name": "Analysis Controller get Category Breakdown",
@@ -2270,7 +2452,7 @@
           },
           "response": [
             {
-              "id": "9bd42885-5b41-4131-adb6-8b38dad8a6c2",
+              "id": "41b0193d-16f1-4650-b2d9-ef179f2f4a5a",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2328,7 +2510,7 @@
           }
         },
         {
-          "id": "14b37d1b-1183-4542-8a95-905bed3243d6",
+          "id": "0019f0da-3b81-4e0f-a110-7f9a5922beea",
           "name": "Analysis Controller get Cash Flow",
           "request": {
             "name": "Analysis Controller get Cash Flow",
@@ -2373,7 +2555,7 @@
           },
           "response": [
             {
-              "id": "84a6bf01-69df-4f88-a301-92cce5d99123",
+              "id": "3b33a440-c93a-40cd-9abd-a938015034c9",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2431,7 +2613,7 @@
           }
         },
         {
-          "id": "a9b56d94-8314-4676-aa28-af3d6bb816da",
+          "id": "69c4c9a1-dadd-4674-8a98-98dc23850041",
           "name": "Analysis Controller get Account Breakdown",
           "request": {
             "name": "Analysis Controller get Account Breakdown",
@@ -2476,7 +2658,7 @@
           },
           "response": [
             {
-              "id": "35ba40da-a590-44fd-901d-16228c70fe19",
+              "id": "2dc28c20-662b-4b1f-b654-df26a4d0873d",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2546,7 +2728,7 @@
     }
   ],
   "info": {
-    "_postman_id": "261f6141-ad23-4427-87ae-e120828d836c",
+    "_postman_id": "04aee75b-8d7b-4f72-92af-c32f958c1acc",
     "name": "Pocketly API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": {

@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { AccountsModule } from './accounts/accounts.module';
 import { AnalysisModule } from './analysis/analysis.module';
@@ -14,7 +16,9 @@ import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
+    SentryModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 100 }]),
     DatabaseModule,
     UsersModule,
     AccountsModule,
@@ -25,7 +29,9 @@ import { UsersModule } from './users/users.module';
   ],
   controllers: [AppController],
   providers: [
+    { provide: APP_FILTER, useClass: SentryGlobalFilter },
     { provide: APP_PIPE, useClass: ZodValidationPipe },
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: ClerkAuthGuard },
   ],
 })

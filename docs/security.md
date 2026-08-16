@@ -18,16 +18,21 @@ Status as of the current implementation — this is a living document, not a com
 
 **Category deletion guard** — a category in use by an existing transaction or budget can't be hard-deleted (only archived via `ignored`), preventing orphaned references.
 
+**CORS** — `app.enableCors(...)` in `main.ts`, restricted to an explicit allow-list read from `CORS_ORIGINS` (comma-separated, defaults to `http://localhost:3000`). Not a wildcard.
+
+**Rate limiting** — `@nestjs/throttler` applied globally (`APP_GUARD`): 100 requests/minute per client by default (`ThrottlerModule.forRoot` in `app.module.ts`). Per-route overrides (`@Throttle()`/`@SkipThrottle()`) can be added once AI/export endpoints exist and need tighter limits (SRS §62).
+
+**Error monitoring** — `@sentry/nestjs` (SRS §67). `src/instrument.ts` is imported first in `main.ts` (required for auto-instrumentation), `SentryModule.forRoot()` + `SentryGlobalFilter` are wired in `app.module.ts`. `sendDefaultPii: false` — financial data must never leave the app as telemetry. Only unexpected/unhandled errors are reported; ordinary `HttpException`s (404, 400, etc.) are not. No-ops safely if `SENTRY_DSN` is unset.
+
+**Account deletion** — `DELETE /users/me` (SRS §64), requires `{ "confirm": true }` in the body as a safeguard against accidental calls. Irreversible: hard-deletes every `Account`/`Category`/`Transaction`/`Budget` owned by the user, deletes the Pocketly `User` profile, then deletes the Clerk identity itself (`clerkClient.users.deleteUser`). Covered by `users/users.service.spec.ts`, which mocks the Clerk call and asserts every collection is empty afterward.
+
 ## Not yet implemented (known gaps)
 
 These are called out explicitly so they don't get assumed as "done":
 
-- **CORS** is not configured in `main.ts`. The web app (port 3000) calling the API (port 4000) cross-origin will be blocked until `app.enableCors(...)` is added with an explicit allowed-origins list.
-- **Rate limiting** (SRS §62) — no throttling on auth-adjacent, AI, or export endpoints yet (AI/export aren't built yet either).
 - **HTTPS** is a deployment-time concern (reverse proxy / hosting platform), not application code — not configured here.
-- **Error monitoring** (Sentry, SRS §67) is not wired in. Errors currently only go to stdout/stderr.
-- **Account deletion flow** (SRS §64) is not implemented.
 - **Automated backups / retention policy** (SRS §66) is an infrastructure concern for whichever MongoDB hosting is chosen — not addressed by application code.
+- Rate limiting is a single global bucket for now — no per-route tiers yet (there's nothing to tier until AI/export/MCP endpoints exist).
 
 ## Principles to keep following
 
