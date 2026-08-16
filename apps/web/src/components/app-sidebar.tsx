@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
@@ -25,6 +25,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Spinner } from "@/components/ui/spinner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,6 +45,18 @@ export const NAV_ITEMS = [
   { title: "Planning", url: "/planning", icon: Target },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
+
+/**
+ * Swaps the nav icon for a spinner while that route is in flight, so a tap
+ * gets an answer immediately instead of the page sitting still until the
+ * new segment arrives. Has to live inside the `Link` for `useLinkStatus` to
+ * see the navigation; the sidebar's `[&_svg]:size-4` rule sizes both marks
+ * identically, so the swap doesn't shift the row.
+ */
+function NavIcon({ icon: Icon }: { icon: (typeof NAV_ITEMS)[number]["icon"] }) {
+  const { pending } = useLinkStatus();
+  return pending ? <Spinner /> : <Icon />;
+}
 
 function initials(name: string) {
   return name
@@ -84,7 +97,7 @@ export function AppSidebar({ user }: { user: SessionUser }) {
                     isActive={pathname.startsWith(item.url)}
                     tooltip={item.title}
                   >
-                    <item.icon />
+                    <NavIcon icon={item.icon} />
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
