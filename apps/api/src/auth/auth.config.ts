@@ -68,6 +68,15 @@ export const auth = betterAuth({
       console.log(`[auth] Password reset requested for ${user.email}: ${url}`);
     },
   },
+  user: {
+    // Off by default in Better Auth -- without this, auth.api.deleteUser
+    // (called by UsersController.deleteAccount, the Settings page's Danger
+    // Zone / SRS §64) throws a NOT_FOUND that Nest can't map to a proper
+    // HTTP status, surfacing as a bare 500. Our own UsersService.deleteAccount
+    // already wipes financial data before this runs, so no beforeDelete
+    // hook or email-verification step is needed here.
+    deleteUser: { enabled: true },
+  },
   plugins: [
     bearer(),
     // Required by oauthProvider: MCP access tokens are signed JWTs,
