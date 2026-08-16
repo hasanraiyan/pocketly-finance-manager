@@ -39,39 +39,48 @@ function AuthCallback() {
 
     let cancelled = false;
 
-    void authClient.getSession().then(async ({ data, error: sessionError }) => {
-      if (cancelled) return;
-      if (sessionError || !data?.session) {
-        // eslint-disable-next-line no-console
-        console.error("[auth/callback] getSession failed:", sessionError);
-        setError(sessionError?.message ?? "no session after sign-in");
-        return;
+    async function checkSession() {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        if (cancelled) return;
+        const { data, error: sessionError } = await authClient.getSession({
+          fetchOptions: {
+            credentials: "include",
+          },
+        });
+
+        if (data?.session) {
+          // Best-effort timezone setup
+          const profile = await client.GET("/users/me").catch(() => null);
+          if (profile?.data?.data.timezone === "UTC") {
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            await client.PATCH("/users/me", { body: { timezone } }).catch(() => {});
+          }
+
+          const mcpQuery = searchParams.get("mcp");
+          if (mcpQuery) {
+            window.location.href = `${authBaseUrl}/oauth2/authorize?${mcpQuery}`;
+            return;
+          }
+
+          router.replace(searchParams.get("next") ?? "/dashboard");
+          return;
+        }
+
+        if (sessionError) {
+          console.error("[auth/callback] getSession failed:", sessionError);
+          setError(sessionError.message ?? "no session after sign-in");
+          return;
+        }
+
+        if (attempt < 2) {
+          await new Promise((resolve) => setTimeout(resolve, 400));
+        }
       }
 
-      // Best-effort, same as the email/password sign-up path: social
-      // sign-in skips that form entirely, so this is the one place that
-      // sees both a first-time Google sign-up and a returning Google
-      // sign-in. Only touches it if it's still on the server default --
-      // never overwrites a timezone the user (or a previous visit here)
-      // already set.
-      const profile = await client.GET("/users/me").catch(() => null);
-      if (profile?.data?.data.timezone === "UTC") {
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        await client.PATCH("/users/me", { body: { timezone } }).catch(() => {});
-      }
+      setError("no session after sign-in");
+    }
 
-      const mcpQuery = searchParams.get("mcp");
-      if (mcpQuery) {
-        // Same continuation the email/password sign-in path uses -- a full
-        // page navigation back to Better Auth's own authorize endpoint,
-        // which now finds the session just established.
-        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-        window.location.href = `${authBaseUrl}/oauth2/authorize?${mcpQuery}`;
-        return;
-      }
-
-      router.replace(searchParams.get("next") ?? "/dashboard");
-    });
+    void checkSession();
 
     return () => {
       cancelled = true;

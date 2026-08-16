@@ -6,13 +6,20 @@ import { jwt } from 'better-auth/plugins';
 import { oauthProvider } from '@better-auth/oauth-provider';
 import { oauthProviderResourceClient } from '@better-auth/oauth-provider/resource-client';
 
-const trustedOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:3000')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
-
 export const apiBaseURL = process.env.API_BASE_URL ?? 'http://localhost:4000';
 const webBaseURL = process.env.WEB_BASE_URL ?? 'http://localhost:3000';
+
+const trustedOrigins = Array.from(
+  new Set([
+    ...(process.env.CORS_ORIGINS ?? 'http://localhost:3000')
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean),
+    webBaseURL,
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+  ]),
+);
 
 /**
  * Canonical resource URI for the MCP tool endpoint (RFC 8707). Bound into

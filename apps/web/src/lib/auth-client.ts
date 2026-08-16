@@ -31,9 +31,11 @@ export const authClient = createAuthClient({
   plugins: [oauthProviderClient()],
   fetchOptions: {
     credentials: "include",
-    auth: {
-      type: "Bearer",
-      token: () => getStoredAuthToken(),
+    onRequest: (ctx) => {
+      const token = getStoredAuthToken();
+      if (token) {
+        ctx.headers.set("Authorization", `Bearer ${token}`);
+      }
     },
     onSuccess: (ctx) => {
       const token = ctx.response.headers.get("set-auth-token");
