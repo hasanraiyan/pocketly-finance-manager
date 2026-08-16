@@ -244,6 +244,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/exports/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ExportsController_requestPdfExport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/mcp-connections/{clientId}": {
         parameters: {
             query?: never;
@@ -587,6 +603,23 @@ export interface components {
                     income: number;
                     expense: number;
                 }[];
+            };
+        };
+        ExportQueryDto: {
+            /**
+             * @default this_month
+             * @enum {string}
+             */
+            period: "7d" | "this_month" | "last_month" | "3m" | "6m" | "this_year" | "custom";
+            /** Format: date-time */
+            from?: string;
+            /** Format: date-time */
+            to?: string;
+        };
+        ExportQueuedDto: {
+            data: {
+                jobId: string;
+                message: string;
             };
         };
         RevokeConnectionResponseDto: {
@@ -1269,6 +1302,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AccountBreakdownDto"];
+                };
+            };
+        };
+    };
+    ExportsController_requestPdfExport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExportQueryDto"];
+            };
+        };
+        responses: {
+            /** @description Export job queued. The PDF will be generated in the background and emailed to the user. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExportQueuedDto"];
                 };
             };
         };
