@@ -33,7 +33,13 @@ pnpm workspaces + Turborepo. `apps/mobile` (Expo) is planned but not started —
 ```
 HTTP request
     ↓
-ClerkAuthGuard        resolves the Clerk session → Pocketly User, attaches req.user
+clerkMiddleware        parses the Clerk session token (Express middleware, every request)
+    ↓
+ThrottlerGuard         100 req/min per client (global)
+    ↓
+ClerkAuthGuard         resolves the Clerk session → Pocketly User, attaches req.user
+    ↓
+LoggingInterceptor      records start time; after the response/error, logs method+path+status+duration+userId
     ↓
 ZodValidationPipe      validates the request body/query against a Zod schema (global)
     ↓
