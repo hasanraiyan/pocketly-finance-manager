@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import {
   baseTransactionSchema,
@@ -14,92 +15,70 @@ export function registerTransactionsTools(
   ctx: McpToolContext,
 ): void {
   server.registerTool(
-    'get_transactions',
+    'manage_transaction',
     {
-      title: 'Get transactions',
+      title: 'Manage transactions',
       description:
-        'List income, expense, and transfer records, with optional filters (type, account, category, date range, search text).',
-      inputSchema: transactionQuerySchema.shape,
-    },
-    async (rawArgs) => {
-      const scope = await requireScope(ctx.token, 'pocketly:read');
-      if (!scope.ok) return errorResult(scope.message);
-
-      const query = transactionQuerySchema.parse(rawArgs);
-      const page = await ctx.services.transactions.findAll(ctx.user._id, query);
-      return textResult(page);
-    },
-  );
-
-  server.registerTool(
-    'create_transaction',
-    {
-      title: 'Create transaction',
-      description:
-        'Record a new income, expense, or transfer. Amounts are integers in the smallest currency unit (e.g. cents/paise).',
-      inputSchema: baseTransactionSchema.shape,
-    },
-    async (rawArgs) => {
-      const scope = await requireScope(ctx.token, 'pocketly:write');
-      if (!scope.ok) return errorResult(scope.message);
-
-      const parsed = createTransactionSchema.safeParse(rawArgs);
-      if (!parsed.success) return errorResult(parsed.error.message);
-
-      const created = await ctx.services.transactions.create(
-        ctx.user._id,
-        parsed.data,
-      );
-      return textResult(created);
-    },
-  );
-
-  server.registerTool(
-    'update_transaction',
-    {
-      title: 'Update transaction',
-      description: 'Edit an existing transaction by id.',
+        'List, get, create, update, or delete income/expense/transfer records. Amounts are integers in the smallest currency unit (e.g. cents/paise). "list"/"get" need only their own fields; "create" needs the full record; "update"/"delete" need "id".',
       inputSchema: {
-        id: objectIdSchema.describe('The transaction id to update'),
+        action: z.enum(['list', 'get', 'create', 'update', 'delete']),
+        id: objectIdSchema
+          .optional()
+          .describe('Transaction id -- required for get/update/delete'),
+        ...transactionQuerySchema.shape,
         ...baseTransactionSchema.partial().shape,
       },
     },
     async (rawArgs) => {
-      const scope = await requireScope(ctx.token, 'pocketly:write');
-      if (!scope.ok) return errorResult(scope.message);
+      const { transactions } = ctx.services;
 
-      const { id, ...rest } = rawArgs as { id: string } & Record<
-        string,
-        unknown
-      >;
-      const parsed = updateTransactionSchema.safeParse(rest);
-      if (!parsed.success) return errorResult(parsed.error.message);
-
-      const updated = await ctx.services.transactions.update(
-        ctx.user._id,
-        id,
-        parsed.data,
-      );
-      return textResult(updated);
-    },
-  );
-
-  server.registerTool(
-    'delete_transaction',
-    {
-      title: 'Delete transaction',
-      description:
-        'Soft-delete a transaction by id. It stops counting toward balances/analysis but stays in history.',
-      inputSchema: {
-        id: objectIdSchema.describe('The transaction id to delete'),
-      },
-    },
-    async ({ id }: { id: string }) => {
-      const scope = await requireScope(ctx.token, 'pocketly:write');
-      if (!scope.ok) return errorResult(scope.message);
-
-      const removed = await ctx.services.transactions.remove(ctx.user._id, id);
-      return textResult(removed);
+      switch (rawArgs.action) {
+        case 'list': {
+          const scope = await requireScope(ctx.token, 'pocketly:read');
+          if (!scope.ok) return errorResult(scope.message);
+          const query = transactionQuerySchema.parse(rawArgs);
+          return textResult(await transactions.findAll(ctx.user._id, query));
+        }
+        case 'get': {
+          const scope = await requireScope(ctx.token, 'pocketly:read');
+          if (!scope.ok) return errorResult(scope.message);
+          if (!rawArgs.id)
+            return errorResult('"id" is required for action "get"');
+          return textResult(
+            await transactions.findOne(ctx.user._id, rawArgs.id),
+          );
+        }
+        case 'create': {
+          const scope = await requireScope(ctx.token, 'pocketly:write');
+          if (!scope.ok) return errorResult(scope.message);
+          const parsed = createTransactionSchema.safeParse(rawArgs);
+          if (!parsed.success) return errorResult(parsed.error.message);
+          return textResult(
+            await transactions.create(ctx.user._id, parsed.data),
+          );
+        }
+        case 'update': {
+          const scope = await requireScope(ctx.token, 'pocketly:write');
+          if (!scope.ok) return errorResult(scope.message);
+          if (!rawArgs.id)
+            return errorResult('"id" is required for action "update"');
+          const { id, ...rest } = rawArgs;
+          const parsed = updateTransactionSchema.safeParse(rest);
+          if (!parsed.success) return errorResult(parsed.error.message);
+          return textResult(
+            await transactions.update(ctx.user._id, id, parsed.data),
+          );
+        }
+        case 'delete': {
+          const scope = await requireScope(ctx.token, 'pocketly:write');
+          if (!scope.ok) return errorResult(scope.message);
+          if (!rawArgs.id)
+            return errorResult('"id" is required for action "delete"');
+          return textResult(
+            await transactions.remove(ctx.user._id, rawArgs.id),
+          );
+        }
+      }
     },
   );
 }
