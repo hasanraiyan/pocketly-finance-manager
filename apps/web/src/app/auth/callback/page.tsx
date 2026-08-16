@@ -84,6 +84,9 @@ function AuthCallback() {
         <p className="text-sm text-muted-foreground">
           Something went wrong signing you in.
         </p>
+        <p className="max-w-sm font-mono text-xs text-muted-foreground/70">
+          {error}
+        </p>
         <Link
           href="/sign-in"
           className="text-sm text-foreground underline underline-offset-4"
