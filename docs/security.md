@@ -32,6 +32,10 @@ Status as of the current implementation — this is a living document, not a com
 
 **Response envelope** — `TransformInterceptor` (global, `APP_INTERCEPTOR`) wraps every success response in `{ data: ... }`, consistently across every route. Doesn't touch the error path (Nest's default `{ statusCode, message, error }` shape is unchanged) or a 204's empty body.
 
+**Webhook signature verification** — `POST /webhooks/clerk` is `@Public()` (no Clerk session — Clerk itself is the caller), but every request is verified via Svix signature (`@clerk/backend/webhooks`'s `verifyWebhook`, `CLERK_WEBHOOK_SIGNING_SECRET`) before any event is processed; an invalid/missing signature is rejected before touching the database. Requires `{ rawBody: true }` in `main.ts` since signature verification needs the exact original bytes, not Nest's re-serialized parsed body.
+
+**Readiness check** — `GET /health` checks live MongoDB connection state (`mongoose.Connection.readyState`), not just process liveness, and returns 503 if the database is unreachable — so a load balancer/orchestrator can tell "the process is up" apart from "the process can actually serve requests."
+
 ## Not yet implemented (known gaps)
 
 These are called out explicitly so they don't get assumed as "done":

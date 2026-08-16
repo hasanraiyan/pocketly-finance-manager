@@ -33,7 +33,7 @@ export interface paths {
         delete: operations["UsersController_deleteAccount"];
         options?: never;
         head?: never;
-        patch?: never;
+        patch: operations["UsersController_updateProfile"];
         trace?: never;
     };
     "/accounts": {
@@ -244,6 +244,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/webhooks/clerk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["WebhooksController_handleClerkWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -260,6 +276,10 @@ export interface components {
                 createdAt: string;
                 updatedAt: string;
             };
+        };
+        UpdateProfileDto: {
+            currency?: string;
+            timezone?: string;
         };
         DeleteAccountDto: {
             /** @constant */
@@ -572,6 +592,12 @@ export interface components {
                 }[];
             };
         };
+        WebhookAckDto: {
+            data: {
+                /** @constant */
+                received: true;
+            };
+        };
     };
     responses: never;
     parameters: never;
@@ -590,7 +616,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Liveness check */
+            /** @description Liveness + readiness check */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -600,9 +626,18 @@ export interface operations {
                         data?: {
                             /** @example ok */
                             status?: string;
+                            /** @example up */
+                            database?: string;
                         };
                     };
                 };
+            };
+            /** @description The database is unreachable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -644,6 +679,29 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    UsersController_updateProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProfileDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDto"];
+                };
             };
         };
     };
@@ -1214,6 +1272,25 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AccountBreakdownDto"];
+                };
+            };
+        };
+    };
+    WebhooksController_handleClerkWebhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookAckDto"];
                 };
             };
         };

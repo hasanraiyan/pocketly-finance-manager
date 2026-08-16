@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Patch,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -15,6 +16,7 @@ import {
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import type { UserDocument } from './schemas/user.schema';
 import { DeleteAccountDto } from './dto/delete-account.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UserDto } from './dto/user-response.dto';
 import { UsersService } from './users.service';
 
@@ -28,6 +30,15 @@ export class UsersController {
   @ApiOkResponse({ type: UserDto })
   getProfile(@CurrentUser() user: UserDocument) {
     return user;
+  }
+
+  @Patch('me')
+  @ApiOkResponse({ type: UserDto })
+  updateProfile(
+    @CurrentUser() user: UserDocument,
+    @Body() dto: UpdateProfileDto,
+  ) {
+    return this.usersService.updateProfile(user, dto);
   }
 
   @Delete('me')

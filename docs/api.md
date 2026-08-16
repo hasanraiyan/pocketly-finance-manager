@@ -1,6 +1,6 @@
 # API
 
-Base URL: `http://localhost:4000/api/v1` (dev). All routes require a Clerk session bearer token except `GET /health`.
+Base URL: `http://localhost:4000/api/v1` (dev). All routes require a Clerk session bearer token except `GET /health` and `POST /webhooks/clerk` (verified by Svix signature instead).
 
 ```
 Authorization: Bearer <clerk-session-token>
@@ -30,8 +30,9 @@ Every route declares its response schema (`@ApiOkResponse`/`@ApiCreatedResponse`
 
 | Resource | Routes |
 | --- | --- |
-| Health | `GET /health` (public) |
-| Users | `GET /users/me`, `DELETE /users/me` (requires `{ "confirm": true }` body — irreversible, deletes all financial data and the Clerk identity) |
+| Health | `GET /health` (public; liveness + MongoDB readiness — 503 if the DB is unreachable) |
+| Webhooks | `POST /webhooks/clerk` (public, Svix-signature verified; syncs `user.updated`/`user.deleted` from Clerk) |
+| Users | `GET /users/me`, `PATCH /users/me` (update `currency`/`timezone` only), `DELETE /users/me` (requires `{ "confirm": true }` body — irreversible, deletes all financial data and the Clerk identity) |
 | Accounts | `GET/POST /accounts` (paginated), `GET/PATCH/DELETE /accounts/:id` |
 | Categories | `GET/POST /categories` (paginated), `GET/PATCH/DELETE /categories/:id` |
 | Transactions | `GET/POST /transactions` (paginated; filters: `type`, `accountId`, `categoryId`, `from`, `to`, `q`), `GET/PATCH/DELETE /transactions/:id`, `PATCH /transactions/:id/restore` |

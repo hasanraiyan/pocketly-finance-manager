@@ -1,6 +1,8 @@
 import { INestApplication } from '@nestjs/common';
+import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { Connection } from 'mongoose';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { requestIdMiddleware } from '../src/common/logging/request-id.middleware';
@@ -39,7 +41,14 @@ describe('AppController (e2e)', () => {
       .get('/api/v1/health')
       .expect(200);
 
-    expect(response.body).toEqual({ data: { status: 'ok' } });
+    expect(response.body).toEqual({ data: { status: 'ok', database: 'up' } });
     expect(response.headers['x-request-id']).toEqual(expect.any(String));
+  });
+
+  it('/api/v1/health (GET) returns 503 when the database is unreachable', async () => {
+    const connection = app.get<Connection>(getConnectionToken());
+    await connection.close();
+
+    await request(app.getHttpServer()).get('/api/v1/health').expect(503);
   });
 });

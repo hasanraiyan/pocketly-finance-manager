@@ -24,6 +24,7 @@
     "docs:generate": "ts-node -r tsconfig-paths/register scripts/generate-docs.ts"
   },
   "dependencies": {
+    "@clerk/backend": "^3.16.6",
     "@clerk/express": "^2.1.57",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.4",

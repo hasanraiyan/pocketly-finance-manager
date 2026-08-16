@@ -33,7 +33,7 @@ import {
 import { User, UserDocument, UserSchema } from './schemas/user.schema';
 import { UsersService } from './users.service';
 
-describe('UsersService.deleteAccount', () => {
+describe('UsersService', () => {
   let mongod: MongoMemoryServer;
   let moduleRef: TestingModule;
   let usersService: UsersService;
@@ -116,5 +116,82 @@ describe('UsersService.deleteAccount', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method -- jest.fn() mock reference, not a real bound method
     const deleteUserMock = clerkClient.users.deleteUser;
     expect(deleteUserMock).toHaveBeenCalledWith('user_test123');
+  });
+
+  it('updateProfile updates currency/timezone and persists them', async () => {
+    const user = await userModel.create({
+      clerkUserId: 'user_update_profile',
+      email: 'profile@b.com',
+      name: 'Profile User',
+      currency: 'USD',
+      timezone: 'UTC',
+    });
+
+    const updated = await usersService.updateProfile(user, {
+      currency: 'INR',
+      timezone: 'Asia/Kolkata',
+    });
+
+    expect(updated.currency).toBe('INR');
+    expect(updated.timezone).toBe('Asia/Kolkata');
+
+    const persisted = await userModel.findById(user._id);
+    expect(persisted?.currency).toBe('INR');
+    expect(persisted?.timezone).toBe('Asia/Kolkata');
+  });
+
+  it('updateFromClerkWebhook syncs email/name/imageUrl and no-ops for an unknown clerk id', async () => {
+    const user = await userModel.create({
+      clerkUserId: 'user_webhook_update',
+      email: 'old@b.com',
+      name: 'Old Name',
+    });
+
+    await usersService.updateFromClerkWebhook('user_webhook_update', {
+      email: 'new@b.com',
+      name: 'New Name',
+      imageUrl: 'https://example.com/avatar.png',
+    });
+
+    const updated = await userModel.findById(user._id);
+    expect(updated?.email).toBe('new@b.com');
+    expect(updated?.name).toBe('New Name');
+    expect(updated?.imageUrl).toBe('https://example.com/avatar.png');
+
+    // No matching Pocketly user for this clerk id -- must not throw.
+    await expect(
+      usersService.updateFromClerkWebhook('user_does_not_exist', {
+        email: 'x@y.com',
+      }),
+    ).resolves.toBeUndefined();
+  });
+
+  it('deleteByClerkId erases financial data without calling Clerk, and no-ops for an unknown clerk id', async () => {
+    const user = await userModel.create({
+      clerkUserId: 'user_webhook_delete',
+      email: 'delete@b.com',
+      name: 'Delete User',
+    });
+    await accountsService.create(user._id, {
+      name: 'Cash',
+      type: 'cash',
+      initialBalance: 0,
+      currency: 'INR',
+    });
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method -- jest.fn() mock reference, not a real bound method
+    const deleteUserMock = clerkClient.users.deleteUser as jest.Mock;
+    deleteUserMock.mockClear();
+
+    await usersService.deleteByClerkId('user_webhook_delete');
+
+    expect(await userModel.findById(user._id)).toBeNull();
+    expect(await accountModel.countDocuments({ userId: user._id })).toBe(0);
+    expect(deleteUserMock).not.toHaveBeenCalled();
+
+    // No matching Pocketly user for this clerk id -- must not throw.
+    await expect(
+      usersService.deleteByClerkId('user_does_not_exist'),
+    ).resolves.toBeUndefined();
   });
 });

@@ -9,7 +9,7 @@ import { requestIdMiddleware } from './common/logging/request-id.middleware';
 import { buildOpenApiDocument } from './swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { rawBody: true });
   app.use(requestIdMiddleware);
   app.use(clerkMiddleware());
   app.setGlobalPrefix('api/v1');

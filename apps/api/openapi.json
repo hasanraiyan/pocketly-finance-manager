@@ -7,7 +7,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Liveness check",
+            "description": "Liveness + readiness check",
             "content": {
               "application/json": {
                 "schema": {
@@ -18,6 +18,10 @@
                         "status": {
                           "type": "string",
                           "example": "ok"
+                        },
+                        "database": {
+                          "type": "string",
+                          "example": "up"
                         }
                       }
                     }
@@ -25,6 +29,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "The database is unreachable"
           }
         },
         "tags": [
@@ -36,6 +43,40 @@
       "get": {
         "operationId": "UsersController_getProfile",
         "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "clerk": []
+          }
+        ],
+        "tags": [
+          "users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_updateProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "",
@@ -1201,6 +1242,27 @@
           "analysis"
         ]
       }
+    },
+    "/webhooks/clerk": {
+      "post": {
+        "operationId": "WebhooksController_handleClerkWebhook",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookAckDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "webhooks"
+        ]
+      }
     }
   },
   "info": {
@@ -1271,6 +1333,19 @@
         "required": [
           "data"
         ]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3
+          },
+          "timezone": {
+            "type": "string"
+          }
+        }
       },
       "DeleteAccountDto": {
         "type": "object",
@@ -2642,6 +2717,28 @@
               "period",
               "accounts"
             ],
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "WebhookAckDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "received": {
+                "type": "boolean",
+                "const": true
+              }
+            },
+            "required": [
+              "received"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
             "x-nestjs_zod-self-required": true
           }
         },

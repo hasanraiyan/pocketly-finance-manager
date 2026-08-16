@@ -74,7 +74,16 @@ Every financial document has a `userId`. Every query filters and writes by `{ _i
 
 ### Auth
 
-Clerk owns identity (`@clerk/express`: `clerkMiddleware()` + `getAuth()`). Pocketly owns authorization: `ClerkAuthGuard` is a global guard (`APP_GUARD`) that resolves the Clerk user to a Pocketly `User` document (creating one on first sight, via `UsersService.findOrCreateByClerkId`) and attaches it to the request. Routes are private by default; `@Public()` opts a route out (used only by `GET /health`).
+Clerk owns identity (`@clerk/express`: `clerkMiddleware()` + `getAuth()`). Pocketly owns authorization: `ClerkAuthGuard` is a global guard (`APP_GUARD`) that resolves the Clerk user to a Pocketly `User` document (creating one on first sight, via `UsersService.findOrCreateByClerkId`) and attaches it to the request. Routes are private by default; `@Public()` opts a route out (`GET /health`, `POST /webhooks/clerk`).
+
+### Staying in sync with Clerk
+
+Two paths keep the Pocketly `User` profile aligned with Clerk, for different situations:
+
+- **Lazy, on first API call**: `UsersService.findOrCreateByClerkId` creates the Pocketly profile the first time a Clerk user hits any authenticated route. Fine for new users, but doesn't react to changes made *after* that.
+- **Pushed, via webhook**: `POST /webhooks/clerk` (`src/webhooks/`) verifies the request came from Clerk using Svix signature verification (`@clerk/backend/webhooks`'s `verifyWebhook`, `CLERK_WEBHOOK_SIGNING_SECRET`), then handles two event types — `user.updated` syncs `email`/`name`/`imageUrl` (never `currency`/`timezone`, which are Pocketly-owned), `user.deleted` erases the user's financial data the same way `DELETE /users/me` does (`UsersService.eraseAllData`), just without the redundant call back to Clerk to delete an identity that's already gone. Both handlers no-op if the Clerk user isn't one we've ever seen — nothing to sync.
+
+Signature verification needs the exact raw request bytes, so `main.ts` boots the app with `{ rawBody: true }` — Nest preserves `req.rawBody` (a `Buffer`) alongside the normally-parsed `req.body` for every request, and only the webhook handler reads it.
 
 ### Response shape & pagination
 
