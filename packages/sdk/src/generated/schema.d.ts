@@ -249,15 +249,17 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         UserDto: {
-            _id: string;
-            clerkUserId: string;
-            email: string;
-            name: string;
-            imageUrl?: string;
-            currency: string;
-            timezone: string;
-            createdAt: string;
-            updatedAt: string;
+            data: {
+                _id: string;
+                clerkUserId: string;
+                email: string;
+                name: string;
+                imageUrl?: string;
+                currency: string;
+                timezone: string;
+                createdAt: string;
+                updatedAt: string;
+            };
         };
         DeleteAccountDto: {
             /** @constant */
@@ -274,19 +276,41 @@ export interface components {
             currency: string;
         };
         AccountWithBalanceDto: {
-            _id: string;
-            userId: string;
-            name: string;
-            /** @enum {string} */
-            type: "bank" | "cash" | "savings" | "upi" | "credit_card" | "wallet";
-            icon?: string;
-            initialBalance: number;
-            currency: string;
-            ignored: boolean;
-            deletedAt: string | null;
-            createdAt: string;
-            updatedAt: string;
-            balance: number;
+            data: {
+                _id: string;
+                userId: string;
+                name: string;
+                /** @enum {string} */
+                type: "bank" | "cash" | "savings" | "upi" | "credit_card" | "wallet";
+                icon?: string;
+                initialBalance: number;
+                currency: string;
+                ignored: boolean;
+                deletedAt: string | null;
+                createdAt: string;
+                updatedAt: string;
+                balance: number;
+            };
+        };
+        AccountListDto: {
+            data: {
+                items: {
+                    _id: string;
+                    userId: string;
+                    name: string;
+                    /** @enum {string} */
+                    type: "bank" | "cash" | "savings" | "upi" | "credit_card" | "wallet";
+                    icon?: string;
+                    initialBalance: number;
+                    currency: string;
+                    ignored: boolean;
+                    deletedAt: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                    balance: number;
+                }[];
+                nextCursor: string | null;
+            };
         };
         UpdateAccountDto: {
             name?: string;
@@ -300,18 +324,20 @@ export interface components {
             ignored?: boolean;
         };
         AccountDto: {
-            _id: string;
-            userId: string;
-            name: string;
-            /** @enum {string} */
-            type: "bank" | "cash" | "savings" | "upi" | "credit_card" | "wallet";
-            icon?: string;
-            initialBalance: number;
-            currency: string;
-            ignored: boolean;
-            deletedAt: string | null;
-            createdAt: string;
-            updatedAt: string;
+            data: {
+                _id: string;
+                userId: string;
+                name: string;
+                /** @enum {string} */
+                type: "bank" | "cash" | "savings" | "upi" | "credit_card" | "wallet";
+                icon?: string;
+                initialBalance: number;
+                currency: string;
+                ignored: boolean;
+                deletedAt: string | null;
+                createdAt: string;
+                updatedAt: string;
+            };
         };
         CreateCategoryDto: {
             name: string;
@@ -321,17 +347,37 @@ export interface components {
             color?: string;
         };
         CategoryDto: {
-            _id: string;
-            userId: string;
-            name: string;
-            /** @enum {string} */
-            type: "income" | "expense";
-            icon?: string;
-            color?: string;
-            ignored: boolean;
-            deletedAt: string | null;
-            createdAt: string;
-            updatedAt: string;
+            data: {
+                _id: string;
+                userId: string;
+                name: string;
+                /** @enum {string} */
+                type: "income" | "expense";
+                icon?: string;
+                color?: string;
+                ignored: boolean;
+                deletedAt: string | null;
+                createdAt: string;
+                updatedAt: string;
+            };
+        };
+        CategoryListDto: {
+            data: {
+                items: {
+                    _id: string;
+                    userId: string;
+                    name: string;
+                    /** @enum {string} */
+                    type: "income" | "expense";
+                    icon?: string;
+                    color?: string;
+                    ignored: boolean;
+                    deletedAt: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                }[];
+                nextCursor: string | null;
+            };
         };
         UpdateCategoryDto: {
             name?: string;
@@ -354,24 +400,7 @@ export interface components {
             date: string;
         };
         TransactionDto: {
-            _id: string;
-            userId: string;
-            /** @enum {string} */
-            type: "income" | "expense" | "transfer";
-            amount: number;
-            description?: string;
-            note?: string;
-            categoryId?: string;
-            accountId: string;
-            toAccountId?: string;
-            date: string;
-            deletedAt: string | null;
-            syncVersion: number;
-            createdAt: string;
-            updatedAt: string;
-        };
-        TransactionListDto: {
-            items: {
+            data: {
                 _id: string;
                 userId: string;
                 /** @enum {string} */
@@ -387,8 +416,29 @@ export interface components {
                 syncVersion: number;
                 createdAt: string;
                 updatedAt: string;
-            }[];
-            nextCursor: string | null;
+            };
+        };
+        TransactionListDto: {
+            data: {
+                items: {
+                    _id: string;
+                    userId: string;
+                    /** @enum {string} */
+                    type: "income" | "expense" | "transfer";
+                    amount: number;
+                    description?: string;
+                    note?: string;
+                    categoryId?: string;
+                    accountId: string;
+                    toAccountId?: string;
+                    date: string;
+                    deletedAt: string | null;
+                    syncVersion: number;
+                    createdAt: string;
+                    updatedAt: string;
+                }[];
+                nextCursor: string | null;
+            };
         };
         UpdateTransactionDto: {
             /** @enum {string} */
@@ -409,21 +459,45 @@ export interface components {
             period: "weekly" | "monthly" | "yearly";
         };
         BudgetWithStatusDto: {
-            _id: string;
-            userId: string;
-            categoryId: string;
-            amount: number;
-            /** @enum {string} */
-            period: "weekly" | "monthly" | "yearly";
-            deletedAt: string | null;
-            syncVersion: number;
-            createdAt: string;
-            updatedAt: string;
-            spent: number;
-            remaining: number;
-            percentageUsed: number;
-            periodStart: string;
-            periodEnd: string;
+            data: {
+                _id: string;
+                userId: string;
+                categoryId: string;
+                amount: number;
+                /** @enum {string} */
+                period: "weekly" | "monthly" | "yearly";
+                deletedAt: string | null;
+                syncVersion: number;
+                createdAt: string;
+                updatedAt: string;
+                spent: number;
+                remaining: number;
+                percentageUsed: number;
+                periodStart: string;
+                periodEnd: string;
+            };
+        };
+        BudgetListDto: {
+            data: {
+                items: {
+                    _id: string;
+                    userId: string;
+                    categoryId: string;
+                    amount: number;
+                    /** @enum {string} */
+                    period: "weekly" | "monthly" | "yearly";
+                    deletedAt: string | null;
+                    syncVersion: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    spent: number;
+                    remaining: number;
+                    percentageUsed: number;
+                    periodStart: string;
+                    periodEnd: string;
+                }[];
+                nextCursor: string | null;
+            };
         };
         UpdateBudgetDto: {
             categoryId?: string;
@@ -432,61 +506,71 @@ export interface components {
             period?: "weekly" | "monthly" | "yearly";
         };
         BudgetDto: {
-            _id: string;
-            userId: string;
-            categoryId: string;
-            amount: number;
-            /** @enum {string} */
-            period: "weekly" | "monthly" | "yearly";
-            deletedAt: string | null;
-            syncVersion: number;
-            createdAt: string;
-            updatedAt: string;
+            data: {
+                _id: string;
+                userId: string;
+                categoryId: string;
+                amount: number;
+                /** @enum {string} */
+                period: "weekly" | "monthly" | "yearly";
+                deletedAt: string | null;
+                syncVersion: number;
+                createdAt: string;
+                updatedAt: string;
+            };
         };
         OverviewDto: {
-            period: {
-                start: string;
-                end: string;
-            };
-            income: number;
-            expense: number;
-            net: number;
-        };
-        CategoryBreakdownDto: {
-            period: {
-                start: string;
-                end: string;
-            };
-            categories: {
-                categoryId: string;
-                /** @enum {string} */
-                type: "income" | "expense";
-                total: number;
-            }[];
-        };
-        CashFlowDto: {
-            period: {
-                start: string;
-                end: string;
-            };
-            days: {
-                date: string;
+            data: {
+                period: {
+                    start: string;
+                    end: string;
+                };
                 income: number;
                 expense: number;
                 net: number;
-            }[];
+            };
+        };
+        CategoryBreakdownDto: {
+            data: {
+                period: {
+                    start: string;
+                    end: string;
+                };
+                categories: {
+                    categoryId: string;
+                    /** @enum {string} */
+                    type: "income" | "expense";
+                    total: number;
+                }[];
+            };
+        };
+        CashFlowDto: {
+            data: {
+                period: {
+                    start: string;
+                    end: string;
+                };
+                days: {
+                    date: string;
+                    income: number;
+                    expense: number;
+                    net: number;
+                }[];
+            };
         };
         AccountBreakdownDto: {
-            period: {
-                start: string;
-                end: string;
+            data: {
+                period: {
+                    start: string;
+                    end: string;
+                };
+                accounts: {
+                    accountId: string;
+                    name: string;
+                    income: number;
+                    expense: number;
+                }[];
             };
-            accounts: {
-                accountId: string;
-                name: string;
-                income: number;
-                expense: number;
-            }[];
         };
     };
     responses: never;
@@ -513,8 +597,10 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
-                        /** @example ok */
-                        status?: string;
+                        data?: {
+                            /** @example ok */
+                            status?: string;
+                        };
                     };
                 };
             };
@@ -563,7 +649,10 @@ export interface operations {
     };
     AccountsController_findAll: {
         parameters: {
-            query?: never;
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -575,7 +664,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AccountWithBalanceDto"][];
+                    "application/json": components["schemas"]["AccountListDto"];
                 };
             };
         };
@@ -673,7 +762,10 @@ export interface operations {
     };
     CategoriesController_findAll: {
         parameters: {
-            query?: never;
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -685,7 +777,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CategoryDto"][];
+                    "application/json": components["schemas"]["CategoryListDto"];
                 };
             };
         };
@@ -923,7 +1015,10 @@ export interface operations {
     };
     BudgetsController_findAll: {
         parameters: {
-            query?: never;
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -935,7 +1030,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["BudgetWithStatusDto"][];
+                    "application/json": components["schemas"]["BudgetListDto"];
                 };
             };
         };

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -14,9 +15,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CurrentUser } from '../common/auth/current-user.decorator';
+import { PaginationQueryDto } from '../common/pagination/pagination-query.dto';
 import type { UserDocument } from '../users/schemas/user.schema';
 import { BudgetsService } from './budgets.service';
-import { BudgetDto, BudgetWithStatusDto } from './dto/budget-response.dto';
+import {
+  BudgetDto,
+  BudgetListDto,
+  BudgetWithStatusDto,
+} from './dto/budget-response.dto';
 import { CreateBudgetDto, UpdateBudgetDto } from './dto/budget.dto';
 
 @ApiTags('budgets')
@@ -32,9 +38,12 @@ export class BudgetsController {
   }
 
   @Get()
-  @ApiOkResponse({ type: [BudgetWithStatusDto] })
-  findAll(@CurrentUser() user: UserDocument) {
-    return this.budgetsService.findAll(user);
+  @ApiOkResponse({ type: BudgetListDto })
+  findAll(
+    @CurrentUser() user: UserDocument,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.budgetsService.findAll(user, query);
   }
 
   @Get(':id')

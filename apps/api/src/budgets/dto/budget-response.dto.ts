@@ -1,5 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { envelopeSchema } from '../../common/http/envelope.schema';
+import { paginatedListSchema } from '../../common/pagination/paginated-list.schema';
 import { BUDGET_PERIODS } from '../schemas/budget.schema';
 
 export const budgetSchema = z.object({
@@ -22,5 +24,10 @@ export const budgetWithStatusSchema = budgetSchema.extend({
   periodEnd: z.string(),
 });
 
-export class BudgetDto extends createZodDto(budgetSchema) {}
-export class BudgetWithStatusDto extends createZodDto(budgetWithStatusSchema) {}
+export class BudgetDto extends createZodDto(envelopeSchema(budgetSchema)) {}
+export class BudgetWithStatusDto extends createZodDto(
+  envelopeSchema(budgetWithStatusSchema),
+) {}
+export class BudgetListDto extends createZodDto(
+  envelopeSchema(paginatedListSchema(budgetWithStatusSchema)),
+) {}

@@ -26,7 +26,11 @@ Status as of the current implementation — this is a living document, not a com
 
 **Account deletion** — `DELETE /users/me` (SRS §64), requires `{ "confirm": true }` in the body as a safeguard against accidental calls. Irreversible: hard-deletes every `Account`/`Category`/`Transaction`/`Budget` owned by the user, deletes the Pocketly `User` profile, then deletes the Clerk identity itself (`clerkClient.users.deleteUser`). Covered by `users/users.service.spec.ts`, which mocks the Clerk call and asserts every collection is empty afterward.
 
-**Request logging** — `LoggingInterceptor` (global, `APP_INTERCEPTOR`, `common/logging/logging.interceptor.ts`) logs every request: method, path, status, duration, and the authenticated user's Mongo `_id` if present. This exists because expected errors (404/400/409/...) previously left **zero** trace anywhere — Sentry only reports genuinely unexpected errors by design, so a wave of validation failures or not-found responses was otherwise invisible. Log level scales with status: `log` for 2xx/3xx, `warn` for 4xx (includes the error message), `error` for 5xx (includes the stack trace). Deliberately logs only method + path — never the body, query string, or headers — so financial data and Clerk tokens can never end up in logs.
+**Request logging** — `LoggingInterceptor` (global, `APP_INTERCEPTOR`, `common/logging/logging.interceptor.ts`) logs every request: method, path, status, duration, request id, and the authenticated user's Mongo `_id` if present. This exists because expected errors (404/400/409/...) previously left **zero** trace anywhere — Sentry only reports genuinely unexpected errors by design, so a wave of validation failures or not-found responses was otherwise invisible. Log level scales with status: `log` for 2xx/3xx, `warn` for 4xx (includes the error message), `error` for 5xx (includes the stack trace). Deliberately logs only method + path — never the body, query string, or headers — so financial data and Clerk tokens can never end up in logs.
+
+**Request correlation** — `requestIdMiddleware` (`common/logging/request-id.middleware.ts`) runs first, before Clerk, so every response (even a 401 rejected by a guard) carries an `X-Request-Id` header — reuses an incoming one if the caller sent it, generates one via `crypto.randomUUID()` otherwise. Included in every log line by `LoggingInterceptor`, so a user-reported issue can be traced back to its exact log entries.
+
+**Response envelope** — `TransformInterceptor` (global, `APP_INTERCEPTOR`) wraps every success response in `{ data: ... }`, consistently across every route. Doesn't touch the error path (Nest's default `{ statusCode, message, error }` shape is unchanged) or a 204's empty body.
 
 ## Not yet implemented (known gaps)
 
@@ -35,7 +39,7 @@ These are called out explicitly so they don't get assumed as "done":
 - **HTTPS** is a deployment-time concern (reverse proxy / hosting platform), not application code — not configured here.
 - **Automated backups / retention policy** (SRS §66) is an infrastructure concern for whichever MongoDB hosting is chosen — not addressed by application code.
 - Rate limiting is a single global bucket for now — no per-route tiers yet (there's nothing to tier until AI/export/MCP endpoints exist).
-- Logs go to stdout/stderr only (`Logger`'s default console transport) — no log aggregation/shipping configured, no request correlation ID tying a log line to a specific request across services.
+- Logs go to stdout/stderr only (`Logger`'s default console transport) — no log aggregation/shipping configured. That's an infrastructure choice (which platform, which log sink) to make when deploying, not something to hardcode into the application now.
 
 ## Principles to keep following
 

@@ -9,7 +9,14 @@ export class AppController {
   @Get('health')
   @ApiOkResponse({
     description: 'Liveness check',
-    schema: { properties: { status: { type: 'string', example: 'ok' } } },
+    schema: {
+      properties: {
+        data: {
+          type: 'object',
+          properties: { status: { type: 'string', example: 'ok' } },
+        },
+      },
+    },
   })
   health(): { status: string } {
     return { status: 'ok' };

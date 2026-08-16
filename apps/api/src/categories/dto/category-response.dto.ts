@@ -1,5 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { envelopeSchema } from '../../common/http/envelope.schema';
+import { paginatedListSchema } from '../../common/pagination/paginated-list.schema';
 import { CATEGORY_TYPES } from '../schemas/category.schema';
 
 export const categorySchema = z.object({
@@ -15,4 +17,7 @@ export const categorySchema = z.object({
   updatedAt: z.string(),
 });
 
-export class CategoryDto extends createZodDto(categorySchema) {}
+export class CategoryDto extends createZodDto(envelopeSchema(categorySchema)) {}
+export class CategoryListDto extends createZodDto(
+  envelopeSchema(paginatedListSchema(categorySchema)),
+) {}

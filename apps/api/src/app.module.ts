@@ -11,6 +11,7 @@ import { BudgetsModule } from './budgets/budgets.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ClerkAuthGuard } from './common/auth/clerk-auth.guard';
 import { DatabaseModule } from './common/database/database.module';
+import { TransformInterceptor } from './common/http/transform.interceptor';
 import { LoggingInterceptor } from './common/logging/logging.interceptor';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UsersModule } from './users/users.module';
@@ -35,6 +36,7 @@ import { UsersModule } from './users/users.module';
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: ClerkAuthGuard },
     { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
+    { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
   ],
 })
 export class AppModule {}

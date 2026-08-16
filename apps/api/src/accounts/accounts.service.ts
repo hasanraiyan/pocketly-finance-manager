@@ -1,7 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, QueryFilter, Types } from 'mongoose';
 import { calculateBalance } from '../common/finance/calculate-balance';
+import { decodeIdCursor, encodeIdCursor } from '../common/pagination/id-cursor';
+import { PaginationQueryDto } from '../common/pagination/pagination-query.dto';
 import {
   Transaction,
   TransactionDocument,
@@ -23,11 +25,30 @@ export class AccountsService {
     return this.withBalance(account);
   }
 
-  async findAll(userId: Types.ObjectId) {
+  async findAll(userId: Types.ObjectId, query: PaginationQueryDto) {
+    const conditions: QueryFilter<AccountDocument>[] = [
+      { userId, deletedAt: null },
+    ];
+    if (query.cursor) {
+      conditions.push({ _id: { $lt: decodeIdCursor(query.cursor) } });
+    }
+
     const accounts = await this.accountModel
-      .find({ userId, deletedAt: null })
+      .find({ $and: conditions })
+      .sort({ _id: -1 })
+      .limit(query.limit + 1)
       .exec();
-    return Promise.all(accounts.map((account) => this.withBalance(account)));
+
+    const hasMore = accounts.length > query.limit;
+    const page = hasMore ? accounts.slice(0, query.limit) : accounts;
+    const items = await Promise.all(
+      page.map((account) => this.withBalance(account)),
+    );
+
+    return {
+      items,
+      nextCursor: hasMore ? encodeIdCursor(page[page.length - 1]._id) : null,
+    };
   }
 
   async findOne(userId: Types.ObjectId, id: string) {

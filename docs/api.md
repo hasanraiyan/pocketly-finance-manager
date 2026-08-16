@@ -6,6 +6,10 @@ Base URL: `http://localhost:4000/api/v1` (dev). All routes require a Clerk sessi
 Authorization: Bearer <clerk-session-token>
 ```
 
+Every success response is wrapped in `{ "data": ... }` (see `docs/architecture.md` § Response shape & pagination). Error responses keep Nest's default `{ statusCode, message, error }` shape, unwrapped. Every response also carries an `X-Request-Id` header.
+
+Every list endpoint (`accounts`, `categories`, `transactions`, `budgets`) is cursor-paginated: pass `?limit=` (default 20, max 100) and `?cursor=` (from the previous page's `nextCursor`); the response is `{ "data": { "items": [...], "nextCursor": string | null } }`.
+
 ## Interactive docs
 
 - Swagger UI: `GET /docs` — click "Authorize" and paste a Clerk session token; it persists across page reloads.
@@ -28,10 +32,10 @@ Every route declares its response schema (`@ApiOkResponse`/`@ApiCreatedResponse`
 | --- | --- |
 | Health | `GET /health` (public) |
 | Users | `GET /users/me`, `DELETE /users/me` (requires `{ "confirm": true }` body — irreversible, deletes all financial data and the Clerk identity) |
-| Accounts | `GET/POST /accounts`, `GET/PATCH/DELETE /accounts/:id` |
-| Categories | `GET/POST /categories`, `GET/PATCH/DELETE /categories/:id` |
-| Transactions | `GET/POST /transactions` (filters: `type`, `accountId`, `categoryId`, `from`, `to`, `q`; cursor pagination via `cursor`/`limit`), `GET/PATCH/DELETE /transactions/:id`, `PATCH /transactions/:id/restore` |
-| Budgets | `GET/POST /budgets`, `GET/PATCH/DELETE /budgets/:id` |
+| Accounts | `GET/POST /accounts` (paginated), `GET/PATCH/DELETE /accounts/:id` |
+| Categories | `GET/POST /categories` (paginated), `GET/PATCH/DELETE /categories/:id` |
+| Transactions | `GET/POST /transactions` (paginated; filters: `type`, `accountId`, `categoryId`, `from`, `to`, `q`), `GET/PATCH/DELETE /transactions/:id`, `PATCH /transactions/:id/restore` |
+| Budgets | `GET/POST /budgets` (paginated), `GET/PATCH/DELETE /budgets/:id` |
 | Analysis | `GET /analysis`, `GET /analysis/categories`, `GET /analysis/cash-flow`, `GET /analysis/accounts` (all accept `period`, and `from`/`to` when `period=custom`) |
 
 See `docs/architecture.md` for how requests flow through auth → validation → service → database, and `docs/security.md` for the ownership/authorization model.

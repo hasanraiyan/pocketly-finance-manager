@@ -4,8 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, QueryFilter, Types } from 'mongoose';
 import { Budget, BudgetDocument } from '../budgets/schemas/budget.schema';
+import { decodeIdCursor, encodeIdCursor } from '../common/pagination/id-cursor';
+import { PaginationQueryDto } from '../common/pagination/pagination-query.dto';
 import {
   Transaction,
   TransactionDocument,
@@ -28,8 +30,27 @@ export class CategoriesService {
     return this.categoryModel.create({ ...dto, userId });
   }
 
-  findAll(userId: Types.ObjectId) {
-    return this.categoryModel.find({ userId, deletedAt: null }).exec();
+  async findAll(userId: Types.ObjectId, query: PaginationQueryDto) {
+    const conditions: QueryFilter<CategoryDocument>[] = [
+      { userId, deletedAt: null },
+    ];
+    if (query.cursor) {
+      conditions.push({ _id: { $lt: decodeIdCursor(query.cursor) } });
+    }
+
+    const categories = await this.categoryModel
+      .find({ $and: conditions })
+      .sort({ _id: -1 })
+      .limit(query.limit + 1)
+      .exec();
+
+    const hasMore = categories.length > query.limit;
+    const items = hasMore ? categories.slice(0, query.limit) : categories;
+
+    return {
+      items,
+      nextCursor: hasMore ? encodeIdCursor(items[items.length - 1]._id) : null,
+    };
   }
 
   async findOne(userId: Types.ObjectId, id: string) {

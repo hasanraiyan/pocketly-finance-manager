@@ -1,5 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { envelopeSchema } from '../../common/http/envelope.schema';
 
 const periodSchema = z.object({
   start: z.string(),
@@ -48,9 +49,11 @@ export const accountBreakdownSchema = z.object({
   ),
 });
 
-export class OverviewDto extends createZodDto(overviewSchema) {}
+export class OverviewDto extends createZodDto(envelopeSchema(overviewSchema)) {}
 export class CategoryBreakdownDto extends createZodDto(
-  categoryBreakdownSchema,
+  envelopeSchema(categoryBreakdownSchema),
 ) {}
-export class CashFlowDto extends createZodDto(cashFlowSchema) {}
-export class AccountBreakdownDto extends createZodDto(accountBreakdownSchema) {}
+export class CashFlowDto extends createZodDto(envelopeSchema(cashFlowSchema)) {}
+export class AccountBreakdownDto extends createZodDto(
+  envelopeSchema(accountBreakdownSchema),
+) {}

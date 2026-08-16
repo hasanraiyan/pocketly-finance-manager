@@ -33,13 +33,15 @@ pnpm workspaces + Turborepo. `apps/mobile` (Expo) is planned but not started —
 ```
 HTTP request
     ↓
+requestIdMiddleware     reads/generates X-Request-Id, sets it on the response, first of everything
+    ↓
 clerkMiddleware        parses the Clerk session token (Express middleware, every request)
     ↓
 ThrottlerGuard         100 req/min per client (global)
     ↓
 ClerkAuthGuard         resolves the Clerk session → Pocketly User, attaches req.user
     ↓
-LoggingInterceptor      records start time; after the response/error, logs method+path+status+duration+userId
+LoggingInterceptor      records start time; after the response/error, logs method+path+status+duration+requestId+userId
     ↓
 ZodValidationPipe      validates the request body/query against a Zod schema (global)
     ↓
@@ -50,6 +52,8 @@ Service                 domain logic: ownership checks, balance/budget calculati
 Mongoose Model          schema-level validation, indexes
     ↓
 MongoDB
+    ↓
+TransformInterceptor    wraps the success response in { data: ... } on the way back out
 ```
 
 Each domain (`accounts`, `categories`, `transactions`, `budgets`, `analysis`, `users`) is one Nest module: schema + Zod DTOs + service + controller. There is no separate repository layer on top of the injected Mongoose models — the service is the only thing that touches the model, which already satisfies the SRS's "isolate the database layer" requirement without an extra abstraction.
@@ -72,6 +76,21 @@ Every financial document has a `userId`. Every query filters and writes by `{ _i
 
 Clerk owns identity (`@clerk/express`: `clerkMiddleware()` + `getAuth()`). Pocketly owns authorization: `ClerkAuthGuard` is a global guard (`APP_GUARD`) that resolves the Clerk user to a Pocketly `User` document (creating one on first sight, via `UsersService.findOrCreateByClerkId`) and attaches it to the request. Routes are private by default; `@Public()` opts a route out (used only by `GET /health`).
 
+### Response shape & pagination
+
+Every success response is wrapped in `{ data: ... }` by the global `TransformInterceptor` (`common/http/transform.interceptor.ts`) — consistent across every route, including `/health`. A 204 (no body) passes through untouched. Error responses are **not** wrapped; Nest's default `{ statusCode, message, error }` shape is unchanged.
+
+Every list endpoint (`accounts`, `categories`, `transactions`, `budgets`) uses cursor pagination: `?cursor=&limit=` in, `{ items: [...], nextCursor: string | null }` out (then wrapped in the envelope, so the full body is `{ data: { items, nextCursor } }`). Two cursor implementations exist because they key on different fields:
+
+- `common/pagination/id-cursor.ts` — keyed on `_id` alone. Used by accounts/categories/budgets, which have no independent sort field; MongoDB ObjectIds are monotonically increasing, so sorting/paginating by `_id` is equivalent to insertion order.
+- `common/pagination/date-cursor.ts` — keyed on `(date, _id)`. Used only by transactions, which sort by a user-editable `date` field that doesn't correlate with insertion order.
+
+`common/pagination/paginated-list.schema.ts` and `common/pagination/pagination-query.dto.ts` are the shared Zod builders both cursor styles' response/request schemas are built from. Analysis endpoints are intentionally **not** paginated — their arrays are bounded by the query range (days/categories/accounts), not open-ended growth.
+
+### Request tracing
+
+`requestIdMiddleware` (`common/logging/request-id.middleware.ts`) runs first, before Clerk — every response carries an `X-Request-Id` header (reusing an incoming one if the caller sent it), and `LoggingInterceptor` includes it in every log line, so a specific request can be traced through the logs even without a full log-aggregation setup.
+
 ### API docs
 
 - Swagger UI: `GET /docs` (interactive, Clerk bearer-auth button, persisted across reloads).
@@ -86,4 +105,5 @@ Next.js 16 (App Router), TypeScript, Tailwind. Not yet wired to the API or to Cl
 
 - Unit tests for pure calculation logic (balance, budget status, period-window resolution, cursor encode/decode, regex escaping) — no I/O.
 - Integration tests boot a real Nest module graph against `mongodb-memory-server` (in-process MongoDB, no external service needed) to verify balance updates, budget status updates, and cross-user ownership enforcement end-to-end.
-- A dedicated test boots the full `AppModule` and asserts the OpenAPI document generates correctly — this caught the `z.coerce.date()` issue above.
+- A dedicated test boots the full `AppModule` and asserts the OpenAPI document generates correctly — this caught the `z.coerce.date()` issue above, and separately catches any route missing a declared response schema.
+- `pnpm --filter api test` runs both: Jest unit/integration specs (`src/**/*.spec.ts`), then a real HTTP e2e test (`test/app.e2e-spec.ts`, supertest against a real booted app + `mongodb-memory-server`) that asserts the `{ data }` envelope and `X-Request-Id` header actually show up on the wire — not just in types. This test was previously broken and silently never run (wrong Jest config, not wired into CI); fixed and wired into the main `test` script specifically because it's the only test exercising the real interceptor/middleware chain over HTTP.

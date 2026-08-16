@@ -10,7 +10,7 @@ import {
   Category,
   CategoryDocument,
 } from '../categories/schemas/category.schema';
-import { decodeCursor, encodeCursor } from '../common/pagination/cursor';
+import { decodeCursor, encodeCursor } from '../common/pagination/date-cursor';
 import { escapeRegExp } from '../common/validation/escape-regexp';
 import {
   CreateTransactionDto,

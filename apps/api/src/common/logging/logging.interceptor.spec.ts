@@ -17,6 +17,7 @@ function createContext(options: {
     method: options.method ?? 'GET',
     path: options.path ?? '/accounts',
     user: options.user,
+    headers: {} as Record<string, string>,
   };
   const response = { statusCode: options.statusCode ?? 200 };
 

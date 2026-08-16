@@ -1,5 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { envelopeSchema } from '../../common/http/envelope.schema';
 
 export const userSchema = z.object({
   _id: z.string(),
@@ -13,4 +14,4 @@ export const userSchema = z.object({
   updatedAt: z.string(),
 });
 
-export class UserDto extends createZodDto(userSchema) {}
+export class UserDto extends createZodDto(envelopeSchema(userSchema)) {}

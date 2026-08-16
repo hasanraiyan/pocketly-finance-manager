@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
-import { decodeCursor, encodeCursor } from './cursor';
+import { decodeCursor, encodeCursor } from './date-cursor';
 
-describe('cursor', () => {
+describe('date-cursor', () => {
   it('round-trips date + id through encode/decode', () => {
     const doc = {
       date: new Date('2026-08-16T10:00:00.000Z'),

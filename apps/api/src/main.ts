@@ -5,10 +5,12 @@ import { clerkMiddleware } from '@clerk/express';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { requestIdMiddleware } from './common/logging/request-id.middleware';
 import { buildOpenApiDocument } from './swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(requestIdMiddleware);
   app.use(clerkMiddleware());
   app.setGlobalPrefix('api/v1');
 

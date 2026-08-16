@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -14,9 +15,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CurrentUser } from '../common/auth/current-user.decorator';
+import { PaginationQueryDto } from '../common/pagination/pagination-query.dto';
 import type { UserDocument } from '../users/schemas/user.schema';
 import { CategoriesService } from './categories.service';
-import { CategoryDto } from './dto/category-response.dto';
+import { CategoryDto, CategoryListDto } from './dto/category-response.dto';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 
 @ApiTags('categories')
@@ -32,9 +34,12 @@ export class CategoriesController {
   }
 
   @Get()
-  @ApiOkResponse({ type: [CategoryDto] })
-  findAll(@CurrentUser() user: UserDocument) {
-    return this.categoriesService.findAll(user._id);
+  @ApiOkResponse({ type: CategoryListDto })
+  findAll(
+    @CurrentUser() user: UserDocument,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.categoriesService.findAll(user._id, query);
   }
 
   @Get(':id')

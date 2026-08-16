@@ -5,9 +5,11 @@ export const dynamic = "force-dynamic";
 
 async function getApiStatus() {
   try {
-    const { data, error } = await apiClient.GET("/health");
-    if (error || !data) return "unreachable";
-    return data.status;
+    // Every success response is wrapped in { data: ... } by the API's
+    // global TransformInterceptor.
+    const { data: envelope, error } = await apiClient.GET("/health");
+    if (error || !envelope?.data) return "unreachable";
+    return envelope.data.status;
   } catch {
     return "unreachable";
   }

@@ -5,13 +5,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, QueryFilter, Types } from 'mongoose';
 import {
   Category,
   CategoryDocument,
 } from '../categories/schemas/category.schema';
 import { calculateBudgetStatus } from '../common/finance/calculate-budget-status';
 import { getPeriodWindow } from '../common/finance/get-period-window';
+import { decodeIdCursor, encodeIdCursor } from '../common/pagination/id-cursor';
+import { PaginationQueryDto } from '../common/pagination/pagination-query.dto';
 import {
   Transaction,
   TransactionDocument,
@@ -49,13 +51,30 @@ export class BudgetsService {
     }
   }
 
-  async findAll(user: UserDocument) {
+  async findAll(user: UserDocument, query: PaginationQueryDto) {
+    const conditions: QueryFilter<BudgetDocument>[] = [
+      { userId: user._id, deletedAt: null },
+    ];
+    if (query.cursor) {
+      conditions.push({ _id: { $lt: decodeIdCursor(query.cursor) } });
+    }
+
     const budgets = await this.budgetModel
-      .find({ userId: user._id, deletedAt: null })
+      .find({ $and: conditions })
+      .sort({ _id: -1 })
+      .limit(query.limit + 1)
       .exec();
-    return Promise.all(
-      budgets.map((budget) => this.withStatus(budget, user.timezone)),
+
+    const hasMore = budgets.length > query.limit;
+    const page = hasMore ? budgets.slice(0, query.limit) : budgets;
+    const items = await Promise.all(
+      page.map((budget) => this.withStatus(budget, user.timezone)),
     );
+
+    return {
+      items,
+      nextCursor: hasMore ? encodeIdCursor(page[page.length - 1]._id) : null,
+    };
   }
 
   async findOne(user: UserDocument, id: string) {

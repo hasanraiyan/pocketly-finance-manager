@@ -1,5 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { envelopeSchema } from '../../common/http/envelope.schema';
+import { paginatedListSchema } from '../../common/pagination/paginated-list.schema';
 import { ACCOUNT_TYPES } from '../schemas/account.schema';
 
 export const accountSchema = z.object({
@@ -20,7 +22,10 @@ export const accountWithBalanceSchema = accountSchema.extend({
   balance: z.number(),
 });
 
-export class AccountDto extends createZodDto(accountSchema) {}
+export class AccountDto extends createZodDto(envelopeSchema(accountSchema)) {}
 export class AccountWithBalanceDto extends createZodDto(
-  accountWithBalanceSchema,
+  envelopeSchema(accountWithBalanceSchema),
+) {}
+export class AccountListDto extends createZodDto(
+  envelopeSchema(paginatedListSchema(accountWithBalanceSchema)),
 ) {}

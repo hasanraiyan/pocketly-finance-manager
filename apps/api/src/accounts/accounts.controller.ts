@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -14,9 +15,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CurrentUser } from '../common/auth/current-user.decorator';
+import { PaginationQueryDto } from '../common/pagination/pagination-query.dto';
 import type { UserDocument } from '../users/schemas/user.schema';
 import { AccountsService } from './accounts.service';
-import { AccountDto, AccountWithBalanceDto } from './dto/account-response.dto';
+import {
+  AccountDto,
+  AccountListDto,
+  AccountWithBalanceDto,
+} from './dto/account-response.dto';
 import { CreateAccountDto, UpdateAccountDto } from './dto/account.dto';
 
 @ApiTags('accounts')
@@ -32,9 +38,12 @@ export class AccountsController {
   }
 
   @Get()
-  @ApiOkResponse({ type: [AccountWithBalanceDto] })
-  findAll(@CurrentUser() user: UserDocument) {
-    return this.accountsService.findAll(user._id);
+  @ApiOkResponse({ type: AccountListDto })
+  findAll(
+    @CurrentUser() user: UserDocument,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.accountsService.findAll(user._id, query);
   }
 
   @Get(':id')

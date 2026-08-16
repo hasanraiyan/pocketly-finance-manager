@@ -1,5 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { envelopeSchema } from '../../common/http/envelope.schema';
+import { paginatedListSchema } from '../../common/pagination/paginated-list.schema';
 import { TRANSACTION_TYPES } from '../schemas/transaction.schema';
 
 export const transactionSchema = z.object({
@@ -19,10 +21,9 @@ export const transactionSchema = z.object({
   updatedAt: z.string(),
 });
 
-export const transactionListSchema = z.object({
-  items: z.array(transactionSchema),
-  nextCursor: z.string().nullable(),
-});
-
-export class TransactionDto extends createZodDto(transactionSchema) {}
-export class TransactionListDto extends createZodDto(transactionListSchema) {}
+export class TransactionDto extends createZodDto(
+  envelopeSchema(transactionSchema),
+) {}
+export class TransactionListDto extends createZodDto(
+  envelopeSchema(paginatedListSchema(transactionSchema)),
+) {}
