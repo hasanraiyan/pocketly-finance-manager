@@ -31,6 +31,9 @@ export const auth = betterAuth({
   trustedOrigins,
   emailAndPassword: {
     enabled: true,
+    // Better Auth requires this to return a Promise; there's no real async
+    // work until a real email provider replaces the console.log below.
+    // eslint-disable-next-line @typescript-eslint/require-await
     sendResetPassword: async ({ user, url }) => {
       // TODO: wire up a real email provider (Resend/SMTP) before launch.
       // Logging the link keeps the reset flow fully testable until then.
