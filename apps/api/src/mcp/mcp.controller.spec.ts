@@ -1,13 +1,16 @@
-import { Response } from 'express';
+import type { Response } from 'express';
 import { McpController } from './mcp.controller';
 import { McpServerFactory } from './mcp-server.factory';
 
-function mockResponse() {
-  const res = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn().mockReturnThis(),
-  };
-  return res as unknown as Response;
+function mockResponse(): {
+  res: Response;
+  status: jest.Mock;
+  json: jest.Mock;
+} {
+  const json: jest.Mock = jest.fn();
+  const status: jest.Mock = jest.fn(() => ({ json }));
+  const res = { status, json } as unknown as Response;
+  return { res, status, json };
 }
 
 describe('McpController', () => {
@@ -17,19 +20,19 @@ describe('McpController', () => {
   const controller = new McpController({} as McpServerFactory);
 
   it('GET /mcp reports method not allowed', () => {
-    const res = mockResponse();
+    const { res, status, json } = mockResponse();
     controller.handleGet(res);
-    expect(res.status).toHaveBeenCalledWith(405);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({
-        error: expect.objectContaining({ code: -32000 }),
-      }),
-    );
+    expect(status).toHaveBeenCalledWith(405);
+    expect(json).toHaveBeenCalledWith({
+      jsonrpc: '2.0',
+      error: { code: -32000, message: 'Method not allowed.' },
+      id: null,
+    });
   });
 
   it('DELETE /mcp reports method not allowed', () => {
-    const res = mockResponse();
+    const { res, status } = mockResponse();
     controller.handleDelete(res);
-    expect(res.status).toHaveBeenCalledWith(405);
+    expect(status).toHaveBeenCalledWith(405);
   });
 });

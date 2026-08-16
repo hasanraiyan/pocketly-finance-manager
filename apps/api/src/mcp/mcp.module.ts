@@ -7,7 +7,6 @@ import { TransactionsModule } from '../transactions/transactions.module';
 import { UsersModule } from '../users/users.module';
 import { McpAuthGuard } from './mcp-auth.guard';
 import { McpController } from './mcp.controller';
-import { McpPagesController } from './mcp-pages.controller';
 import { McpServerFactory } from './mcp-server.factory';
 
 @Module({
@@ -19,7 +18,7 @@ import { McpServerFactory } from './mcp-server.factory';
     AnalysisModule,
     UsersModule,
   ],
-  controllers: [McpController, McpPagesController],
+  controllers: [McpController],
   providers: [McpAuthGuard, McpServerFactory],
 })
 export class McpModule {}

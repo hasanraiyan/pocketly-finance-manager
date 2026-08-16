@@ -78,11 +78,7 @@ async function bootstrap() {
   app.use(express.urlencoded({ extended: true }));
 
   app.setGlobalPrefix('api/v1', {
-    exclude: [
-      { path: 'mcp', method: RequestMethod.ALL },
-      { path: 'mcp/login', method: RequestMethod.ALL },
-      { path: 'mcp/consent', method: RequestMethod.ALL },
-    ],
+    exclude: [{ path: 'mcp', method: RequestMethod.ALL }],
   });
 
   const document = buildOpenApiDocument(app);

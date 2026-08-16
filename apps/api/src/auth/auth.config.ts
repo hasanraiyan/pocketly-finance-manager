@@ -17,6 +17,7 @@ const trustedOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:3000')
   .filter(Boolean);
 
 export const apiBaseURL = process.env.API_BASE_URL ?? 'http://localhost:4000';
+const webBaseURL = process.env.WEB_BASE_URL ?? 'http://localhost:3000';
 
 /**
  * Canonical resource URI for the MCP tool endpoint (RFC 8707). Bound into
@@ -59,8 +60,14 @@ export const auth = betterAuth({
     // verifiable locally via /jwks without a database round trip per call.
     jwt(),
     oauthProvider({
-      loginPage: `${apiBaseURL}/mcp/login`,
-      consentPage: `${apiBaseURL}/mcp/consent`,
+      // Both pages live in apps/web (not here), matching the rest of the
+      // sign-in flow -- see apps/web's sign-in page (MCP re-entry branch)
+      // and app/mcp-connect. Web and api are same-site (same registrable
+      // domain, different port/subdomain), so Better Auth's session cookie
+      // set during login still reaches these cross-origin credentialed
+      // requests -- see auth-client.ts's `credentials: "include"`.
+      loginPage: `${webBaseURL}/sign-in`,
+      consentPage: `${webBaseURL}/mcp-connect`,
       scopes: ['openid', 'profile', 'email', 'pocketly:read', 'pocketly:write'],
       // MCP clients (Claude, etc.) self-register without a pre-issued
       // developer credential -- this is how they actually connect in
