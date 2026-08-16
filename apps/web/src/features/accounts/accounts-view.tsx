@@ -34,7 +34,18 @@ import { ErrorState } from "@/components/error-state";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { AccountFormDialog } from "./account-form-dialog";
+import { ACCOUNT_ICONS, resolveAccountIconKey } from "./account-icons";
 import { useAccounts, useDeleteAccount, type Account } from "./hooks";
+
+function AccountAvatar({ account }: { account: Account }) {
+  const Icon =
+    ACCOUNT_ICONS[resolveAccountIconKey(account.icon, account.type)].icon;
+  return (
+    <div className="flex size-9 shrink-0 items-center justify-center rounded-none bg-muted text-foreground">
+      <Icon className="size-4" />
+    </div>
+  );
+}
 
 const ACCOUNT_TYPE_LABELS: Record<Account["type"], string> = {
   bank: "Bank",
@@ -141,13 +152,16 @@ export function AccountsView({
                 key={account._id}
                 className="flex items-center justify-between gap-3 py-3"
               >
-                <div className="flex min-w-0 flex-col">
-                  <span className="truncate text-sm font-medium text-foreground">
-                    {account.name}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {ACCOUNT_TYPE_LABELS[account.type]}
-                  </span>
+                <div className="flex min-w-0 items-center gap-3">
+                  <AccountAvatar account={account} />
+                  <div className="flex min-w-0 flex-col">
+                    <span className="truncate text-sm font-medium text-foreground">
+                      {account.name}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {ACCOUNT_TYPE_LABELS[account.type]}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <span
@@ -190,7 +204,10 @@ export function AccountsView({
               {accounts.map((account) => (
                 <TableRow key={account._id}>
                   <TableCell className="font-medium text-foreground">
-                    {account.name}
+                    <div className="flex items-center gap-3">
+                      <AccountAvatar account={account} />
+                      {account.name}
+                    </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {ACCOUNT_TYPE_LABELS[account.type]}

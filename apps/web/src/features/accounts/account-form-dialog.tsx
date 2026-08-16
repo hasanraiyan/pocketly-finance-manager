@@ -17,6 +17,12 @@ import {
 } from "@/components/ui/native-select";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { AccountIconPicker } from "./account-icon-picker";
+import {
+  defaultAccountIcon,
+  isAccountIconKey,
+  type AccountIconKey,
+} from "./account-icons";
 import {
   useCreateAccount,
   useUpdateAccount,
@@ -49,6 +55,12 @@ export function AccountFormDialog({
     account ? String(account.initialBalance / 100) : "0",
   );
   const [currency, setCurrency] = useState(account?.currency ?? "INR");
+  const [icon, setIcon] = useState<AccountIconKey>(
+    account?.icon && isAccountIconKey(account.icon)
+      ? account.icon
+      : defaultAccountIcon(account?.type ?? "bank"),
+  );
+  const [iconTouched, setIconTouched] = useState(false);
 
   const createAccount = useCreateAccount();
   const updateAccount = useUpdateAccount();
@@ -61,6 +73,17 @@ export function AccountFormDialog({
     setType(account?.type ?? "bank");
     setBalance(account ? String(account.initialBalance / 100) : "0");
     setCurrency(account?.currency ?? "INR");
+    setIcon(
+      account?.icon && isAccountIconKey(account.icon)
+        ? account.icon
+        : defaultAccountIcon(account?.type ?? "bank"),
+    );
+    setIconTouched(false);
+  }
+
+  function handleTypeChange(nextType: Account["type"]) {
+    setType(nextType);
+    if (!iconTouched) setIcon(defaultAccountIcon(nextType));
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -68,6 +91,7 @@ export function AccountFormDialog({
     const input = {
       name,
       type,
+      icon,
       initialBalance: Math.round(parseFloat(balance || "0") * 100),
       currency: currency.toUpperCase(),
     };
@@ -107,14 +131,24 @@ export function AccountFormDialog({
           <div className="mt-4 flex flex-col gap-4">
             <Field>
               <FieldLabel htmlFor={nameId}>Name</FieldLabel>
-              <Input
-                id={nameId}
-                required
-                maxLength={100}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="HDFC Savings"
-              />
+              <div className="flex gap-2">
+                <AccountIconPicker
+                  value={icon}
+                  onChange={(next) => {
+                    setIcon(next);
+                    setIconTouched(true);
+                  }}
+                />
+                <Input
+                  id={nameId}
+                  required
+                  maxLength={100}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="HDFC Savings"
+                  className="flex-1"
+                />
+              </div>
             </Field>
 
             <Field>
@@ -123,7 +157,7 @@ export function AccountFormDialog({
                 className="w-full"
                 value={type}
                 onChange={(e) =>
-                  setType(e.target.value as Account["type"])
+                  handleTypeChange(e.target.value as Account["type"])
                 }
               >
                 {ACCOUNT_TYPE_OPTIONS.map((opt) => (
