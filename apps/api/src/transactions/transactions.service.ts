@@ -88,10 +88,27 @@ export class TransactionsService {
       categoryId: dto.categoryId ?? existing.categoryId?.toString(),
     });
 
+    // A partial update's schema refine only validates fields present in
+    // *this* request, not the record's final merged state -- so changing
+    // `type` without also clearing the now-invalid opposite field
+    // (categoryId for transfers, toAccountId otherwise) would leave both
+    // set, violating the same invariant create() enforces. Force the
+    // exclusive field to match whenever `type` is part of this update.
+    const unset: Record<string, 1> = {};
+    if (dto.type === 'transfer') {
+      unset.categoryId = 1;
+    } else if (dto.type) {
+      unset.toAccountId = 1;
+    }
+
     const updated = await this.transactionModel
       .findOneAndUpdate(
         { _id: id, userId, deletedAt: null },
-        { ...dto, $inc: { syncVersion: 1 } },
+        {
+          ...dto,
+          $inc: { syncVersion: 1 },
+          ...(Object.keys(unset).length > 0 ? { $unset: unset } : {}),
+        },
         { new: true },
       )
       .exec();
