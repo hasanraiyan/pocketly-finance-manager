@@ -1,9 +1,27 @@
 import Image from "next/image";
+import { apiClient } from "@/lib/api-client";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+async function getApiStatus() {
+  try {
+    const { data, error } = await apiClient.GET("/health");
+    if (error || !data) return "unreachable";
+    return data.status;
+  } catch {
+    return "unreachable";
+  }
+}
+
+export default async function Home() {
+  const apiStatus = await getApiStatus();
+
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+        <p className="self-start text-sm text-zinc-500 dark:text-zinc-400">
+          API status: <span className="font-mono">{apiStatus}</span>
+        </p>
         <Image
           className="dark:invert h-5 w-[100px]"
           src="/next.svg"

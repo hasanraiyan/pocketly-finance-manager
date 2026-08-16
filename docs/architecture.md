@@ -7,11 +7,24 @@ pocketly/
 ├── apps/
 │   ├── web/   Next.js frontend (port 3000)
 │   └── api/   NestJS backend  (port 4000)
+├── packages/
+│   └── sdk/   @pocketly/sdk — shared typed API client (see below)
 ├── docs/      this folder
 └── requirement.md   product SRS
 ```
 
 pnpm workspaces + Turborepo. `apps/mobile` (Expo) is planned but not started — see `requirement.md` §44.
+
+## Shared API client (`packages/sdk`)
+
+`@pocketly/sdk` is a typed HTTP client generated from `apps/api/openapi.json` — the same spec `apps/api`'s Zod DTOs already produce (see below). It exists so `apps/web` and (eventually) `apps/mobile` share one client instead of each hand-writing/duplicating request and response types.
+
+- **Codegen, not hand-written types**: `openapi-typescript` turns the OpenAPI spec into `paths`/`components` types (`pnpm --filter @pocketly/sdk generate`, committed output in `src/generated/schema.d.ts`). Regenerate it whenever `apps/api/openapi.json` changes.
+- **Runtime**: `openapi-fetch` — tiny, zero-dependency, built on the global `fetch`. Works unmodified in the browser, Node, and React Native/Expo, which is exactly what "web now, mobile later" needs.
+- **Auth is injected, not hardcoded**: the package has no dependency on Clerk. `createPocketlyClient({ baseUrl, getToken })` accepts an async `getToken()` callback and injects `Authorization: Bearer <token>` via a middleware — `apps/web` will supply this from `@clerk/nextjs`, `apps/mobile` will eventually supply it from `@clerk/clerk-expo`. Same shape, different SDK, no coupling.
+- **`baseUrl` must include `/api/v1`** — the generated spec's paths (`/health`, `/accounts`, ...) don't include the global prefix, since `apps/api/scripts/generate-docs.ts` generates the doc from a raw `TestingModule` app that never calls `setGlobalPrefix`.
+
+`apps/web/src/lib/api-client.ts` is the current instantiation point (unauthenticated so far — Clerk isn't wired into `apps/web` yet).
 
 ## Backend (`apps/api`)
 

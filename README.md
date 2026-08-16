@@ -9,6 +9,8 @@ pocketly/
 ├── apps/
 │   ├── web/   # Next.js frontend (port 3000)
 │   └── api/   # NestJS backend  (port 4000)
+├── packages/
+│   └── sdk/   # @pocketly/sdk — shared typed API client (web now, mobile later)
 ├── docs/      # architecture, security, API reference
 ├── requirement.md
 └── turbo.json
@@ -21,6 +23,7 @@ Mobile (Expo/React Native) will be added later as `apps/mobile`. Not part of thi
 ```bash
 pnpm install
 cp apps/api/.env.example apps/api/.env   # then fill in the values below
+cp apps/web/.env.example apps/web/.env.local
 pnpm dev                                 # runs web + api together
 ```
 
@@ -32,8 +35,16 @@ pnpm dev                                 # runs web + api together
 | `MONGODB_URI` | yes | MongoDB connection string |
 | `CLERK_SECRET_KEY` | yes | Clerk backend secret key, used to verify session tokens |
 | `CLERK_PUBLISHABLE_KEY` | yes | Clerk publishable key |
+| `CORS_ORIGINS` | no (defaults to `http://localhost:3000`) | Comma-separated allow-list for cross-origin requests |
+| `SENTRY_DSN` | no | Error monitoring; no-ops safely if unset |
 
-Without `MONGODB_URI` and `CLERK_SECRET_KEY` set, the API will fail to start (by design — see `docs/security.md`).
+Without `MONGODB_URI` and `CLERK_SECRET_KEY` set, the API will fail to start (by design — see `docs/security.md`). Note: `clerkMiddleware()` also needs `CLERK_PUBLISHABLE_KEY` to be in valid Clerk key format (`pk_test_...`/`pk_live_...`) or every request — including public ones — will 500.
+
+### Environment variables (`apps/web/.env.local`)
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `NEXT_PUBLIC_API_URL` | no (defaults to `http://localhost:4000/api/v1`) | Base URL the SDK client calls |
 
 ## Commands
 
@@ -50,10 +61,11 @@ pnpm test          # test all apps
 
 Run a single app: `pnpm --filter web dev` or `pnpm --filter api dev`.
 
-Regenerate API docs (OpenAPI JSON + Postman collection) after changing routes/DTOs:
+Regenerate API docs (OpenAPI JSON + Postman collection) after changing routes/DTOs, then the SDK's types from that spec:
 
 ```
 pnpm --filter api docs:generate
+pnpm --filter @pocketly/sdk generate
 ```
 
 ## Notes

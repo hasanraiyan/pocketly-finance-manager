@@ -7,7 +7,19 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Liveness check",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "tags": [
