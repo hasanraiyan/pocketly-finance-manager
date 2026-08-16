@@ -5,6 +5,7 @@ import { bearer } from 'better-auth/plugins/bearer';
 import { jwt } from 'better-auth/plugins';
 import { oauthProvider } from '@better-auth/oauth-provider';
 import { oauthProviderResourceClient } from '@better-auth/oauth-provider/resource-client';
+import { Resend } from 'resend';
 
 export const apiBaseURL = process.env.API_BASE_URL ?? 'http://localhost:4000';
 const webBaseURL = process.env.WEB_BASE_URL ?? 'http://localhost:3000';
@@ -71,15 +72,54 @@ function buildAuth() {
     trustedOrigins,
     emailAndPassword: {
       enabled: true,
-      // Better Auth requires this to return a Promise; there's no real async
-      // work until a real email provider replaces the console.log below.
-      // eslint-disable-next-line @typescript-eslint/require-await
       sendResetPassword: async ({ user, url }) => {
-        // TODO: wire up a real email provider (Resend/SMTP) before launch.
-        // Logging the link keeps the reset flow fully testable until then.
-        console.log(
-          `[auth] Password reset requested for ${user.email}: ${url}`,
-        );
+        const apiKey = process.env.RESEND_API_KEY;
+        const fromAddress =
+          process.env.RESEND_FROM_EMAIL ?? 'Pocketly <onboarding@resend.dev>';
+
+        if (!apiKey) {
+          console.log(
+            `[auth] RESEND_API_KEY is not set -- logging reset link for ${user.email}: ${url}`,
+          );
+          return;
+        }
+
+        try {
+          const resend = new Resend(apiKey);
+          const { error } = await resend.emails.send({
+            from: fromAddress,
+            to: user.email,
+            subject: 'Reset your Pocketly password',
+            html: `
+              <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; padding: 24px; color: #1a1a1a;">
+                <h1 style="font-size: 20px; margin: 0 0 12px;">Reset your Pocketly password</h1>
+                <p style="font-size: 14px; color: #555; line-height: 1.5; margin: 0 0 24px;">
+                  Click the button below to reset your password. This link will expire shortly.
+                </p>
+                <a href="${url}" style="display: inline-block; background: #000; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;">
+                  Reset Password
+                </a>
+                <p style="font-size: 12px; color: #999; margin: 32px 0 0;">
+                  If you didn't request a password reset, you can safely ignore this email.
+                </p>
+              </div>
+            `.trim(),
+          });
+
+          if (error) {
+            console.error(
+              `[auth] Failed to send password reset to ${user.email}:`,
+              error,
+            );
+          } else {
+            console.log(`[auth] Sent password reset email to ${user.email}`);
+          }
+        } catch (err) {
+          console.error(
+            `[auth] Error sending reset email to ${user.email}:`,
+            err,
+          );
+        }
       },
     },
     user: {
