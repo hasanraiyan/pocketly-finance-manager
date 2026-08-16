@@ -37,4 +37,31 @@ export class ExportsService {
 
     return { jobId: job.id };
   }
+
+  async queueCsvExport(
+    user: UserDocument,
+    period: AnalysisPeriod,
+    from?: Date,
+    to?: Date,
+  ) {
+    const payload: ExportJobPayload = {
+      userId: user._id.toString(),
+      email: user.email,
+      userName: user.name,
+      currency: user.currency,
+      timezone: user.timezone,
+      period,
+      from,
+      to,
+    };
+
+    const job = await this.exportsQueue.add('generate-csv', payload, {
+      attempts: 3,
+      backoff: { type: 'exponential', delay: 5_000 },
+      removeOnComplete: 100,
+      removeOnFail: 50,
+    });
+
+    return { jobId: job.id };
+  }
 }

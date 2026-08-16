@@ -792,6 +792,187 @@
         ]
       }
     },
+    "/notifications/devices": {
+      "post": {
+        "operationId": "NotificationsController_registerDevice",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDeviceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Register or refresh an FCM device token"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/notifications/devices/{token}": {
+      "delete": {
+        "operationId": "NotificationsController_unregisterDevice",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Unregister an FCM device token"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/notifications": {
+      "get": {
+        "operationId": "NotificationsController_findAll",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "unreadOnly",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationListDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/notifications/{id}/read": {
+      "patch": {
+        "operationId": "NotificationsController_markAsRead",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/notifications/read-all": {
+      "post": {
+        "operationId": "NotificationsController_markAllAsRead",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Mark all notifications as read"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/notifications/test": {
+      "post": {
+        "operationId": "NotificationsController_sendTestNotification",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Send a test push notification to current user"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
     "/budgets": {
       "post": {
         "operationId": "BudgetsController_create",
@@ -1279,6 +1460,42 @@
         ]
       }
     },
+    "/exports/csv": {
+      "post": {
+        "operationId": "ExportsController_requestCsvExport",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Export job queued. The CSV file will be generated in the background and emailed to the user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportQueuedDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "exports"
+        ]
+      }
+    },
     "/mcp-connections/{clientId}": {
       "delete": {
         "operationId": "McpConnectionsController_revoke",
@@ -1311,187 +1528,6 @@
         ],
         "tags": [
           "mcp-connections"
-        ]
-      }
-    },
-    "/notifications/devices": {
-      "post": {
-        "operationId": "NotificationsController_registerDevice",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegisterDeviceDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Register or refresh an FCM device token"
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ],
-        "tags": [
-          "notifications"
-        ]
-      }
-    },
-    "/notifications/devices/{token}": {
-      "delete": {
-        "operationId": "NotificationsController_unregisterDevice",
-        "parameters": [
-          {
-            "name": "token",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Unregister an FCM device token"
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ],
-        "tags": [
-          "notifications"
-        ]
-      }
-    },
-    "/notifications": {
-      "get": {
-        "operationId": "NotificationsController_findAll",
-        "parameters": [
-          {
-            "name": "limit",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
-            "name": "page",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
-            "name": "unreadOnly",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotificationListDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ],
-        "tags": [
-          "notifications"
-        ]
-      }
-    },
-    "/notifications/{id}/read": {
-      "patch": {
-        "operationId": "NotificationsController_markAsRead",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotificationDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ],
-        "tags": [
-          "notifications"
-        ]
-      }
-    },
-    "/notifications/read-all": {
-      "post": {
-        "operationId": "NotificationsController_markAllAsRead",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Mark all notifications as read"
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ],
-        "tags": [
-          "notifications"
-        ]
-      }
-    },
-    "/notifications/test": {
-      "post": {
-        "operationId": "NotificationsController_sendTestNotification",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Send a test push notification to current user"
-          }
-        },
-        "security": [
-          {
-            "jwt": []
-          }
-        ],
-        "tags": [
-          "notifications"
         ]
       }
     }
@@ -2418,6 +2454,166 @@
           }
         }
       },
+      "RegisterDeviceDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 1024
+          },
+          "platform": {
+            "default": "web",
+            "type": "string",
+            "enum": [
+              "web",
+              "android",
+              "ios"
+            ]
+          },
+          "userAgent": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "NotificationListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "userId": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "body": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "BUDGET_ALERT",
+                        "DAILY_REMINDER",
+                        "MONTHLY_REPORT",
+                        "SECURITY",
+                        "SYSTEM"
+                      ]
+                    },
+                    "read": {
+                      "type": "boolean"
+                    },
+                    "actionUrl": {
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "_id",
+                    "userId",
+                    "title",
+                    "body",
+                    "type",
+                    "read",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              },
+              "unreadCount": {
+                "type": "number"
+              },
+              "total": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "items",
+              "unreadCount",
+              "total"
+            ],
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "NotificationDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "userId": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "body": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "BUDGET_ALERT",
+                  "DAILY_REMINDER",
+                  "MONTHLY_REPORT",
+                  "SECURITY",
+                  "SYSTEM"
+                ]
+              },
+              "read": {
+                "type": "boolean"
+              },
+              "actionUrl": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string"
+              },
+              "updatedAt": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "_id",
+              "userId",
+              "title",
+              "body",
+              "type",
+              "read",
+              "createdAt",
+              "updatedAt"
+            ],
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
       "CreateBudgetDto": {
         "type": "object",
         "properties": {
@@ -3016,166 +3212,6 @@
               "revoked"
             ],
             "x-nestjs_zod-uses-3-point-1-syntax": true,
-            "x-nestjs_zod-self-required": true
-          }
-        },
-        "required": [
-          "data"
-        ]
-      },
-      "RegisterDeviceDto": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string",
-            "minLength": 10,
-            "maxLength": 1024
-          },
-          "platform": {
-            "default": "web",
-            "type": "string",
-            "enum": [
-              "web",
-              "android",
-              "ios"
-            ]
-          },
-          "userAgent": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "token"
-        ]
-      },
-      "NotificationListDto": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "object",
-            "properties": {
-              "items": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "_id": {
-                      "type": "string"
-                    },
-                    "userId": {
-                      "type": "string"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "body": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "type": "string",
-                      "enum": [
-                        "BUDGET_ALERT",
-                        "DAILY_REMINDER",
-                        "MONTHLY_REPORT",
-                        "SECURITY",
-                        "SYSTEM"
-                      ]
-                    },
-                    "read": {
-                      "type": "boolean"
-                    },
-                    "actionUrl": {
-                      "type": "string"
-                    },
-                    "createdAt": {
-                      "type": "string"
-                    },
-                    "updatedAt": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "_id",
-                    "userId",
-                    "title",
-                    "body",
-                    "type",
-                    "read",
-                    "createdAt",
-                    "updatedAt"
-                  ]
-                }
-              },
-              "unreadCount": {
-                "type": "number"
-              },
-              "total": {
-                "type": "number"
-              }
-            },
-            "required": [
-              "items",
-              "unreadCount",
-              "total"
-            ],
-            "x-nestjs_zod-self-required": true
-          }
-        },
-        "required": [
-          "data"
-        ]
-      },
-      "NotificationDto": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "object",
-            "properties": {
-              "_id": {
-                "type": "string"
-              },
-              "userId": {
-                "type": "string"
-              },
-              "title": {
-                "type": "string"
-              },
-              "body": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string",
-                "enum": [
-                  "BUDGET_ALERT",
-                  "DAILY_REMINDER",
-                  "MONTHLY_REPORT",
-                  "SECURITY",
-                  "SYSTEM"
-                ]
-              },
-              "read": {
-                "type": "boolean"
-              },
-              "actionUrl": {
-                "type": "string"
-              },
-              "createdAt": {
-                "type": "string"
-              },
-              "updatedAt": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "_id",
-              "userId",
-              "title",
-              "body",
-              "type",
-              "read",
-              "createdAt",
-              "updatedAt"
-            ],
             "x-nestjs_zod-self-required": true
           }
         },

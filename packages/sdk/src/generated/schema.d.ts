@@ -148,6 +148,102 @@ export interface paths {
         patch: operations["TransactionsController_restore"];
         trace?: never;
     };
+    "/notifications/devices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["NotificationsController_registerDevice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/devices/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["NotificationsController_unregisterDevice"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["NotificationsController_findAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["NotificationsController_markAsRead"];
+        trace?: never;
+    };
+    "/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["NotificationsController_markAllAsRead"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["NotificationsController_sendTestNotification"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/budgets": {
         parameters: {
             query?: never;
@@ -260,6 +356,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/exports/csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ExportsController_requestCsvExport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/mcp-connections/{clientId}": {
         parameters: {
             query?: never;
@@ -271,102 +383,6 @@ export interface paths {
         put?: never;
         post?: never;
         delete: operations["McpConnectionsController_revoke"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notifications/devices": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["NotificationsController_registerDevice"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notifications/devices/{token}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete: operations["NotificationsController_unregisterDevice"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notifications": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["NotificationsController_findAll"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notifications/{id}/read": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch: operations["NotificationsController_markAsRead"];
-        trace?: never;
-    };
-    "/notifications/read-all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["NotificationsController_markAllAsRead"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/notifications/test": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["NotificationsController_sendTestNotification"];
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -581,6 +597,47 @@ export interface components {
             /** Format: date-time */
             date?: string;
         };
+        RegisterDeviceDto: {
+            token: string;
+            /**
+             * @default web
+             * @enum {string}
+             */
+            platform: "web" | "android" | "ios";
+            userAgent?: string;
+        };
+        NotificationListDto: {
+            data: {
+                items: {
+                    _id: string;
+                    userId: string;
+                    title: string;
+                    body: string;
+                    /** @enum {string} */
+                    type: "BUDGET_ALERT" | "DAILY_REMINDER" | "MONTHLY_REPORT" | "SECURITY" | "SYSTEM";
+                    read: boolean;
+                    actionUrl?: string;
+                    createdAt: string;
+                    updatedAt: string;
+                }[];
+                unreadCount: number;
+                total: number;
+            };
+        };
+        NotificationDto: {
+            data: {
+                _id: string;
+                userId: string;
+                title: string;
+                body: string;
+                /** @enum {string} */
+                type: "BUDGET_ALERT" | "DAILY_REMINDER" | "MONTHLY_REPORT" | "SECURITY" | "SYSTEM";
+                read: boolean;
+                actionUrl?: string;
+                createdAt: string;
+                updatedAt: string;
+            };
+        };
         CreateBudgetDto: {
             categoryId: string;
             amount: number;
@@ -722,47 +779,6 @@ export interface components {
             data: {
                 /** @constant */
                 revoked: true;
-            };
-        };
-        RegisterDeviceDto: {
-            token: string;
-            /**
-             * @default web
-             * @enum {string}
-             */
-            platform: "web" | "android" | "ios";
-            userAgent?: string;
-        };
-        NotificationListDto: {
-            data: {
-                items: {
-                    _id: string;
-                    userId: string;
-                    title: string;
-                    body: string;
-                    /** @enum {string} */
-                    type: "BUDGET_ALERT" | "DAILY_REMINDER" | "MONTHLY_REPORT" | "SECURITY" | "SYSTEM";
-                    read: boolean;
-                    actionUrl?: string;
-                    createdAt: string;
-                    updatedAt: string;
-                }[];
-                unreadCount: number;
-                total: number;
-            };
-        };
-        NotificationDto: {
-            data: {
-                _id: string;
-                userId: string;
-                title: string;
-                body: string;
-                /** @enum {string} */
-                type: "BUDGET_ALERT" | "DAILY_REMINDER" | "MONTHLY_REPORT" | "SECURITY" | "SYSTEM";
-                read: boolean;
-                actionUrl?: string;
-                createdAt: string;
-                updatedAt: string;
             };
         };
     };
@@ -1238,6 +1254,128 @@ export interface operations {
             };
         };
     };
+    NotificationsController_registerDevice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterDeviceDto"];
+            };
+        };
+        responses: {
+            /** @description Register or refresh an FCM device token */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NotificationsController_unregisterDevice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Unregister an FCM device token */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NotificationsController_findAll: {
+        parameters: {
+            query: {
+                limit: number;
+                page: number;
+                unreadOnly: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationListDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_markAsRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationDto"];
+                };
+            };
+        };
+    };
+    NotificationsController_markAllAsRead: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Mark all notifications as read */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    NotificationsController_sendTestNotification: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Send a test push notification to current user */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     BudgetsController_findAll: {
         parameters: {
             query?: {
@@ -1467,6 +1605,30 @@ export interface operations {
             };
         };
     };
+    ExportsController_requestCsvExport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExportQueryDto"];
+            };
+        };
+        responses: {
+            /** @description Export job queued. The CSV file will be generated in the background and emailed to the user. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExportQueuedDto"];
+                };
+            };
+        };
+    };
     McpConnectionsController_revoke: {
         parameters: {
             query?: never;
@@ -1485,128 +1647,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["RevokeConnectionResponseDto"];
                 };
-            };
-        };
-    };
-    NotificationsController_registerDevice: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RegisterDeviceDto"];
-            };
-        };
-        responses: {
-            /** @description Register or refresh an FCM device token */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    NotificationsController_unregisterDevice: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                token: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Unregister an FCM device token */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    NotificationsController_findAll: {
-        parameters: {
-            query: {
-                limit: number;
-                page: number;
-                unreadOnly: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["NotificationListDto"];
-                };
-            };
-        };
-    };
-    NotificationsController_markAsRead: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["NotificationDto"];
-                };
-            };
-        };
-    };
-    NotificationsController_markAllAsRead: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Mark all notifications as read */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    NotificationsController_sendTestNotification: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Send a test push notification to current user */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };

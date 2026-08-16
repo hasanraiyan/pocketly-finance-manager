@@ -153,7 +153,68 @@ export class ExportProcessor extends WorkerHost {
     // 6. Format period label
     const periodLabel = this.formatPeriodLabel(period, range.start, range.end);
 
-    // 7. Render PDF
+
+    // 7. Handle CSV format
+    if (job.name === 'generate-csv') {
+      const escapeCsv = (val: any) => {
+        if (val === null || val === undefined) return '""';
+        const str = String(val).replace(/"/g, '""');
+        return `"${str}"`;
+      };
+
+      const csvRows = [
+        [
+          'Date',
+          'Type',
+          'Amount',
+          'Currency',
+          'Category',
+          'Account',
+          'To Account',
+          'Description',
+          'Note',
+        ].join(','),
+      ];
+
+      for (const tx of transactions) {
+        const row = [
+          escapeCsv(format(new Date(tx.date), 'yyyy-MM-dd HH:mm:ss')),
+          escapeCsv(tx.type),
+          escapeCsv(tx.amount),
+          escapeCsv(currency),
+          escapeCsv(
+            categoryMap.get(tx.categoryId?.toString() ?? '') ?? 'Uncategorised',
+          ),
+          escapeCsv(accountMap.get(tx.accountId?.toString() ?? '') ?? ''),
+          escapeCsv(accountMap.get(tx.toAccountId?.toString() ?? '') ?? ''),
+          escapeCsv(tx.description ?? ''),
+          escapeCsv(tx.note ?? ''),
+        ];
+        csvRows.push(row.join(','));
+      }
+
+      const csvBuffer = Buffer.from(csvRows.join('\r\n'), 'utf-8');
+      const filename = `pocketly-transactions-${period}-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+
+      await this.mailer.sendCsvReport({
+        to: email,
+        periodLabel,
+        csvBuffer,
+        filename,
+      });
+
+      void this.notificationDispatcher.sendMonthlyReportNotification(
+        userObjectId,
+        `${periodLabel} (CSV)`,
+      );
+
+      this.logger.log(
+        `Export CSV job ${job.id} complete — emailed ${filename} to ${email}`,
+      );
+      return;
+    }
+
+    // 8. Render PDF
     this.logger.log(
       `Rendering PDF for job ${job.id} — ${transactions.length} transactions`,
     );

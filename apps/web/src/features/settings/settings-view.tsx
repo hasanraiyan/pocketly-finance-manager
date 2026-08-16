@@ -2,10 +2,22 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bell, Cable, PenLine, Plus, Tags, Trash2, Unplug } from "lucide-react";
+import {
+  Bell,
+  Cable,
+  Download,
+  FileSpreadsheet,
+  FileText,
+  PenLine,
+  Plus,
+  Tags,
+  Trash2,
+  Unplug,
+} from "lucide-react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { clearStoredAuthToken } from "@/lib/auth-token";
+import { useExportCsv, useExportPdf } from "@/features/transactions/hooks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -560,6 +572,84 @@ function NotificationsCard() {
   );
 }
 
+function ExportDataCard() {
+  const [period, setPeriod] = useState("all_time");
+  const exportPdf = useExportPdf();
+  const exportCsv = useExportCsv();
+
+  const isPending = exportPdf.isPending || exportCsv.isPending;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Download className="size-4" />
+          Export Financial Data
+        </CardTitle>
+        <CardDescription>
+          Download your complete financial history in CSV spreadsheet format (for Excel / Google Sheets) or as a styled PDF statement.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-border p-3">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-medium text-foreground">
+              Export timeframe
+            </span>
+            <div className="w-48">
+              <NativeSelect
+                value={period}
+                onChange={(e) => setPeriod(e.target.value)}
+                disabled={isPending}
+              >
+                <NativeSelectOption value="all_time">All time</NativeSelectOption>
+                <NativeSelectOption value="this_year">This year</NativeSelectOption>
+                <NativeSelectOption value="6m">Last 6 months</NativeSelectOption>
+                <NativeSelectOption value="3m">Last 3 months</NativeSelectOption>
+                <NativeSelectOption value="this_month">This month</NativeSelectOption>
+                <NativeSelectOption value="last_month">Last month</NativeSelectOption>
+              </NativeSelect>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportCsv.mutate({ period })}
+              disabled={isPending}
+            >
+              {exportCsv.isPending ? (
+                <Spinner className="mr-1.5 size-3.5" />
+              ) : (
+                <FileSpreadsheet className="mr-1.5 size-3.5" />
+              )}
+              {exportCsv.isPending ? "Queuing…" : "Export CSV"}
+            </Button>
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => exportPdf.mutate({ period })}
+              disabled={isPending}
+            >
+              {exportPdf.isPending ? (
+                <Spinner className="mr-1.5 size-3.5" />
+              ) : (
+                <FileText className="mr-1.5 size-3.5" />
+              )}
+              {exportPdf.isPending ? "Queuing…" : "Export PDF"}
+            </Button>
+          </div>
+        </div>
+
+        <p className="text-[11px] text-muted-foreground">
+          📧 Reports are processed securely via background workers and delivered directly to your registered email with the file attached.
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function SettingsView({
   currency,
   timezone,
@@ -596,6 +686,7 @@ export function SettingsView({
         initialData={categoriesInitialData}
         initialLoadFailed={categoriesLoadFailed}
       />
+      <ExportDataCard />
       <NotificationsCard />
       <ConnectedAppsCard />
       <DangerZoneCard />

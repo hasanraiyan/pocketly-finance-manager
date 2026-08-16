@@ -261,3 +261,51 @@ export function useExportPdf() {
     },
   });
 }
+
+/**
+ * Queues an async CSV transactions export job on the server.
+ * The server returns 202 immediately; the CSV file is emailed once generated.
+ */
+export function useExportCsv() {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
+
+  return useMutation({
+    mutationFn: async (params: ExportPdfInput) => {
+      const { getStoredAuthToken } = await import("@/lib/auth-token");
+      const token = getStoredAuthToken();
+
+      const res = await fetch(`${baseUrl}/exports/csv`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(params),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(
+          (body as { message?: string }).message ?? "CSV export failed",
+        );
+      }
+
+      return res.json() as Promise<{ jobId: string; message: string }>;
+    },
+    onSuccess: (data) => {
+      toast.add({
+        title: "📧 CSV export queued!",
+        description: data.message,
+        type: "success",
+      });
+    },
+    onError: (err: Error) => {
+      toast.add({
+        title: "CSV export failed",
+        description: err.message || "Could not queue the CSV export. Try again.",
+        type: "error",
+      });
+    },
+  });
+}
