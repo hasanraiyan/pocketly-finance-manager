@@ -2,6 +2,9 @@ import { MongoClient } from 'mongodb';
 import { betterAuth } from 'better-auth';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { bearer } from 'better-auth/plugins/bearer';
+import { jwt } from 'better-auth/plugins';
+import { oauthProvider } from '@better-auth/oauth-provider';
+import { oauthProviderResourceClient } from '@better-auth/oauth-provider/resource-client';
 
 const mongoUri =
   process.env.MONGODB_URI ?? 'mongodb://localhost:27017/pocketly';
@@ -12,6 +15,16 @@ const trustedOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:3000')
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
+
+export const apiBaseURL = process.env.API_BASE_URL ?? 'http://localhost:4000';
+
+/**
+ * Canonical resource URI for the MCP tool endpoint (RFC 8707). Bound into
+ * every access token as its `aud` claim, and published verbatim in the
+ * `/.well-known/oauth-protected-resource` document -- see main.ts and
+ * mcp-auth.guard.ts, which must both use this exact value.
+ */
+export const mcpResourceUri = `${apiBaseURL}/mcp`;
 
 /**
  * Owns identity (email/password, sessions, multi-device revocation) in its
@@ -27,7 +40,7 @@ const trustedOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:3000')
 export const auth = betterAuth({
   database: mongodbAdapter(db, { client, transaction: false }),
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.API_BASE_URL ?? 'http://localhost:4000',
+  baseURL: apiBaseURL,
   trustedOrigins,
   emailAndPassword: {
     enabled: true,
@@ -40,5 +53,33 @@ export const auth = betterAuth({
       console.log(`[auth] Password reset requested for ${user.email}: ${url}`);
     },
   },
-  plugins: [bearer()],
+  plugins: [
+    bearer(),
+    // Required by oauthProvider: MCP access tokens are signed JWTs,
+    // verifiable locally via /jwks without a database round trip per call.
+    jwt(),
+    oauthProvider({
+      loginPage: `${apiBaseURL}/mcp/login`,
+      consentPage: `${apiBaseURL}/mcp/consent`,
+      scopes: ['openid', 'profile', 'email', 'pocketly:read', 'pocketly:write'],
+      // MCP clients (Claude, etc.) self-register without a pre-issued
+      // developer credential -- this is how they actually connect in
+      // practice (RFC 7591 dynamic client registration).
+      allowDynamicClientRegistration: true,
+      allowUnauthenticatedClientRegistration: true,
+      validAudiences: [mcpResourceUri],
+      // Both path-aware well-known discovery routes are mounted manually
+      // in main.ts (our issuer has a non-root path, /api/auth) -- this
+      // just silences the plugin's init-time reminder to do that.
+      silenceWarnings: { oauthAuthServerConfig: true, openidConfig: true },
+    }),
+  ],
 });
+
+/**
+ * Shared resource-server actions for verifying MCP access tokens and
+ * building protected-resource metadata -- one instance, reused by main.ts
+ * (well-known routes) and McpAuthGuard (per-request token verification).
+ */
+export const mcpResourceClientActions =
+  oauthProviderResourceClient(auth).getActions();

@@ -24,6 +24,8 @@
     "docs:generate": "ts-node -r tsconfig-paths/register scripts/generate-docs.ts"
   },
   "dependencies": {
+    "@better-auth/oauth-provider": "1.6.29",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.1",

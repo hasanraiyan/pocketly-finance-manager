@@ -13,6 +13,7 @@ import { DatabaseModule } from './common/database/database.module';
 import { TransformInterceptor } from './common/http/transform.interceptor';
 import { AppAuthGuard } from './common/auth/app-auth.guard';
 import { LoggingInterceptor } from './common/logging/logging.interceptor';
+import { McpModule } from './mcp/mcp.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UsersModule } from './users/users.module';
 
@@ -28,6 +29,7 @@ import { UsersModule } from './users/users.module';
     TransactionsModule,
     BudgetsModule,
     AnalysisModule,
+    McpModule,
   ],
   controllers: [AppController],
   providers: [

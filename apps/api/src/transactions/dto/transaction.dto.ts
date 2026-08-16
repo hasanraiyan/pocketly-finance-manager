@@ -4,7 +4,7 @@ import { isoDateSchema } from '../../common/validation/iso-date.schema';
 import { objectIdSchema } from '../../common/validation/object-id.schema';
 import { TRANSACTION_TYPES } from '../schemas/transaction.schema';
 
-const baseTransactionSchema = z.object({
+export const baseTransactionSchema = z.object({
   type: z.enum(TRANSACTION_TYPES),
   amount: z.number().int().positive(),
   description: z.string().max(200).optional(),

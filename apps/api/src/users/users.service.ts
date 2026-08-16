@@ -28,6 +28,10 @@ export class UsersService {
     private readonly budgetModel: Model<BudgetDocument>,
   ) {}
 
+  async findByAuthUserId(authUserId: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ authUserId }).exec();
+  }
+
   async findOrCreateByAuthUserId(
     authUserId: string,
     email: string,
