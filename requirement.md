@@ -1,4 +1,4 @@
-Absolutely. I’d rewrite it as the **actual engineering SRS for the standalone Pocketly product**, with **Clerk, MongoDB, Next.js, TypeScript, Zod, Expo/React Native, AI, MCP, Telegram, and the existing Pocketly functionality** treated as first-class parts of the architecture.
+Absolutely. I’d rewrite it as the **actual engineering SRS for the standalone Pocketly product**, with **Better Auth, MongoDB, Next.js, TypeScript, Zod, Expo/React Native, AI, MCP, Telegram, and the existing Pocketly functionality** treated as first-class parts of the architecture.
 
 I’d also remove the unnecessary custom-auth requirements from the previous version.
 
@@ -160,7 +160,7 @@ The initial standalone application will use the following technologies.
 | UI               | React                |
 | Styling          | Tailwind CSS         |
 | Components       | shadcn/ui            |
-| Authentication   | **Clerk**            |
+| Authentication   | **Better Auth**      |
 | Database         | MongoDB              |
 | ODM              | Mongoose             |
 | Validation       | Zod                  |
@@ -178,32 +178,30 @@ The architecture should remain flexible enough to replace individual infrastruct
 
 # 7. Authentication
 
-## 7.1 Clerk
+## 7.1 Better Auth
 
-Pocketly MUST use **Clerk** as its authentication and identity provider.
+Pocketly MUST use **Better Auth**, self-hosted inside the API (`apps/api`), as its authentication library.
 
-Pocketly MUST NOT implement its own:
+Pocketly MUST NOT hand-roll:
 
-* Password authentication
-* Password reset system
-* Session management
-* OAuth implementation
-* Credential storage
+* Password hashing
+* Session/token issuance
+* OAuth provider implementation (used for MCP client authorization)
 
-Clerk will handle identity and authentication.
+Better Auth handles identity, session issuance, and OAuth -- Pocketly's own code only reads the resulting session/token, it never re-implements auth primitives itself.
 
 ---
 
-# 8. Clerk User Identity
+# 8. Better Auth User Identity
 
-Every Pocketly user MUST be associated with a Clerk user.
+Every Pocketly user MUST be associated with a Better Auth user.
 
 Example:
 
 ```text
-Clerk
+Better Auth
   │
-  │ clerkUserId
+  │ authUserId
   ↓
 Pocketly User
 ```
@@ -213,7 +211,7 @@ The Pocketly database SHOULD maintain a lightweight user/profile record.
 ```text
 User
 ├── id
-├── clerkUserId
+├── authUserId
 ├── email
 ├── name
 ├── imageUrl
@@ -223,7 +221,7 @@ User
 └── updatedAt
 ```
 
-`clerkUserId` MUST be unique.
+`authUserId` MUST be unique.
 
 ---
 
@@ -231,7 +229,7 @@ User
 
 Authentication and authorization are separate concerns.
 
-Clerk answers:
+Better Auth answers:
 
 > Who is this user?
 
@@ -255,7 +253,7 @@ Transaction
 The backend MUST verify:
 
 ```text
-authenticated Clerk user
+authenticated Better Auth user
         ↓
 Pocketly user
         ↓
@@ -1022,7 +1020,7 @@ Recommended technology:
 
 The mobile application should provide:
 
-* Authentication through Clerk
+* Authentication through Better Auth
 * Dashboard
 * Accounts
 * Transactions
@@ -1036,7 +1034,7 @@ The mobile application should provide:
 
 # 45. Mobile Authentication
 
-The mobile application MUST use Clerk-supported authentication mechanisms.
+The mobile application MUST use Better Auth-supported authentication mechanisms.
 
 Pocketly MUST NOT implement an insecure custom authentication system merely for mobile.
 
@@ -1168,22 +1166,25 @@ The API SHOULD be versioned.
 
 # 52. Authentication API
 
-Clerk manages authentication.
-
-Pocketly's backend does NOT need traditional:
+Better Auth manages authentication, mounted inside the API at its own
+prefix rather than under `/api/v1`:
 
 ```text
-/register
-/login
-/forgot-password
+/api/auth/sign-up
+/api/auth/sign-in
+/api/auth/forgot-password
+...
 ```
 
-Instead, authenticated requests arrive with Clerk identity.
+Pocketly's own `/api/v1` route tree does NOT re-implement any of these --
+it only ever reads the session Better Auth has already resolved.
+
+Authenticated requests to `/api/v1` arrive with a Better Auth session/token.
 
 The backend resolves:
 
 ```text
-Clerk user
+Better Auth user
     ↓
 Pocketly user
 ```
@@ -1285,7 +1286,7 @@ Security is a critical requirement because Pocketly handles sensitive financial 
 The application MUST:
 
 * Use HTTPS in production.
-* Use Clerk for authentication.
+* Use Better Auth for authentication.
 * Validate authorization on every protected request.
 * Validate all input.
 * Avoid logging financial information unnecessarily.
@@ -1343,7 +1344,7 @@ Delete/anonymize Pocketly data
         ↓
 Delete Pocketly profile
         ↓
-Clerk account deletion / appropriate Clerk flow
+Better Auth account deletion (auth.api.deleteUser)
 ```
 
 The exact deletion strategy should comply with the selected data-retention policy.
@@ -1570,7 +1571,7 @@ Existing Pocketly
        ↓
 Extract data
        ↓
-Create Clerk user mapping
+Create Better Auth user mapping
        ↓
 Create Pocketly user
        ↓
@@ -1607,7 +1608,7 @@ Pocketly
 
 New
 
-Clerk User
+Better Auth User
   ↓
 Pocketly User
   ↓
@@ -1820,7 +1821,7 @@ The standalone MVP MUST include:
 
 ### Authentication
 
-* Clerk
+* Better Auth
 * Protected routes
 * User-specific authorization
 
@@ -1883,7 +1884,7 @@ The following should be added after the core product is stable:
 Phase 1
 Standalone Core
 │
-├── Clerk
+├── Better Auth
 ├── MongoDB
 ├── Accounts
 ├── Transactions
@@ -1923,8 +1924,8 @@ Intelligence
 
 Pocketly MVP is ready when a new user can:
 
-1. Sign up through Clerk.
-2. Sign in through Clerk.
+1. Sign up through Better Auth.
+2. Sign in through Better Auth.
 3. Create a financial account.
 4. Create an expense.
 5. Create income.
@@ -1970,7 +1971,7 @@ A feature is considered complete when:
 
 Existing Pocketly functionality should be extracted and improved instead of unnecessarily rewritten.
 
-## 87.2 Clerk Handles Identity
+## 87.2 Better Auth Handles Identity
 
 Pocketly does not implement its own authentication system.
 
@@ -2014,7 +2015,7 @@ The initial production architecture should look approximately like this:
                                    │
                                    ▼
                          ┌───────────────────┐
-                         │       Clerk       │
+                         │    Better Auth    │
                          │ Authentication    │
                          └─────────┬─────────┘
                                    │
@@ -2069,7 +2070,7 @@ The standalone product will transform it into a proper multi-user application by
 ```text
 Existing Pocketly
        +
-Clerk
+Better Auth
        +
 User-scoped authorization
        +
@@ -2088,6 +2089,6 @@ Standalone Pocketly
 
 The most important architectural rule is:
 
-> **Clerk owns identity. Pocketly owns financial data. The Finance Domain owns financial rules. AI interacts with the Finance Domain through authorized tools.**
+> **Better Auth owns identity. Pocketly owns financial data. The Finance Domain owns financial rules. AI interacts with the Finance Domain through authorized tools.**
 
 That gives us a clean foundation without overengineering the first version.
