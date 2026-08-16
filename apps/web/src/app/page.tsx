@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
+import { getServerSession } from "@/lib/get-session";
 import {
   LineChart,
   Receipt,
@@ -71,8 +71,8 @@ const CAPABILITIES = [
 ];
 
 export default async function Home() {
-  const { userId } = await auth();
-  if (userId) {
+  const session = await getServerSession();
+  if (session) {
     redirect("/dashboard");
   }
 

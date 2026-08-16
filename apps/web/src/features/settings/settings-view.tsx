@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useClerk } from "@clerk/nextjs";
 import { PenLine, Plus, Tags, Trash2 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { clearStoredAuthToken } from "@/lib/auth-token";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -264,12 +265,14 @@ function DangerZoneCard() {
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const deleteAccount = useDeleteMyAccount();
-  const { signOut } = useClerk();
   const router = useRouter();
 
   async function handleDelete() {
     await deleteAccount.mutateAsync();
-    await signOut();
+    // The account (and its Better Auth identity) is already gone server-side
+    // at this point, so this call is just best-effort local cleanup.
+    await authClient.signOut().catch(() => {});
+    clearStoredAuthToken();
     router.push("/");
   }
 

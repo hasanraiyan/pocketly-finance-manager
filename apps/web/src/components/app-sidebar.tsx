@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Wallet,
@@ -10,7 +9,10 @@ import {
   LineChart,
   Target,
   Settings,
+  LogOut,
 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { clearStoredAuthToken } from "@/lib/auth-token";
 import {
   Sidebar,
   SidebarContent,
@@ -22,6 +24,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import type { SessionUser } from "@/lib/get-session";
 
 const NAV_ITEMS = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -32,9 +44,24 @@ const NAV_ITEMS = [
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
-export function AppSidebar() {
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
+export function AppSidebar({ user }: { user: SessionUser }) {
   const pathname = usePathname();
-  const { user } = useUser();
+  const router = useRouter();
+
+  async function handleSignOut() {
+    await authClient.signOut();
+    clearStoredAuthToken();
+    router.push("/");
+  }
 
   return (
     <Sidebar collapsible="icon">
@@ -66,12 +93,31 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <div className="flex items-center gap-2 px-2 py-1.5">
-          <UserButton />
-          <span className="truncate text-sm text-sidebar-foreground group-data-[collapsible=icon]:hidden">
-            {user?.fullName ?? user?.primaryEmailAddress?.emailAddress}
-          </span>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <button
+                type="button"
+                className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-sidebar-accent"
+              />
+            }
+          >
+            <Avatar size="sm">
+              <AvatarFallback>{initials(user.name)}</AvatarFallback>
+            </Avatar>
+            <span className="truncate text-sm text-sidebar-foreground group-data-[collapsible=icon]:hidden">
+              {user.name || user.email}
+            </span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="top" align="start">
+            <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleSignOut}>
+              <LogOut />
+              Sign out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </SidebarFooter>
     </Sidebar>
   );

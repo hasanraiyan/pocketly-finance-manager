@@ -1,4 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { getServerSession } from "@/lib/get-session";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   SidebarInset,
@@ -14,11 +15,14 @@ export default async function AppLayout({
 }) {
   // Resource-based auth check: redirects to sign-in if not authenticated.
   // Covers every route under this layout in one place.
-  await auth.protect();
+  const session = await getServerSession();
+  if (!session) {
+    redirect("/sign-in");
+  }
 
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar user={session.user} />
       <SidebarInset>
         <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-4">
           <SidebarTrigger />
