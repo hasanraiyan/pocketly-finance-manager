@@ -28,7 +28,7 @@ import {
 import { TransactionsService } from './transactions.service';
 
 @ApiTags('transactions')
-@ApiBearerAuth('clerk')
+@ApiBearerAuth('jwt')
 @Controller('transactions')
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}

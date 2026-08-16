@@ -13,9 +13,9 @@ export function buildOpenApiConfig() {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
-        description: 'Clerk session token',
+        description: 'Pocketly access token, from POST /auth/login',
       },
-      'clerk',
+      'jwt',
     )
     .build();
 }

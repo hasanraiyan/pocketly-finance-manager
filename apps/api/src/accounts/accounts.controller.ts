@@ -26,7 +26,7 @@ import {
 import { CreateAccountDto, UpdateAccountDto } from './dto/account.dto';
 
 @ApiTags('accounts')
-@ApiBearerAuth('clerk')
+@ApiBearerAuth('jwt')
 @Controller('accounts')
 export class AccountsController {
   constructor(private readonly accountsService: AccountsService) {}

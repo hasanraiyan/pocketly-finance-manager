@@ -22,7 +22,7 @@ import { CategoryDto, CategoryListDto } from './dto/category-response.dto';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 
 @ApiTags('categories')
-@ApiBearerAuth('clerk')
+@ApiBearerAuth('jwt')
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}

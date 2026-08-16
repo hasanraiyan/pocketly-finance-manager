@@ -12,7 +12,7 @@ import {
 import { AnalysisQueryDto } from './dto/analysis-query.dto';
 
 @ApiTags('analysis')
-@ApiBearerAuth('clerk')
+@ApiBearerAuth('jwt')
 @Controller('analysis')
 export class AnalysisController {
   constructor(private readonly analysisService: AnalysisService) {}

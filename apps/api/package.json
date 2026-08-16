@@ -24,8 +24,6 @@
     "docs:generate": "ts-node -r tsconfig-paths/register scripts/generate-docs.ts"
   },
   "dependencies": {
-    "@clerk/backend": "^3.16.6",
-    "@clerk/express": "^2.1.57",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.1",
@@ -35,8 +33,10 @@
     "@nestjs/swagger": "^11.4.6",
     "@nestjs/throttler": "^6.5.0",
     "@sentry/nestjs": "^10.70.0",
+    "better-auth": "^1.6.29",
     "date-fns": "^4.4.0",
     "date-fns-tz": "^3.2.0",
+    "mongodb": "^7.5.0",
     "mongoose": "^9.9.2",
     "nestjs-zod": "^5.5.0",
     "reflect-metadata": "^0.2.2",

@@ -4,7 +4,6 @@ import { envelopeSchema } from '../../common/http/envelope.schema';
 
 export const userSchema = z.object({
   _id: z.string(),
-  clerkUserId: z.string(),
   email: z.string(),
   name: z.string(),
   imageUrl: z.string().optional(),

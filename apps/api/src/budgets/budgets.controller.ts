@@ -26,7 +26,7 @@ import {
 import { CreateBudgetDto, UpdateBudgetDto } from './dto/budget.dto';
 
 @ApiTags('budgets')
-@ApiBearerAuth('clerk')
+@ApiBearerAuth('jwt')
 @Controller('budgets')
 export class BudgetsController {
   constructor(private readonly budgetsService: BudgetsService) {}

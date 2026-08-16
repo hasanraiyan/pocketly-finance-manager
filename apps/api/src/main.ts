@@ -1,7 +1,6 @@
 // Must be imported before anything else so Sentry can instrument all modules.
 import './instrument';
 
-import { clerkMiddleware } from '@clerk/express';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -11,7 +10,6 @@ import { buildOpenApiDocument } from './swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { rawBody: true });
   app.use(requestIdMiddleware);
-  app.use(clerkMiddleware());
   app.setGlobalPrefix('api/v1');
 
   const corsOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:3000')
