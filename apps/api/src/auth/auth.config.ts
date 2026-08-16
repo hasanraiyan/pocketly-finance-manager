@@ -62,6 +62,12 @@ function buildAuth() {
     secret: process.env.BETTER_AUTH_SECRET,
     baseURL: apiBaseURL,
     trustedOrigins,
+    socialProviders: {
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID as string,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      },
+    },
     emailAndPassword: {
       enabled: true,
       // Better Auth requires this to return a Promise; there's no real async

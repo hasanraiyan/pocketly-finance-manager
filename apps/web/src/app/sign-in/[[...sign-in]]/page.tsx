@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authBaseUrl, authClient } from "@/lib/auth-client";
 import { isMcpOAuthRequest } from "@/lib/mcp-oauth";
+import { GoogleIcon } from "@/components/google-icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/password-input";
@@ -21,6 +22,23 @@ function SignInForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  async function handleGoogleSignIn() {
+    setGoogleLoading(true);
+    const callbackURL = isMcpConnect
+      ? `/auth/callback?mcp=${encodeURIComponent(searchParams.toString())}`
+      : "/auth/callback?next=/dashboard";
+    const { error: authError } = await authClient.signIn.social({
+      provider: "google",
+      callbackURL,
+    });
+    if (authError) {
+      setGoogleLoading(false);
+      setError(authError.message ?? "Couldn't sign in with Google.");
+    }
+    // On success this navigates away to Google -- no further state update.
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -67,7 +85,27 @@ function SignInForm() {
           <CardTitle>Sign in</CardTitle>
           <CardDescription>Welcome back to your ledger.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGoogleSignIn}
+            disabled={submitting || googleLoading}
+          >
+            {googleLoading ? (
+              <Spinner className="size-3.5" />
+            ) : (
+              <GoogleIcon className="size-4" />
+            )}
+            Continue with Google
+          </Button>
+
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted-foreground">or</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
           <form onSubmit={handleSubmit}>
             <FieldGroup>
               <Field>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { usePocketlyClient } from "@/lib/use-pocketly-client";
+import { GoogleIcon } from "@/components/google-icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/password-input";
@@ -22,6 +23,25 @@ export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  async function handleGoogleSignUp() {
+    if (!agreedToTerms) {
+      setError("You need to accept the Terms and Privacy Policy to continue.");
+      return;
+    }
+    setError(null);
+    setGoogleLoading(true);
+    const { error: authError } = await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/auth/callback?next=/dashboard",
+    });
+    if (authError) {
+      setGoogleLoading(false);
+      setError(authError.message ?? "Couldn't sign up with Google.");
+    }
+    // On success this navigates away to Google -- no further state update.
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -65,7 +85,27 @@ export default function SignUpPage() {
           <CardTitle>Create your account</CardTitle>
           <CardDescription>Start your ledger.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGoogleSignUp}
+            disabled={submitting || googleLoading || !agreedToTerms}
+          >
+            {googleLoading ? (
+              <Spinner className="size-3.5" />
+            ) : (
+              <GoogleIcon className="size-4" />
+            )}
+            Continue with Google
+          </Button>
+
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted-foreground">or</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
           <form onSubmit={handleSubmit}>
             <FieldGroup>
               <Field>
