@@ -30,6 +30,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { ErrorState } from "@/components/error-state";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { AccountFormDialog } from "./account-form-dialog";
@@ -79,8 +80,16 @@ function DeleteAccountAlert({ account }: { account: Account }) {
   );
 }
 
-export function AccountsView({ initialData }: { initialData: Account[] }) {
-  const { data: accounts } = useAccounts(initialData);
+export function AccountsView({
+  initialData,
+  initialLoadFailed = false,
+}: {
+  initialData: Account[];
+  initialLoadFailed?: boolean;
+}) {
+  const { data: accounts, isError, isFetching, refetch } =
+    useAccounts(initialData);
+  const showError = initialLoadFailed || isError;
 
   return (
     <div className="flex flex-col gap-6">
@@ -101,7 +110,13 @@ export function AccountsView({ initialData }: { initialData: Account[] }) {
         />
       </div>
 
-      {accounts.length === 0 ? (
+      {showError ? (
+        <ErrorState
+          title="Couldn't load your accounts"
+          onRetry={() => refetch()}
+          retrying={isFetching}
+        />
+      ) : accounts.length === 0 ? (
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">

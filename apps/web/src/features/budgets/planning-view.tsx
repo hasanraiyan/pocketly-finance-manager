@@ -24,6 +24,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { ErrorState } from "@/components/error-state";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { Category } from "@/features/categories/hooks";
@@ -73,14 +74,18 @@ function DeleteBudgetAlert({ budget, name }: { budget: Budget; name: string }) {
 
 export function PlanningView({
   initialData,
+  initialLoadFailed = false,
   categories,
   currency,
 }: {
   initialData: Budget[];
+  initialLoadFailed?: boolean;
   categories: Category[];
   currency: string;
 }) {
-  const { data: budgets } = useBudgets(initialData);
+  const { data: budgets, isError, isFetching, refetch } =
+    useBudgets(initialData);
+  const showError = initialLoadFailed || isError;
   const categoryMap = useMemo(
     () => new Map(categories.map((c) => [c._id, c])),
     [categories],
@@ -110,7 +115,13 @@ export function PlanningView({
         />
       </div>
 
-      {budgets.length === 0 ? (
+      {showError ? (
+        <ErrorState
+          title="Couldn't load your budgets"
+          onRetry={() => refetch()}
+          retrying={isFetching}
+        />
+      ) : budgets.length === 0 ? (
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">

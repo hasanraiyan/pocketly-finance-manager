@@ -48,6 +48,12 @@ export default async function AnalysisPage() {
           accounts: [],
         }
       }
+      initialLoadFailed={Boolean(
+        overviewRes.error ||
+          cashFlowRes.error ||
+          categoryBreakdownRes.error ||
+          accountBreakdownRes.error,
+      )}
       categories={categoriesRes.data?.data.items ?? []}
       currency={profileRes.data?.data.currency ?? "INR"}
     />

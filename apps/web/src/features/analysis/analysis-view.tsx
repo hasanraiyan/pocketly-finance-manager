@@ -24,6 +24,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
+import { ErrorState } from "@/components/error-state";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { Category } from "@/features/categories/hooks";
@@ -58,6 +59,7 @@ export function AnalysisView({
   initialCashFlow,
   initialCategoryBreakdown,
   initialAccountBreakdown,
+  initialLoadFailed = false,
   categories,
   currency,
 }: {
@@ -65,28 +67,58 @@ export function AnalysisView({
   initialCashFlow: CashFlow;
   initialCategoryBreakdown: CategoryBreakdown;
   initialAccountBreakdown: AccountBreakdown;
+  initialLoadFailed?: boolean;
   categories: Category[];
   currency: string;
 }) {
   const [period, setPeriod] = useState<AnalysisPeriod>("this_month");
   const isDefault = period === "this_month";
 
-  const { data: overview } = useAnalysisOverview(
-    period,
-    isDefault ? initialOverview : undefined,
-  );
-  const { data: cashFlow } = useCashFlow(
-    period,
-    isDefault ? initialCashFlow : undefined,
-  );
-  const { data: categoryBreakdown } = useCategoryBreakdown(
+  const {
+    data: overview,
+    isError: overviewError,
+    isFetching: overviewFetching,
+    refetch: refetchOverview,
+  } = useAnalysisOverview(period, isDefault ? initialOverview : undefined);
+  const {
+    data: cashFlow,
+    isError: cashFlowError,
+    isFetching: cashFlowFetching,
+    refetch: refetchCashFlow,
+  } = useCashFlow(period, isDefault ? initialCashFlow : undefined);
+  const {
+    data: categoryBreakdown,
+    isError: categoryError,
+    isFetching: categoryFetching,
+    refetch: refetchCategory,
+  } = useCategoryBreakdown(
     period,
     isDefault ? initialCategoryBreakdown : undefined,
   );
-  const { data: accountBreakdown } = useAccountBreakdown(
+  const {
+    data: accountBreakdown,
+    isError: accountError,
+    isFetching: accountFetching,
+    refetch: refetchAccount,
+  } = useAccountBreakdown(
     period,
     isDefault ? initialAccountBreakdown : undefined,
   );
+
+  const showError =
+    (isDefault && initialLoadFailed) ||
+    overviewError ||
+    cashFlowError ||
+    categoryError ||
+    accountError;
+  const retrying =
+    overviewFetching || cashFlowFetching || categoryFetching || accountFetching;
+  const retryAll = () => {
+    refetchOverview();
+    refetchCashFlow();
+    refetchCategory();
+    refetchAccount();
+  };
 
   const categoryMap = new Map(categories.map((c) => [c._id, c]));
   const maxCategoryTotal = Math.max(
@@ -119,6 +151,14 @@ export function AnalysisView({
         </NativeSelect>
       </div>
 
+      {showError ? (
+        <ErrorState
+          title="Couldn't load your analysis"
+          onRetry={retryAll}
+          retrying={retrying}
+        />
+      ) : (
+        <>
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
@@ -285,6 +325,8 @@ export function AnalysisView({
           </CardContent>
         </Card>
       </div>
+        </>
+      )}
     </div>
   );
 }

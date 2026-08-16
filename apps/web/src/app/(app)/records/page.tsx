@@ -17,6 +17,7 @@ export default async function RecordsPage() {
         items: transactionsRes.data?.data.items ?? [],
         nextCursor: transactionsRes.data?.data.nextCursor ?? null,
       }}
+      initialLoadFailed={Boolean(transactionsRes.error)}
       accounts={accountsRes.data?.data.items ?? []}
       categories={categoriesRes.data?.data.items ?? []}
       currency={profileRes.data?.data.currency ?? "INR"}

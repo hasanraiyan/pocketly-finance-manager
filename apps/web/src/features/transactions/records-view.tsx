@@ -25,6 +25,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { ErrorState } from "@/components/error-state";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { Account } from "@/features/accounts/hooks";
@@ -51,11 +52,13 @@ const TYPE_FILTER_OPTIONS: Array<{
 
 export function RecordsView({
   initialData,
+  initialLoadFailed = false,
   accounts,
   categories,
   currency,
 }: {
   initialData: TransactionsPage;
+  initialLoadFailed?: boolean;
   accounts: Account[];
   categories: Category[];
   currency: string;
@@ -75,10 +78,11 @@ export function RecordsView({
   );
 
   const isDefaultFilters = !type && !accountId && !q;
-  const { data } = useTransactions(
+  const { data, isError, isFetching, refetch } = useTransactions(
     filters,
     isDefaultFilters ? initialData : undefined,
   );
+  const showError = (isDefaultFilters && initialLoadFailed) || isError;
   const deleteTransaction = useDeleteTransaction(filters);
   const loadMore = useLoadMoreTransactions(filters);
 
@@ -147,7 +151,13 @@ export function RecordsView({
         />
       </div>
 
-      {data.items.length === 0 ? (
+      {showError ? (
+        <ErrorState
+          title="Couldn't load your records"
+          onRetry={() => refetch()}
+          retrying={isFetching}
+        />
+      ) : data.items.length === 0 ? (
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">

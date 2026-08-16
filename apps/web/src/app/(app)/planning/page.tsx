@@ -12,6 +12,7 @@ export default async function PlanningPage() {
   return (
     <PlanningView
       initialData={budgetsRes.data?.data.items ?? []}
+      initialLoadFailed={Boolean(budgetsRes.error)}
       categories={categoriesRes.data?.data.items ?? []}
       currency={profileRes.data?.data.currency ?? "INR"}
     />
