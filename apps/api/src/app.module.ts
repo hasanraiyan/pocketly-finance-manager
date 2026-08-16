@@ -16,6 +16,7 @@ import { AppAuthGuard } from './common/auth/app-auth.guard';
 import { LoggingInterceptor } from './common/logging/logging.interceptor';
 import { ExportsModule } from './exports/exports.module';
 import { McpModule } from './mcp/mcp.module';
+import { NotificationsModule } from './notifications/notifications.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UsersModule } from './users/users.module';
 
@@ -47,6 +48,7 @@ import { UsersModule } from './users/users.module';
     AnalysisModule,
     ExportsModule,
     McpModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [

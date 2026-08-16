@@ -8,6 +8,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import { NotificationCenter } from "@/features/notifications/notification-center";
 
 export default async function AppLayout({
   children,
@@ -25,10 +26,13 @@ export default async function AppLayout({
     <SidebarProvider>
       <AppSidebar user={session.user} />
       <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background/95 px-4 backdrop-blur-sm">
-          <SidebarTrigger />
-          <Separator orientation="vertical" className="h-4" />
-          <PageHeaderTitle />
+        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border bg-background/95 px-4 backdrop-blur-sm">
+          <div className="flex items-center gap-2">
+            <SidebarTrigger />
+            <Separator orientation="vertical" className="h-4" />
+            <PageHeaderTitle />
+          </div>
+          <NotificationCenter />
         </header>
         <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">{children}</div>
       </SidebarInset>

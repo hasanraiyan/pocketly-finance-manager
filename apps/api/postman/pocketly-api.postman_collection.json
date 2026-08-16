@@ -1,7 +1,7 @@
 {
   "item": [
     {
-      "id": "a431a6ce-acc2-474c-b040-3a1ee48e6959",
+      "id": "b68f61b5-3da9-448f-976d-6b535fbf73ee",
       "name": "health",
       "description": {
         "content": "",
@@ -9,7 +9,7 @@
       },
       "item": [
         {
-          "id": "4e5dc8c7-b9e1-4406-a122-3142304865c6",
+          "id": "ed5b0fab-92f0-4f01-beb6-f21b0582032c",
           "name": "App Controller health",
           "request": {
             "name": "App Controller health",
@@ -35,7 +35,7 @@
           },
           "response": [
             {
-              "id": "50d5137f-fbb2-4326-83de-77ea14bdb481",
+              "id": "166e265b-63ad-4d5f-b8c7-fe4a688854d7",
               "name": "Liveness + readiness check",
               "originalRequest": {
                 "url": {
@@ -70,7 +70,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "8c249234-c0c4-4f06-8287-55108dee6781",
+              "id": "48243a5c-0253-4a9d-ae27-230d935845d2",
               "name": "The database is unreachable",
               "originalRequest": {
                 "url": {
@@ -108,7 +108,7 @@
       "event": []
     },
     {
-      "id": "f2289800-c47d-4420-ba77-24456e236670",
+      "id": "d92ecdf6-b828-4ce6-9e54-80511ecc6577",
       "name": "users",
       "description": {
         "content": "",
@@ -116,7 +116,7 @@
       },
       "item": [
         {
-          "id": "8a603e8e-64d6-4c48-a2e3-2a67e4ecf8ca",
+          "id": "98e951a6-a9ba-4565-bb6b-e080359307e6",
           "name": "Users Controller get Profile",
           "request": {
             "name": "Users Controller get Profile",
@@ -151,7 +151,7 @@
           },
           "response": [
             {
-              "id": "52c523dc-1509-40a0-826d-b8cce1aa17bd",
+              "id": "2fe8d138-932e-4b0f-9fa6-840153261707",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -200,7 +200,7 @@
           }
         },
         {
-          "id": "a8f61618-0fd9-4fe0-84d6-3818e27a52f0",
+          "id": "03619f2d-eca7-4830-acb8-757591a48b5f",
           "name": "Users Controller update Profile",
           "request": {
             "name": "Users Controller update Profile",
@@ -248,7 +248,7 @@
           },
           "response": [
             {
-              "id": "6b38b70b-51ae-4f66-84bb-3a511397e9cb",
+              "id": "3ddeaaac-af65-4d35-8a1b-80153c5f25b2",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -305,7 +305,7 @@
           }
         },
         {
-          "id": "457edec6-b30f-4da6-b5a1-4e1d1be7e2da",
+          "id": "faeb17c3-9638-44ce-81fa-eed3c36fdd17",
           "name": "Users Controller delete Account",
           "request": {
             "name": "Users Controller delete Account",
@@ -349,7 +349,7 @@
           },
           "response": [
             {
-              "id": "6f33a6e8-e14e-443e-bfa6-9853358ba091",
+              "id": "7277d56e-11c6-4ad2-a44a-2a505d27c255",
               "name": "Account and all owned financial data deleted",
               "originalRequest": {
                 "url": {
@@ -406,7 +406,7 @@
       "event": []
     },
     {
-      "id": "9cd1e0e9-6d2d-4d39-b691-6ddeaa4e28ce",
+      "id": "59d06651-0140-4560-8426-ce54f0a5d482",
       "name": "accounts",
       "description": {
         "content": "",
@@ -414,7 +414,7 @@
       },
       "item": [
         {
-          "id": "5ce4ee82-0354-49ea-84c6-1d20ce000fc8",
+          "id": "27083b80-b8c4-482d-b6b1-5df76551f210",
           "name": "Accounts Controller create",
           "request": {
             "name": "Accounts Controller create",
@@ -461,7 +461,7 @@
           },
           "response": [
             {
-              "id": "7b3d0862-c555-48de-aa99-6bb81eaf6db0",
+              "id": "94630bc1-d94c-4eda-968b-9f414d7f56ae",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -506,7 +506,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"credit_card\",\n    \"initialBalance\": 2394.1789783771205,\n    \"currency\": \"string\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"balance\": 5589.626758759156,\n    \"icon\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"credit_card\",\n    \"initialBalance\": 8938.502436426508,\n    \"currency\": \"string\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"balance\": 1130.9768013188038,\n    \"icon\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -517,7 +517,7 @@
           }
         },
         {
-          "id": "79bb0339-0d44-45c0-801f-b0b4320b9f1e",
+          "id": "50df702f-81e9-49c1-9ade-5a6a9bd56a50",
           "name": "Accounts Controller find All",
           "request": {
             "name": "Accounts Controller find All",
@@ -562,7 +562,7 @@
           },
           "response": [
             {
-              "id": "b653d875-6f28-4ff4-a4f0-158d7977e370",
+              "id": "56a84c9f-ff5d-4caf-bd68-7d9439bf3902",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -608,7 +608,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"savings\",\n        \"initialBalance\": 5056.199188980158,\n        \"currency\": \"string\",\n        \"ignored\": false,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"balance\": 1405.5389577482292,\n        \"icon\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"wallet\",\n        \"initialBalance\": 4480.221387160947,\n        \"currency\": \"string\",\n        \"ignored\": false,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"balance\": 8176.13328669526,\n        \"icon\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"bank\",\n        \"initialBalance\": 3532.0962102039944,\n        \"currency\": \"string\",\n        \"ignored\": true,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"balance\": 2675.6812002534357,\n        \"icon\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"savings\",\n        \"initialBalance\": 8871.432225455126,\n        \"currency\": \"string\",\n        \"ignored\": true,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"balance\": 7255.418029084294,\n        \"icon\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -619,7 +619,7 @@
           }
         },
         {
-          "id": "fab91cad-b318-4574-958a-b8ab283d4f2b",
+          "id": "9a964809-8aaa-4a4f-98a1-dfa00d1f6726",
           "name": "Accounts Controller find One",
           "request": {
             "name": "Accounts Controller find One",
@@ -662,7 +662,7 @@
           },
           "response": [
             {
-              "id": "6f3bb2dc-5e9d-4f01-9f55-910ea9c05df2",
+              "id": "68a80bed-b0ae-4ba9-ab36-c0faf411d360",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -708,7 +708,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"credit_card\",\n    \"initialBalance\": 2394.1789783771205,\n    \"currency\": \"string\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"balance\": 5589.626758759156,\n    \"icon\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"credit_card\",\n    \"initialBalance\": 8938.502436426508,\n    \"currency\": \"string\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"balance\": 1130.9768013188038,\n    \"icon\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -719,7 +719,7 @@
           }
         },
         {
-          "id": "0ffcd25c-e183-4d96-a0f2-433dfcf24f0b",
+          "id": "eb2b6c89-5389-48df-8697-e7cb44f9c2f0",
           "name": "Accounts Controller update",
           "request": {
             "name": "Accounts Controller update",
@@ -775,7 +775,7 @@
           },
           "response": [
             {
-              "id": "892d7eeb-093a-42fa-b112-b479ccce5df7",
+              "id": "c279c36a-c500-4aba-bac8-e183cf663c77",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -829,7 +829,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"credit_card\",\n    \"initialBalance\": 2394.1789783771205,\n    \"currency\": \"string\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"balance\": 5589.626758759156,\n    \"icon\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"credit_card\",\n    \"initialBalance\": 8938.502436426508,\n    \"currency\": \"string\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"balance\": 1130.9768013188038,\n    \"icon\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -840,7 +840,7 @@
           }
         },
         {
-          "id": "33cde206-c760-499a-b162-87b5dbb2a748",
+          "id": "11d8540e-4915-4a62-9ac8-184921fec6c7",
           "name": "Accounts Controller remove",
           "request": {
             "name": "Accounts Controller remove",
@@ -883,7 +883,7 @@
           },
           "response": [
             {
-              "id": "07247863-148f-4af8-8de1-a80ae2a46919",
+              "id": "b20b9a10-b141-47cb-950a-1d6e68cfd321",
               "name": "The archived (soft-deleted) account",
               "originalRequest": {
                 "url": {
@@ -930,7 +930,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"cash\",\n    \"initialBalance\": 8583.910678480292,\n    \"currency\": \"string\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"savings\",\n    \"initialBalance\": 6375.123852191966,\n    \"currency\": \"string\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -944,7 +944,7 @@
       "event": []
     },
     {
-      "id": "ccfa1ffa-1f40-4f60-8f86-9dad93eb2591",
+      "id": "f8bb10c2-71a9-475a-8a7a-cb152e1eefa4",
       "name": "categories",
       "description": {
         "content": "",
@@ -952,7 +952,7 @@
       },
       "item": [
         {
-          "id": "63ac21db-5aa7-41ab-b380-35fa1dcd5b09",
+          "id": "6fd233c1-017b-44f3-8253-29a350062f71",
           "name": "Categories Controller create",
           "request": {
             "name": "Categories Controller create",
@@ -999,7 +999,7 @@
           },
           "response": [
             {
-              "id": "7d8b6875-1fb6-484a-baff-47de775a0257",
+              "id": "dc02e55d-2c6c-4813-a520-e11b2e6ffbe8",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1044,7 +1044,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"expense\",\n    \"ignored\": false,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"expense\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1055,7 +1055,7 @@
           }
         },
         {
-          "id": "018cf6e8-e95c-4cb3-bd30-8ddd64048ec9",
+          "id": "8fec8db4-8fd2-427c-a32b-8a2ed613e66e",
           "name": "Categories Controller find All",
           "request": {
             "name": "Categories Controller find All",
@@ -1100,7 +1100,7 @@
           },
           "response": [
             {
-              "id": "22ec936f-f46b-4319-a1e4-1dd406ca93a0",
+              "id": "f42baeb7-b8cf-427d-b001-919277b86a51",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1146,7 +1146,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"expense\",\n        \"ignored\": true,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"icon\": \"string\",\n        \"color\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"income\",\n        \"ignored\": true,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"icon\": \"string\",\n        \"color\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"expense\",\n        \"ignored\": false,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"icon\": \"string\",\n        \"color\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"expense\",\n        \"ignored\": false,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"icon\": \"string\",\n        \"color\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1157,7 +1157,7 @@
           }
         },
         {
-          "id": "3dc2ffdb-ca91-4fe9-9fe9-43ce5ddba32a",
+          "id": "a5c3b6b3-b0f3-4e71-ad5b-ff471f793c66",
           "name": "Categories Controller find One",
           "request": {
             "name": "Categories Controller find One",
@@ -1200,7 +1200,7 @@
           },
           "response": [
             {
-              "id": "1148305b-52c9-445a-b79d-33288927a411",
+              "id": "30694f70-0458-49a0-a5dc-a24b3c71eb77",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1246,7 +1246,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"expense\",\n    \"ignored\": false,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"expense\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1257,7 +1257,7 @@
           }
         },
         {
-          "id": "6f8c1646-4564-4c9b-b683-fff1d492606d",
+          "id": "53d35cf0-5723-4e04-a973-9ef19be99a0e",
           "name": "Categories Controller update",
           "request": {
             "name": "Categories Controller update",
@@ -1313,7 +1313,7 @@
           },
           "response": [
             {
-              "id": "468531bc-942b-4a1c-8acf-d0861320c4bd",
+              "id": "df9eb449-0c6f-4b3f-8b0b-44d13fc779a5",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1367,7 +1367,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"expense\",\n    \"ignored\": false,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"expense\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1378,7 +1378,7 @@
           }
         },
         {
-          "id": "30a63ff5-cfca-4177-b133-05170d7b054e",
+          "id": "f68cbb3d-acb5-4f5b-bae8-069e6fe87434",
           "name": "Categories Controller remove",
           "request": {
             "name": "Categories Controller remove",
@@ -1421,7 +1421,7 @@
           },
           "response": [
             {
-              "id": "31667e64-740d-4abe-88d6-f42f44a8f48c",
+              "id": "8ec450ee-5c91-413b-a9e7-489add5fb797",
               "name": "The archived (soft-deleted) category",
               "originalRequest": {
                 "url": {
@@ -1468,7 +1468,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"expense\",\n    \"ignored\": false,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"expense\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1482,7 +1482,7 @@
       "event": []
     },
     {
-      "id": "83ab4c39-5862-4236-a0e0-d07949c828fc",
+      "id": "d9b97001-8fea-4cb4-a5d9-f244061425af",
       "name": "transactions",
       "description": {
         "content": "",
@@ -1490,7 +1490,7 @@
       },
       "item": [
         {
-          "id": "3c7ec423-84ac-48e6-887d-dad0ff43aee0",
+          "id": "a10e4805-2384-4d72-8e9f-5c580639fafe",
           "name": "Transactions Controller create",
           "request": {
             "name": "Transactions Controller create",
@@ -1537,7 +1537,7 @@
           },
           "response": [
             {
-              "id": "94af28c9-5203-48fe-a311-0407fabf2772",
+              "id": "5ad5b9ea-141c-4e16-8338-95942fea6636",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1582,7 +1582,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 8773.847761678993,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 7547.318724911491,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 6140.236125417548,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 3276.681476514579,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1593,7 +1593,7 @@
           }
         },
         {
-          "id": "765f35ab-ad4d-4fad-9008-60a44d08bc54",
+          "id": "772aaba4-372c-4d13-8edd-71d4ca05f3c2",
           "name": "Transactions Controller find All",
           "request": {
             "name": "Transactions Controller find All",
@@ -1668,7 +1668,7 @@
           },
           "response": [
             {
-              "id": "a7983886-f7ed-49ab-ba4b-fb832c66002a",
+              "id": "f2a4dda4-4060-48e9-9897-0dd37b39c772",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1738,7 +1738,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"type\": \"income\",\n        \"amount\": 6983.159599868287,\n        \"accountId\": \"string\",\n        \"date\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 7460.458920408532,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"description\": \"string\",\n        \"note\": \"string\",\n        \"categoryId\": \"string\",\n        \"toAccountId\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"type\": \"income\",\n        \"amount\": 7748.438194519333,\n        \"accountId\": \"string\",\n        \"date\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 2819.4707953704033,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"description\": \"string\",\n        \"note\": \"string\",\n        \"categoryId\": \"string\",\n        \"toAccountId\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"type\": \"expense\",\n        \"amount\": 3036.8372732284543,\n        \"accountId\": \"string\",\n        \"date\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 8668.572516658513,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"description\": \"string\",\n        \"note\": \"string\",\n        \"categoryId\": \"string\",\n        \"toAccountId\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"type\": \"expense\",\n        \"amount\": 128.2828838095551,\n        \"accountId\": \"string\",\n        \"date\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 7959.375952851585,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"description\": \"string\",\n        \"note\": \"string\",\n        \"categoryId\": \"string\",\n        \"toAccountId\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1749,7 +1749,7 @@
           }
         },
         {
-          "id": "8024c4c4-0a33-4660-a7aa-64b1c34a5c4b",
+          "id": "442b6916-4e50-45b2-801b-cee2cd131be9",
           "name": "Transactions Controller find One",
           "request": {
             "name": "Transactions Controller find One",
@@ -1792,7 +1792,7 @@
           },
           "response": [
             {
-              "id": "8fbbac69-f0be-4ca9-9d8f-ff6d53e480f1",
+              "id": "4a26e59d-a696-4a01-8670-e09aa3e6bd81",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1838,7 +1838,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 8773.847761678993,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 7547.318724911491,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 6140.236125417548,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 3276.681476514579,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1849,7 +1849,7 @@
           }
         },
         {
-          "id": "fa5f2110-589c-466a-939e-8ba5dbba7c02",
+          "id": "580eecba-100b-40c1-833a-eb6f004d4a3b",
           "name": "Transactions Controller update",
           "request": {
             "name": "Transactions Controller update",
@@ -1905,7 +1905,7 @@
           },
           "response": [
             {
-              "id": "bf143d32-b7fd-4fba-8c69-63dc3a318943",
+              "id": "7b05f16d-65b6-40cf-9aad-e9ae0d13aa11",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1959,7 +1959,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 8773.847761678993,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 7547.318724911491,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 6140.236125417548,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 3276.681476514579,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1970,7 +1970,7 @@
           }
         },
         {
-          "id": "e3cdc456-ccd4-49f4-b83f-6268a7314a68",
+          "id": "17c577a5-5bae-4025-9303-452f7df1986d",
           "name": "Transactions Controller remove",
           "request": {
             "name": "Transactions Controller remove",
@@ -2013,7 +2013,7 @@
           },
           "response": [
             {
-              "id": "c13db23b-8a3d-4125-9aaa-04c246a8e99d",
+              "id": "ddb2f20d-99a2-4171-9f38-74f5fdcc52cd",
               "name": "The soft-deleted transaction",
               "originalRequest": {
                 "url": {
@@ -2060,7 +2060,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 8773.847761678993,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 7547.318724911491,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 6140.236125417548,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 3276.681476514579,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2071,7 +2071,7 @@
           }
         },
         {
-          "id": "795e8947-04c2-4afe-a854-c5ae5c7e7577",
+          "id": "94bd3471-aa8a-4cce-abf6-ff18171aeda7",
           "name": "Transactions Controller restore",
           "request": {
             "name": "Transactions Controller restore",
@@ -2115,7 +2115,7 @@
           },
           "response": [
             {
-              "id": "0a534531-47a6-475b-9571-abf6882a249c",
+              "id": "d7da8ed9-c85e-4d4e-a7f6-fb7a6ccbbcd9",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2162,7 +2162,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 8773.847761678993,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 7547.318724911491,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 6140.236125417548,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 3276.681476514579,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2176,7 +2176,7 @@
       "event": []
     },
     {
-      "id": "5783c473-2c4a-4b50-ab86-685c7706ef84",
+      "id": "6faa0546-8256-4527-a867-e9fe8d075ea1",
       "name": "budgets",
       "description": {
         "content": "",
@@ -2184,7 +2184,7 @@
       },
       "item": [
         {
-          "id": "5aaedae7-5872-4a2c-b7ff-6c155281e0e1",
+          "id": "0fd03d05-8233-4131-a474-23791d2f0451",
           "name": "Budgets Controller create",
           "request": {
             "name": "Budgets Controller create",
@@ -2231,7 +2231,7 @@
           },
           "response": [
             {
-              "id": "4d4e3dc7-cffc-4033-9449-ba663764d31b",
+              "id": "8d89c84b-f048-4635-b868-2f2a667322d6",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2276,7 +2276,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 2614.0710252375375,\n    \"period\": \"weekly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 3892.0626283053916,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"spent\": 1460.5152185654158,\n    \"remaining\": 1958.838165077862,\n    \"percentageUsed\": 5916.710476423177,\n    \"periodStart\": \"string\",\n    \"periodEnd\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 7475.843911428033,\n    \"period\": \"monthly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 6821.764891047446,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"spent\": 3371.554799918137,\n    \"remaining\": 1115.1550058998937,\n    \"percentageUsed\": 1776.0982979918738,\n    \"periodStart\": \"string\",\n    \"periodEnd\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2287,7 +2287,7 @@
           }
         },
         {
-          "id": "c67f3e72-9c6f-436e-a029-da3357a1a06e",
+          "id": "675891f2-9413-4f4e-bba4-f0f733bbb4f7",
           "name": "Budgets Controller find All",
           "request": {
             "name": "Budgets Controller find All",
@@ -2332,7 +2332,7 @@
           },
           "response": [
             {
-              "id": "72b33588-c4e3-413b-b314-02a93de5b67b",
+              "id": "eb5592e8-4848-4bda-8224-051c7cb3db3a",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2378,7 +2378,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"categoryId\": \"string\",\n        \"amount\": 1143.3896102773945,\n        \"period\": \"monthly\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 2527.1867306200725,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"spent\": 6752.5839732374,\n        \"remaining\": 6358.9514667470285,\n        \"percentageUsed\": 3618.8912269540388,\n        \"periodStart\": \"string\",\n        \"periodEnd\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"categoryId\": \"string\",\n        \"amount\": 2748.781581543839,\n        \"period\": \"monthly\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 9622.992722090185,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"spent\": 7473.244281290088,\n        \"remaining\": 4078.552926516007,\n        \"percentageUsed\": 7772.559399053009,\n        \"periodStart\": \"string\",\n        \"periodEnd\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"categoryId\": \"string\",\n        \"amount\": 4414.488807737566,\n        \"period\": \"weekly\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 7160.23084637097,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"spent\": 5144.523999092693,\n        \"remaining\": 4811.622531175232,\n        \"percentageUsed\": 6377.007658535549,\n        \"periodStart\": \"string\",\n        \"periodEnd\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"categoryId\": \"string\",\n        \"amount\": 7311.838610450978,\n        \"period\": \"yearly\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 6139.474654477528,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"spent\": 7327.558448498683,\n        \"remaining\": 8422.616798911811,\n        \"percentageUsed\": 1764.2710387360905,\n        \"periodStart\": \"string\",\n        \"periodEnd\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2389,7 +2389,7 @@
           }
         },
         {
-          "id": "da981d6c-d9ca-4b4d-9a25-f8807dca7652",
+          "id": "433fa575-b4e8-45b0-99fc-2dec73487654",
           "name": "Budgets Controller find One",
           "request": {
             "name": "Budgets Controller find One",
@@ -2432,7 +2432,7 @@
           },
           "response": [
             {
-              "id": "3a4372e7-74c3-467a-a281-ccd68a03aeb5",
+              "id": "d0297a93-acfb-4def-ba9c-73b6700ae769",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2478,7 +2478,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 2614.0710252375375,\n    \"period\": \"weekly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 3892.0626283053916,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"spent\": 1460.5152185654158,\n    \"remaining\": 1958.838165077862,\n    \"percentageUsed\": 5916.710476423177,\n    \"periodStart\": \"string\",\n    \"periodEnd\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 7475.843911428033,\n    \"period\": \"monthly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 6821.764891047446,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"spent\": 3371.554799918137,\n    \"remaining\": 1115.1550058998937,\n    \"percentageUsed\": 1776.0982979918738,\n    \"periodStart\": \"string\",\n    \"periodEnd\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2489,7 +2489,7 @@
           }
         },
         {
-          "id": "9761670b-f7d0-42f1-bcbf-5becb9954b1f",
+          "id": "9b9ca52c-7537-4392-ad1d-fd1b3ec42203",
           "name": "Budgets Controller update",
           "request": {
             "name": "Budgets Controller update",
@@ -2545,7 +2545,7 @@
           },
           "response": [
             {
-              "id": "9d04ee41-40dc-4ffc-802f-31f26a879031",
+              "id": "89bd1145-35bf-47a6-9ebe-538196612b2a",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2599,7 +2599,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 2614.0710252375375,\n    \"period\": \"weekly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 3892.0626283053916,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"spent\": 1460.5152185654158,\n    \"remaining\": 1958.838165077862,\n    \"percentageUsed\": 5916.710476423177,\n    \"periodStart\": \"string\",\n    \"periodEnd\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 7475.843911428033,\n    \"period\": \"monthly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 6821.764891047446,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"spent\": 3371.554799918137,\n    \"remaining\": 1115.1550058998937,\n    \"percentageUsed\": 1776.0982979918738,\n    \"periodStart\": \"string\",\n    \"periodEnd\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2610,7 +2610,7 @@
           }
         },
         {
-          "id": "f8092af2-fda1-4bc1-a539-03a33d70c35f",
+          "id": "576021fc-b9e8-42c0-99f5-7da547c7bc64",
           "name": "Budgets Controller remove",
           "request": {
             "name": "Budgets Controller remove",
@@ -2653,7 +2653,7 @@
           },
           "response": [
             {
-              "id": "89edc8a0-b4f9-4ebd-8dac-fd61920659fa",
+              "id": "df980672-c8c2-4f86-b857-309e5ea4cca2",
               "name": "The archived (soft-deleted) budget",
               "originalRequest": {
                 "url": {
@@ -2700,7 +2700,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 9246.522960999606,\n    \"period\": \"yearly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 4171.001471879272,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 5456.775509982223,\n    \"period\": \"monthly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 5784.798014325244,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2714,7 +2714,7 @@
       "event": []
     },
     {
-      "id": "287142aa-75b6-4f3c-ade2-b002d8a417be",
+      "id": "6152ab32-4f7f-4c58-b05e-bf51660cb08b",
       "name": "analysis",
       "description": {
         "content": "",
@@ -2722,7 +2722,7 @@
       },
       "item": [
         {
-          "id": "8e30bec3-5a98-408e-b45c-af3572bd1402",
+          "id": "ebae1526-4deb-4430-90a5-89d38efde799",
           "name": "Analysis Controller get Overview",
           "request": {
             "name": "Analysis Controller get Overview",
@@ -2772,7 +2772,7 @@
           },
           "response": [
             {
-              "id": "58bf768f-09ac-445a-98d4-53b52136799d",
+              "id": "a09c26c3-5bb8-4134-9dbc-942a15d96db9",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2822,7 +2822,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"income\": 1699.832391010825,\n    \"expense\": 8933.73959993183,\n    \"net\": 8480.755354889207\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"income\": 2668.1995399651714,\n    \"expense\": 4431.076774412302,\n    \"net\": 1418.788649764715\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2833,7 +2833,7 @@
           }
         },
         {
-          "id": "d81a788c-4181-4cc7-88d5-04787716ce78",
+          "id": "d7866a1f-ad8c-4e15-af9b-3ccbda88ef8d",
           "name": "Analysis Controller get Category Breakdown",
           "request": {
             "name": "Analysis Controller get Category Breakdown",
@@ -2884,7 +2884,7 @@
           },
           "response": [
             {
-              "id": "5169bf69-1087-4f62-bb59-e74b29a74852",
+              "id": "c0330b3b-b460-4ae3-a50f-875fcd536f12",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2935,7 +2935,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"categories\": [\n      {\n        \"categoryId\": \"string\",\n        \"type\": \"expense\",\n        \"total\": 2531.7774896904575\n      },\n      {\n        \"categoryId\": \"string\",\n        \"type\": \"income\",\n        \"total\": 5451.534889852683\n      }\n    ]\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"categories\": [\n      {\n        \"categoryId\": \"string\",\n        \"type\": \"expense\",\n        \"total\": 8611.383948897632\n      },\n      {\n        \"categoryId\": \"string\",\n        \"type\": \"expense\",\n        \"total\": 8038.120851054934\n      }\n    ]\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2946,7 +2946,7 @@
           }
         },
         {
-          "id": "602749b1-755e-4eb5-9f01-4560a01943ae",
+          "id": "866cdb9b-e3e0-4f70-ac7a-692837c490e5",
           "name": "Analysis Controller get Cash Flow",
           "request": {
             "name": "Analysis Controller get Cash Flow",
@@ -2997,7 +2997,7 @@
           },
           "response": [
             {
-              "id": "dcd279c3-8530-4732-bdb8-587b92b2a038",
+              "id": "ac17c903-6f38-4b72-a108-51d48375302a",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -3048,7 +3048,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"days\": [\n      {\n        \"date\": \"string\",\n        \"income\": 412.0313809176679,\n        \"expense\": 7961.498779129779,\n        \"net\": 2128.7094984392343\n      },\n      {\n        \"date\": \"string\",\n        \"income\": 5108.488481530464,\n        \"expense\": 6110.0512363484795,\n        \"net\": 4878.415171291901\n      }\n    ]\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"days\": [\n      {\n        \"date\": \"string\",\n        \"income\": 4953.2684785660995,\n        \"expense\": 6476.179098118224,\n        \"net\": 9412.109291813505\n      },\n      {\n        \"date\": \"string\",\n        \"income\": 9692.763511756215,\n        \"expense\": 2386.740111670529,\n        \"net\": 1161.3999882646508\n      }\n    ]\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3059,7 +3059,7 @@
           }
         },
         {
-          "id": "812abf71-4e45-49c8-8169-323f296b8ac6",
+          "id": "d0acec07-0cfc-4cc5-8d50-e8def9531ab0",
           "name": "Analysis Controller get Account Breakdown",
           "request": {
             "name": "Analysis Controller get Account Breakdown",
@@ -3110,7 +3110,7 @@
           },
           "response": [
             {
-              "id": "56aa1d5c-96f2-468d-b0ce-03980d840460",
+              "id": "7224c8c7-cf77-4750-b3d5-a0bc2b800af2",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -3161,7 +3161,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"accounts\": [\n      {\n        \"accountId\": \"string\",\n        \"name\": \"string\",\n        \"income\": 4107.948027807887,\n        \"expense\": 646.1572832981399\n      },\n      {\n        \"accountId\": \"string\",\n        \"name\": \"string\",\n        \"income\": 3659.4512442352143,\n        \"expense\": 1102.6577393582736\n      }\n    ]\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"accounts\": [\n      {\n        \"accountId\": \"string\",\n        \"name\": \"string\",\n        \"income\": 5177.130337199815,\n        \"expense\": 3910.1837474997137\n      },\n      {\n        \"accountId\": \"string\",\n        \"name\": \"string\",\n        \"income\": 6041.25406811773,\n        \"expense\": 1999.388382178089\n      }\n    ]\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3175,7 +3175,7 @@
       "event": []
     },
     {
-      "id": "44e4cc46-d3df-484a-b68e-ef0dd093eddc",
+      "id": "48dfb395-2991-49ae-bbc8-484ce07d108b",
       "name": "exports",
       "description": {
         "content": "",
@@ -3183,7 +3183,7 @@
       },
       "item": [
         {
-          "id": "fcda0899-8136-4dc3-af49-c9ae4e64377c",
+          "id": "07606690-13bf-4291-988b-956143f0071e",
           "name": "Exports Controller request Pdf Export",
           "request": {
             "name": "Exports Controller request Pdf Export",
@@ -3231,7 +3231,7 @@
           },
           "response": [
             {
-              "id": "521ef789-0649-4bf4-a699-ce1933683017",
+              "id": "691e7d9f-7d14-4c7a-816b-e0f17971cfe3",
               "name": "Export job queued. The PDF will be generated in the background and emailed to the user.",
               "originalRequest": {
                 "url": {
@@ -3292,7 +3292,7 @@
       "event": []
     },
     {
-      "id": "3a5e62a6-375d-4f80-a88a-28745fbd057f",
+      "id": "010d4772-9dd8-4977-8277-2f074aab57bb",
       "name": "mcp-connections",
       "description": {
         "content": "",
@@ -3300,7 +3300,7 @@
       },
       "item": [
         {
-          "id": "d979d464-0ebd-4e9a-9982-25e0a1cbc95d",
+          "id": "2e5dfc73-fb57-46a9-829b-e0d1a63dc2af",
           "name": "Mcp Connections Controller revoke",
           "request": {
             "name": "Mcp Connections Controller revoke",
@@ -3343,7 +3343,7 @@
           },
           "response": [
             {
-              "id": "f93bcfbe-e5f7-4619-a6ee-bec6c3709954",
+              "id": "3f212214-03eb-4435-bee9-5de1c5320c86",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -3389,9 +3389,577 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"revoked\": true\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"revoked\": false\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "7a4fbabf-72b7-4c49-9a42-0d13fe481176",
+      "name": "notifications",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "db826baa-2d8d-4301-b7c7-45fd2625b6dd",
+          "name": "Notifications Controller register Device",
+          "request": {
+            "name": "Notifications Controller register Device",
+            "description": {},
+            "url": {
+              "path": [
+                "notifications",
+                "devices"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"<string>\",\n  \"platform\": \"web\",\n  \"userAgent\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "55d5de97-f96b-4dfe-8e4c-8345e4e44dbd",
+              "name": "Register or refresh an FCM device token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "notifications",
+                    "devices"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"token\": \"<string>\",\n  \"platform\": \"web\",\n  \"userAgent\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "cbc64dbb-a4b1-4d6d-8fc9-90a32c826820",
+          "name": "Notifications Controller unregister Device",
+          "request": {
+            "name": "Notifications Controller unregister Device",
+            "description": {},
+            "url": {
+              "path": [
+                "notifications",
+                "devices",
+                ":token"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "token",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "44345b1c-3762-4dfc-8257-f7afa94b704d",
+              "name": "Unregister an FCM device token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "notifications",
+                    "devices",
+                    ":token"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "token",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "bcfd6126-7db5-478f-87da-b029c947d134",
+          "name": "Notifications Controller find All",
+          "request": {
+            "name": "Notifications Controller find All",
+            "description": {},
+            "url": {
+              "path": [
+                "notifications"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "limit",
+                  "value": "<number>",
+                  "description": "(Required) "
+                },
+                {
+                  "disabled": false,
+                  "key": "page",
+                  "value": "<number>",
+                  "description": "(Required) "
+                },
+                {
+                  "disabled": false,
+                  "key": "unreadOnly",
+                  "value": "<boolean>",
+                  "description": "(Required) "
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "368a22be-bc59-45a3-9db0-9343d91dfa3e",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "notifications"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "page",
+                      "value": "<number>"
+                    },
+                    {
+                      "key": "unreadOnly",
+                      "value": "<boolean>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"title\": \"string\",\n        \"body\": \"string\",\n        \"type\": \"DAILY_REMINDER\",\n        \"read\": false,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"actionUrl\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"title\": \"string\",\n        \"body\": \"string\",\n        \"type\": \"DAILY_REMINDER\",\n        \"read\": false,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"actionUrl\": \"string\"\n      }\n    ],\n    \"unreadCount\": 1644.0045480432996,\n    \"total\": 3705.47628422635\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "ad526b6c-25d8-4c68-af89-2fa6d803cab7",
+          "name": "Notifications Controller mark As Read",
+          "request": {
+            "name": "Notifications Controller mark As Read",
+            "description": {},
+            "url": {
+              "path": [
+                "notifications",
+                ":id",
+                "read"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "5efc268f-4db9-430d-8534-ae2431a5aca4",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "notifications",
+                    ":id",
+                    "read"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"title\": \"string\",\n    \"body\": \"string\",\n    \"type\": \"BUDGET_ALERT\",\n    \"read\": true,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"actionUrl\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "07c52140-8f8b-4590-9630-228c63753521",
+          "name": "Notifications Controller mark All As Read",
+          "request": {
+            "name": "Notifications Controller mark All As Read",
+            "description": {},
+            "url": {
+              "path": [
+                "notifications",
+                "read-all"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "705c5771-b9c4-4fc0-b307-f6989bba1dee",
+              "name": "Mark all notifications as read",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "notifications",
+                    "read-all"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "425b5c02-232e-4de3-9ebe-8cadd5292475",
+          "name": "Notifications Controller send Test Notification",
+          "request": {
+            "name": "Notifications Controller send Test Notification",
+            "description": {},
+            "url": {
+              "path": [
+                "notifications",
+                "test"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "7fa1f187-0e29-4160-8aae-052d3a158fe9",
+              "name": "Send a test push notification to current user",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "notifications",
+                    "test"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
             }
           ],
           "event": [],
@@ -3412,7 +3980,7 @@
     }
   ],
   "info": {
-    "_postman_id": "75827738-5c49-410c-9bc5-2ccc7f285bae",
+    "_postman_id": "9b0a7013-36c2-4228-8fc0-3c62cfc405b0",
     "name": "Pocketly API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": {

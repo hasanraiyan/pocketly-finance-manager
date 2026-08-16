@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Cable, PenLine, Plus, Tags, Trash2, Unplug } from "lucide-react";
+import { Bell, Cable, PenLine, Plus, Tags, Trash2, Unplug } from "lucide-react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { clearStoredAuthToken } from "@/lib/auth-token";
@@ -53,6 +53,10 @@ import {
   useOAuthConnections,
   type OAuthConnection,
 } from "./connections-hooks";
+import {
+  usePushNotificationManager,
+  useSendTestNotification,
+} from "@/features/notifications/hooks";
 
 const TIMEZONES =
   typeof Intl.supportedValuesOf === "function"
@@ -458,6 +462,86 @@ function DangerZoneCard() {
   );
 }
 
+function NotificationsCard() {
+  const { permissionStatus, isRegistering, enablePushNotifications } =
+    usePushNotificationManager();
+  const sendTest = useSendTestNotification();
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Bell className="size-4" />
+          Push Notifications & Devices
+        </CardTitle>
+        <CardDescription>
+          Receive real-time budget threshold warnings and daily streak reminders even when the website is closed.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-border p-3">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-medium text-foreground">
+              Browser Push (FCM)
+            </span>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              Status:{" "}
+              {permissionStatus === "granted" ? (
+                <span className="font-medium text-emerald-600 dark:text-emerald-400">
+                  Active & Connected (Granted)
+                </span>
+              ) : permissionStatus === "denied" ? (
+                <span className="font-medium text-destructive">
+                  Blocked in browser settings
+                </span>
+              ) : (
+                <span className="font-medium text-amber-600 dark:text-amber-400">
+                  Not enabled
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {permissionStatus !== "granted" ? (
+              <Button
+                variant="default"
+                size="sm"
+                onClick={enablePushNotifications}
+                disabled={isRegistering || permissionStatus === "denied"}
+              >
+                {isRegistering ? (
+                  <Spinner className="mr-1.5 size-3.5" />
+                ) : (
+                  <Bell className="mr-1.5 size-3.5" />
+                )}
+                Enable on this device
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => sendTest.mutate()}
+                disabled={sendTest.isPending}
+              >
+                {sendTest.isPending ? (
+                  <Spinner className="mr-1.5 size-3.5" />
+                ) : (
+                  <Bell className="mr-1.5 size-3.5" />
+                )}
+                Send Test Alert
+              </Button>
+            )}
+          </div>
+        </div>
+
+        <p className="text-[11px] text-muted-foreground">
+          📱 <strong>Mobile App Sync:</strong> Connecting this web browser registers an FCM device token. When you log in with the upcoming Android / iOS app, your notifications will automatically sync across all your devices.
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function SettingsView({
   currency,
   timezone,
@@ -494,6 +578,7 @@ export function SettingsView({
         initialData={categoriesInitialData}
         initialLoadFailed={categoriesLoadFailed}
       />
+      <NotificationsCard />
       <ConnectedAppsCard />
       <DangerZoneCard />
     </div>
