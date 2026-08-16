@@ -910,19 +910,16 @@ When financial information is requested, the system SHOULD retrieve current appl
 
 Pocketly SHOULD provide an MCP interface.
 
-Potential tools:
+Tools:
 
 ```text
-get_financial_overview
-get_accounts
-get_transactions
-get_categories
-get_budgets
-get_analysis
+manage_transaction  -- action: list | get | create | update | delete
+manage_account      -- action: list | get | create | update | delete
+manage_category     -- action: list | get | create | update | delete
+manage_budget       -- action: list | get | create | update | delete
 
-create_transaction
-update_transaction
-delete_transaction
+get_analysis
+get_financial_overview
 ```
 
 MCP requests MUST authenticate the user.

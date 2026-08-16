@@ -7,7 +7,15 @@ import {
 import { paginationQuerySchema } from '../../common/pagination/pagination-query.dto';
 import { objectIdSchema } from '../../common/validation/object-id.schema';
 import { McpToolContext, requireScope } from '../mcp-context';
-import { errorResult, textResult } from '../mcp-result';
+import { errorResult, textResult, zodErrorResult } from '../mcp-result';
+
+const DESCRIPTION = `Manage income/expense categories. One tool, five actions via the "action" field:
+
+- list: optional cursor, limit (default 20, max 100).
+- get: requires id.
+- create: requires name, type (income or expense). Optional: icon, color.
+- update: requires id, plus only the fields you want to change (also accepts ignored: true/false to hide/show it without deleting).
+- delete: requires id. Fails if the category is in use by an existing transaction or budget -- use update with ignored: true instead if you just want it out of the way.`;
 
 export function registerCategoriesTools(
   server: McpServer,
@@ -17,8 +25,7 @@ export function registerCategoriesTools(
     'manage_category',
     {
       title: 'Manage categories',
-      description:
-        'List, get, create, update, or delete income/expense categories. "list"/"get" need only their own fields; "create" needs the full record; "update"/"delete" need "id". Categories in use by a transaction or budget can\'t be deleted.',
+      description: DESCRIPTION,
       inputSchema: {
         action: z.enum(['list', 'get', 'create', 'update', 'delete']),
         id: objectIdSchema
@@ -26,6 +33,10 @@ export function registerCategoriesTools(
           .describe('Category id -- required for get/update/delete'),
         ...paginationQuerySchema.shape,
         ...createCategorySchema.partial().shape,
+        ignored: z
+          .boolean()
+          .optional()
+          .describe('update only: hide (true) or show (false) this category'),
       },
     },
     async (rawArgs) => {
@@ -49,8 +60,8 @@ export function registerCategoriesTools(
           const scope = await requireScope(ctx.token, 'pocketly:write');
           if (!scope.ok) return errorResult(scope.message);
           const parsed = createCategorySchema.safeParse(rawArgs);
-          if (!parsed.success) return errorResult(parsed.error.message);
-          return textResult(categories.create(ctx.user._id, parsed.data));
+          if (!parsed.success) return zodErrorResult(parsed.error);
+          return textResult(await categories.create(ctx.user._id, parsed.data));
         }
         case 'update': {
           const scope = await requireScope(ctx.token, 'pocketly:write');
@@ -59,7 +70,7 @@ export function registerCategoriesTools(
             return errorResult('"id" is required for action "update"');
           const { id, ...rest } = rawArgs;
           const parsed = updateCategorySchema.safeParse(rest);
-          if (!parsed.success) return errorResult(parsed.error.message);
+          if (!parsed.success) return zodErrorResult(parsed.error);
           return textResult(
             await categories.update(ctx.user._id, id, parsed.data),
           );

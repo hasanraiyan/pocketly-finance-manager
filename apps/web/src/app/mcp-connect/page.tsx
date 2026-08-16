@@ -10,7 +10,8 @@ import { Spinner } from "@/components/ui/spinner";
 
 const SCOPE_DESCRIPTIONS: Record<string, string> = {
   "pocketly:read": "View your accounts, records, budgets, categories, and analysis",
-  "pocketly:write": "Create, edit, and delete records on your behalf",
+  "pocketly:write":
+    "Create, edit, and delete records, accounts, categories, and budgets on your behalf",
   openid: "Confirm your identity",
   profile: "Read your name",
   email: "Read your email address",

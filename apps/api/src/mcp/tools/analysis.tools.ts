@@ -20,7 +20,23 @@ export function registerAnalysisTools(
       title: 'Get analysis',
       description:
         'Cash flow and spending analysis for a period: overall totals, day-by-day cash flow, spend by category, or income/expense by account.',
-      inputSchema: { ...analysisQuerySchema.shape, metric: metricSchema },
+      inputSchema: {
+        ...analysisQuerySchema.shape,
+        metric: metricSchema,
+        // The MCP SDK validates/transforms tool-call args against this
+        // schema before the handler runs; analysisQuerySchema's from/to use
+        // a transform (string -> Date), which would hand the handler an
+        // already-transformed value that analysisQuerySchema.parse() below
+        // can't re-parse. Kept as plain strings here for that reason.
+        from: z
+          .string()
+          .optional()
+          .describe('ISO 8601 date-time -- inclusive lower bound'),
+        to: z
+          .string()
+          .optional()
+          .describe('ISO 8601 date-time -- inclusive upper bound'),
+      },
     },
     async (rawArgs) => {
       const scope = await requireScope(ctx.token, 'pocketly:read');
