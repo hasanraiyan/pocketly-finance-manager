@@ -13,6 +13,9 @@ export function SiteFooter() {
           </span>
         </div>
         <nav className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
+          <Link href="/blog" className="hover:text-foreground">
+            Blog
+          </Link>
           <Link href="/faq" className="hover:text-foreground">
             FAQ
           </Link>

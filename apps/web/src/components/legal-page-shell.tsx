@@ -15,7 +15,7 @@ export function LegalPageShell({
   return (
     <div className="flex flex-1 flex-col bg-background">
       <SiteHeader authenticated={authenticated} />
-      <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-16 sm:px-12">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16 sm:px-12">
         <p className="mb-2 font-mono text-xs tracking-widest text-muted-foreground uppercase">
           {title}
         </p>
