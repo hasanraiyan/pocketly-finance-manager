@@ -1,5 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { isoDateSchema } from '../../common/validation/iso-date.schema';
 import { objectIdSchema } from '../../common/validation/object-id.schema';
 import { TRANSACTION_TYPES } from '../schemas/transaction.schema';
 
@@ -11,7 +12,7 @@ const baseTransactionSchema = z.object({
   categoryId: objectIdSchema.optional(),
   accountId: objectIdSchema,
   toAccountId: objectIdSchema.optional(),
-  date: z.coerce.date(),
+  date: isoDateSchema,
 });
 
 function refineTransactionRules<
@@ -65,8 +66,8 @@ export const transactionQuerySchema = z.object({
   type: z.enum(TRANSACTION_TYPES).optional(),
   accountId: objectIdSchema.optional(),
   categoryId: objectIdSchema.optional(),
-  from: z.coerce.date().optional(),
-  to: z.coerce.date().optional(),
+  from: isoDateSchema.optional(),
+  to: isoDateSchema.optional(),
   q: z.string().max(200).optional(),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(100).default(20),

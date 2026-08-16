@@ -1,9 +1,12 @@
 import { Controller, Get, Query } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import type { UserDocument } from '../users/schemas/user.schema';
 import { AnalysisService } from './analysis.service';
 import { AnalysisQueryDto } from './dto/analysis-query.dto';
 
+@ApiTags('analysis')
+@ApiBearerAuth('clerk')
 @Controller('analysis')
 export class AnalysisController {
   constructor(private readonly analysisService: AnalysisService) {}

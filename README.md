@@ -34,4 +34,5 @@ Run a single app: `pnpm --filter web dev` or `pnpm --filter api dev`.
 
 - `apps/web` runs on `next dev`, default port 3000.
 - `apps/api` default port is 4000 (set via `PORT` env var), to avoid clashing with the web app.
+- `apps/api` serves interactive API docs (Swagger UI) at `/docs`, and the raw OpenAPI JSON at `/docs-json`.
 - See `requirement.md` for the product SRS.

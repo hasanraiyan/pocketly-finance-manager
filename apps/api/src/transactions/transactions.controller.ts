@@ -8,6 +8,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import type { UserDocument } from '../users/schemas/user.schema';
 import {
@@ -17,6 +18,8 @@ import {
 } from './dto/transaction.dto';
 import { TransactionsService } from './transactions.service';
 
+@ApiTags('transactions')
+@ApiBearerAuth('clerk')
 @Controller('transactions')
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
