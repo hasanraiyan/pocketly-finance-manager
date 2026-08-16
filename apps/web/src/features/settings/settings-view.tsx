@@ -463,9 +463,16 @@ function DangerZoneCard() {
 }
 
 function NotificationsCard() {
-  const { permissionStatus, isRegistering, enablePushNotifications } =
-    usePushNotificationManager();
+  const {
+    permissionStatus,
+    isRegistering,
+    isDeviceRegistered,
+    enablePushNotifications,
+    disablePushNotifications,
+  } = usePushNotificationManager();
   const sendTest = useSendTestNotification();
+
+  const isEnabled = permissionStatus === "granted" && isDeviceRegistered;
 
   return (
     <Card>
@@ -486,9 +493,9 @@ function NotificationsCard() {
             </span>
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               Status:{" "}
-              {permissionStatus === "granted" ? (
+              {isEnabled ? (
                 <span className="font-medium text-emerald-600 dark:text-emerald-400">
-                  Enabled
+                  Enabled on this device
                 </span>
               ) : permissionStatus === "denied" ? (
                 <span className="font-medium text-destructive">
@@ -501,8 +508,8 @@ function NotificationsCard() {
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            {permissionStatus !== "granted" ? (
+          <div className="flex flex-wrap items-center gap-2">
+            {!isEnabled ? (
               <Button
                 variant="default"
                 size="sm"
@@ -517,19 +524,30 @@ function NotificationsCard() {
                 Enable notifications
               </Button>
             ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => sendTest.mutate()}
-                disabled={sendTest.isPending}
-              >
-                {sendTest.isPending ? (
-                  <Spinner className="mr-1.5 size-3.5" />
-                ) : (
-                  <Bell className="mr-1.5 size-3.5" />
-                )}
-                Send test reminder
-              </Button>
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => sendTest.mutate()}
+                  disabled={sendTest.isPending}
+                >
+                  {sendTest.isPending ? (
+                    <Spinner className="mr-1.5 size-3.5" />
+                  ) : (
+                    <Bell className="mr-1.5 size-3.5" />
+                  )}
+                  Send test reminder
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-muted-foreground hover:text-destructive"
+                  onClick={disablePushNotifications}
+                  disabled={isRegistering}
+                >
+                  Disable
+                </Button>
+              </>
             )}
           </div>
         </div>

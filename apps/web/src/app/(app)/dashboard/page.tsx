@@ -20,6 +20,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Progress } from "@/components/ui/progress";
+import { NotificationPromptBanner } from "@/features/notifications/notification-prompt-banner";
 
 export default async function DashboardPage() {
   const client = await getServerApiClient();
@@ -59,6 +60,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-8">
+      <NotificationPromptBanner />
       <div>
         <h1 className="font-heading text-2xl text-foreground">Hi {firstName}</h1>
         <p className="text-sm text-muted-foreground">

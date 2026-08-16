@@ -119,10 +119,13 @@ export function usePushNotificationManager() {
   const client = usePocketlyClient();
   const [permissionStatus, setPermissionStatus] = useState<NotificationPermission | "unsupported">("default");
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isDeviceRegistered, setIsDeviceRegistered] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
       setPermissionStatus(Notification.permission);
+      const savedToken = localStorage.getItem("pocketly_device_token");
+      setIsDeviceRegistered(Boolean(savedToken && Notification.permission === "granted"));
     } else {
       setPermissionStatus("unsupported");
     }
@@ -137,6 +140,8 @@ export function usePushNotificationManager() {
       }
 
       setPermissionStatus("granted");
+      localStorage.setItem("pocketly_device_token", token);
+      setIsDeviceRegistered(true);
 
       // Register token with backend
       await client.POST("/notifications/devices", {
@@ -167,9 +172,39 @@ export function usePushNotificationManager() {
     }
   }, [client]);
 
+  const disablePushNotifications = useCallback(async () => {
+    setIsRegistering(true);
+    try {
+      const savedToken = localStorage.getItem("pocketly_device_token");
+      if (savedToken) {
+        await client.DELETE("/notifications/devices/{token}", {
+          params: { path: { token: savedToken } },
+        }).catch(() => {});
+        localStorage.removeItem("pocketly_device_token");
+      }
+
+      setIsDeviceRegistered(false);
+      toast.add({
+        title: "Notifications disabled",
+        description: "You will no longer receive background alerts on this device.",
+        type: "info",
+        timeout: 4000,
+      });
+    } catch {
+      toast.add({
+        title: "Couldn't disable notifications",
+        type: "error",
+      });
+    } finally {
+      setIsRegistering(false);
+    }
+  }, [client]);
+
   return {
     permissionStatus,
     isRegistering,
+    isDeviceRegistered,
     enablePushNotifications,
+    disablePushNotifications,
   };
 }
