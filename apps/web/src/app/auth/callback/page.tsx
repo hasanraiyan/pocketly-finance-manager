@@ -22,15 +22,29 @@ function AuthCallback() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const client = usePocketlyClient();
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Better Auth appends this to the callback URL itself when the
+    // provider exchange fails (e.g. redirect_uri_mismatch, bad client
+    // secret) -- session was never created, so there's no point calling
+    // getSession() at all in that case.
+    const providerError = searchParams.get("error");
+    if (providerError) {
+      // eslint-disable-next-line no-console
+      console.error("[auth/callback] provider error:", providerError);
+      setError(providerError);
+      return;
+    }
+
     let cancelled = false;
 
-    void authClient.getSession().then(async ({ data }) => {
+    void authClient.getSession().then(async ({ data, error: sessionError }) => {
       if (cancelled) return;
-      if (!data?.session) {
-        setError(true);
+      if (sessionError || !data?.session) {
+        // eslint-disable-next-line no-console
+        console.error("[auth/callback] getSession failed:", sessionError);
+        setError(sessionError?.message ?? "no session after sign-in");
         return;
       }
 
