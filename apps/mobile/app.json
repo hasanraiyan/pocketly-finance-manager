@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "Pocketly",
+    "slug": "pocketly",
+    "scheme": "pocketly",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hasanraiyan.pocketly"
+    },
+    "android": {
+      "package": "com.hasanraiyan.pocketly",
+      "adaptiveIcon": {
+        "backgroundColor": "#193b24",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "plugins": [
+      "expo-router",
+      "expo-splash-screen",
+      "@clerk/expo",
+      "expo-secure-store",
+      "expo-font"
+    ]
+  }
+}
