@@ -7,7 +7,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.hasanraiyan.pocketly"
@@ -35,6 +34,12 @@
       "@clerk/expo",
       "expo-secure-store",
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9f78b4db-4bd7-49de-a756-fb71b94a4aa5"
+      }
+    }
   }
 }
