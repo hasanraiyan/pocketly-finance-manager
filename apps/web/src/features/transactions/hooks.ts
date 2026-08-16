@@ -201,3 +201,63 @@ export function useDeleteTransaction(filters: TransactionFilters) {
     },
   });
 }
+
+// ---------------------------------------------------------------------------
+// PDF Export
+// ---------------------------------------------------------------------------
+
+export interface ExportPdfInput {
+  period: string;
+  from?: string;
+  to?: string;
+}
+
+/**
+ * Queues an async PDF export job on the server.
+ * The server returns 202 immediately; the PDF is emailed once generated.
+ */
+export function useExportPdf() {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
+
+  return useMutation({
+    mutationFn: async (params: ExportPdfInput) => {
+      // We use fetch directly because the SDK client doesn't handle
+      // 202 responses with arbitrary JSON bodies out of the box.
+      const { getStoredAuthToken } = await import("@/lib/auth-token");
+      const token = getStoredAuthToken();
+
+      const res = await fetch(`${baseUrl}/exports/pdf`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(params),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(
+          (body as { message?: string }).message ?? "Export failed",
+        );
+      }
+
+      return res.json() as Promise<{ jobId: string; message: string }>;
+    },
+    onSuccess: (data) => {
+      toast.add({
+        title: "📧 Report on its way!",
+        description: data.message,
+        type: "success",
+      });
+    },
+    onError: (err: Error) => {
+      toast.add({
+        title: "Export failed",
+        description: err.message || "Could not queue the report. Try again.",
+        type: "error",
+      });
+    },
+  });
+}

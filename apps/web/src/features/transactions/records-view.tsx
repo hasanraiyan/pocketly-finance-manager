@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Filter, PenLine, Plus, Receipt, Trash2 } from "lucide-react";
+import { Download, Filter, PenLine, Plus, Receipt, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -36,6 +36,7 @@ import { cn } from "@/lib/utils";
 import type { Account } from "@/features/accounts/hooks";
 import type { Category } from "@/features/categories/hooks";
 import { TransactionFormDialog } from "./transaction-form-dialog";
+import { ExportDialog } from "./export-dialog";
 import {
   useDeleteTransaction,
   useLoadMoreTransactions,
@@ -220,6 +221,18 @@ export function RecordsView({
             <Button className="hidden md:inline-flex">
               <Plus />
               Add record
+            </Button>
+          }
+        />
+        <ExportDialog
+          trigger={
+            <Button
+              variant="outline"
+              className="hidden md:inline-flex"
+              aria-label="Export PDF"
+            >
+              <Download />
+              Export PDF
             </Button>
           }
         />

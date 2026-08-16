@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
+import { BullModule } from '@nestjs/bullmq';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { AccountsModule } from './accounts/accounts.module';
 import { AnalysisModule } from './analysis/analysis.module';
@@ -13,6 +14,7 @@ import { DatabaseModule } from './common/database/database.module';
 import { TransformInterceptor } from './common/http/transform.interceptor';
 import { AppAuthGuard } from './common/auth/app-auth.guard';
 import { LoggingInterceptor } from './common/logging/logging.interceptor';
+import { ExportsModule } from './exports/exports.module';
 import { McpModule } from './mcp/mcp.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UsersModule } from './users/users.module';
@@ -22,6 +24,16 @@ import { UsersModule } from './users/users.module';
     SentryModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 100 }]),
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        connection: {
+          host: config.get<string>('REDIS_HOST', 'localhost'),
+          port: Number(config.get<string>('REDIS_PORT', '6379')),
+          password: config.get<string>('REDIS_PASSWORD') || undefined,
+        },
+      }),
+    }),
     DatabaseModule,
     UsersModule,
     AccountsModule,
@@ -29,6 +41,7 @@ import { UsersModule } from './users/users.module';
     TransactionsModule,
     BudgetsModule,
     AnalysisModule,
+    ExportsModule,
     McpModule,
   ],
   controllers: [AppController],
