@@ -13,7 +13,8 @@ export function buildOpenApiConfig() {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
-        description: 'Pocketly access token, from POST /auth/login',
+        description:
+          'Better Auth session token. Returned in the set-auth-token response header from POST /api/auth/sign-in/email (or /sign-up/email).',
       },
       'jwt',
     )

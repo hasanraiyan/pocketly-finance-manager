@@ -36,6 +36,7 @@
     "better-auth": "^1.6.29",
     "date-fns": "^4.4.0",
     "date-fns-tz": "^3.2.0",
+    "express": "^5.2.1",
     "mongodb": "^7.5.0",
     "mongoose": "^9.9.2",
     "nestjs-zod": "^5.5.0",
@@ -74,13 +75,16 @@
     "moduleFileExtensions": [
       "js",
       "json",
-      "ts"
+      "ts",
+      "mjs"
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.(t|j)s$": "ts-jest",
+      "^.+\\.mjs$": "ts-jest"
     },
+    "transformIgnorePatterns": [],
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],

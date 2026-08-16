@@ -28,6 +28,19 @@ export class UsersService {
     private readonly budgetModel: Model<BudgetDocument>,
   ) {}
 
+  async findOrCreateByAuthUserId(
+    authUserId: string,
+    email: string,
+    name: string,
+  ): Promise<UserDocument> {
+    const existing = await this.userModel.findOne({ authUserId }).exec();
+    if (existing) {
+      return existing;
+    }
+
+    return this.userModel.create({ authUserId, email, name });
+  }
+
   async updateProfile(
     user: UserDocument,
     dto: UpdateProfileDto,

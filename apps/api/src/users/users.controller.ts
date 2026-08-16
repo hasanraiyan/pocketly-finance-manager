@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Patch,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -13,6 +14,9 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { fromNodeHeaders } from 'better-auth/node';
+import type { Request } from 'express';
+import { auth } from '../auth/auth.config';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import type { UserDocument } from './schemas/user.schema';
 import { DeleteAccountDto } from './dto/delete-account.dto';
@@ -48,10 +52,18 @@ export class UsersController {
   })
   async deleteAccount(
     @CurrentUser() user: UserDocument,
+    @Req() request: Request,
     // dto is unused: its only job is letting the Zod pipe require { confirm: true } before this runs.
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @Body() dto: DeleteAccountDto,
   ) {
     await this.usersService.deleteAccount(user);
+    // Erase the identity itself (email/password, sessions) last -- if this
+    // fails, the caller still has a valid session to retry, rather than a
+    // dangling Better Auth identity with no Pocketly profile behind it.
+    await auth.api.deleteUser({
+      headers: fromNodeHeaders(request.headers),
+      body: {},
+    });
   }
 }

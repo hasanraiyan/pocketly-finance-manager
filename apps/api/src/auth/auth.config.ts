@@ -3,7 +3,8 @@ import { betterAuth } from 'better-auth';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { bearer } from 'better-auth/plugins/bearer';
 
-const mongoUri = process.env.MONGODB_URI ?? 'mongodb://localhost:27017/pocketly';
+const mongoUri =
+  process.env.MONGODB_URI ?? 'mongodb://localhost:27017/pocketly';
 const client = new MongoClient(mongoUri);
 const db = client.db();
 

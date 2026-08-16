@@ -76,7 +76,7 @@ describe('UsersService', () => {
   it('deleteAccount erases all financial data and the profile', async () => {
     const user = await userModel.create({
       email: 'a@b.com',
-      passwordHash: 'irrelevant-for-this-test',
+      authUserId: 'test-auth-user-id-1',
       name: 'Test User',
     });
 
@@ -109,7 +109,7 @@ describe('UsersService', () => {
   it('updateProfile updates currency/timezone and persists them', async () => {
     const user = await userModel.create({
       email: 'profile@b.com',
-      passwordHash: 'irrelevant-for-this-test',
+      authUserId: 'test-auth-user-id-2',
       name: 'Profile User',
       currency: 'USD',
       timezone: 'UTC',

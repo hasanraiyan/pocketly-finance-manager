@@ -57,7 +57,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -91,7 +91,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -118,7 +118,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -154,7 +154,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -198,7 +198,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -233,7 +233,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -276,7 +276,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -309,7 +309,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -345,7 +345,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -389,7 +389,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -424,7 +424,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -467,7 +467,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -500,7 +500,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -536,7 +536,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -638,7 +638,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -673,7 +673,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -716,7 +716,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -749,7 +749,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -784,7 +784,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -820,7 +820,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -864,7 +864,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -899,7 +899,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -942,7 +942,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -975,7 +975,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -1040,7 +1040,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -1105,7 +1105,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -1170,7 +1170,7 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
@@ -1235,32 +1235,11 @@
         },
         "security": [
           {
-            "clerk": []
+            "jwt": []
           }
         ],
         "tags": [
           "analysis"
-        ]
-      }
-    },
-    "/webhooks/clerk": {
-      "post": {
-        "operationId": "WebhooksController_handleClerkWebhook",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WebhookAckDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "webhooks"
         ]
       }
     }
@@ -1275,11 +1254,11 @@
   "servers": [],
   "components": {
     "securitySchemes": {
-      "clerk": {
+      "jwt": {
         "scheme": "bearer",
         "bearerFormat": "JWT",
         "type": "http",
-        "description": "Clerk session token"
+        "description": "Better Auth session token. Returned in the set-auth-token response header from POST /api/auth/sign-in/email (or /sign-up/email)."
       }
     },
     "schemas": {
@@ -1290,9 +1269,6 @@
             "type": "object",
             "properties": {
               "_id": {
-                "type": "string"
-              },
-              "clerkUserId": {
                 "type": "string"
               },
               "email": {
@@ -1319,7 +1295,6 @@
             },
             "required": [
               "_id",
-              "clerkUserId",
               "email",
               "name",
               "currency",
@@ -2717,28 +2692,6 @@
               "period",
               "accounts"
             ],
-            "x-nestjs_zod-self-required": true
-          }
-        },
-        "required": [
-          "data"
-        ]
-      },
-      "WebhookAckDto": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "object",
-            "properties": {
-              "received": {
-                "type": "boolean",
-                "const": true
-              }
-            },
-            "required": [
-              "received"
-            ],
-            "x-nestjs_zod-uses-3-point-1-syntax": true,
             "x-nestjs_zod-self-required": true
           }
         },

@@ -244,22 +244,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/webhooks/clerk": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["WebhooksController_handleClerkWebhook"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -267,7 +251,6 @@ export interface components {
         UserDto: {
             data: {
                 _id: string;
-                clerkUserId: string;
                 email: string;
                 name: string;
                 imageUrl?: string;
@@ -590,12 +573,6 @@ export interface components {
                     income: number;
                     expense: number;
                 }[];
-            };
-        };
-        WebhookAckDto: {
-            data: {
-                /** @constant */
-                received: true;
             };
         };
     };
@@ -1272,25 +1249,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AccountBreakdownDto"];
-                };
-            };
-        };
-    };
-    WebhooksController_handleClerkWebhook: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["WebhookAckDto"];
                 };
             };
         };
