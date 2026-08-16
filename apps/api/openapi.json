@@ -33,7 +33,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -60,7 +67,7 @@
         },
         "responses": {
           "204": {
-            "description": ""
+            "description": "Account and all owned financial data deleted"
           }
         },
         "security": [
@@ -89,7 +96,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountWithBalanceDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -106,7 +120,17 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AccountWithBalanceDto"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -134,7 +158,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountWithBalanceDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -170,7 +201,14 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountWithBalanceDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -196,7 +234,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "The archived (soft-deleted) account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -225,7 +270,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -242,7 +294,17 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryDto"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -270,7 +332,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -306,7 +375,14 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -332,7 +408,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "The archived (soft-deleted) category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -361,7 +444,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -456,7 +546,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionListDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -484,7 +581,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -520,7 +624,14 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -546,7 +657,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "The soft-deleted transaction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -574,7 +692,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -603,7 +728,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BudgetWithStatusDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -620,7 +752,17 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BudgetWithStatusDto"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -648,7 +790,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BudgetWithStatusDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -684,7 +833,14 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BudgetWithStatusDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -710,7 +866,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "The archived (soft-deleted) budget",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BudgetDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -768,7 +931,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -826,7 +996,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryBreakdownDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -884,7 +1061,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CashFlowDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -942,7 +1126,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountBreakdownDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -974,6 +1165,48 @@
       }
     },
     "schemas": {
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "clerkUserId": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "_id",
+          "clerkUserId",
+          "email",
+          "name",
+          "currency",
+          "timezone",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
       "DeleteAccountDto": {
         "type": "object",
         "properties": {
@@ -1028,6 +1261,88 @@
           "type"
         ]
       },
+      "AccountWithBalanceDto": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "userId": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "name": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "bank",
+              "cash",
+              "savings",
+              "upi",
+              "credit_card",
+              "wallet"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "icon": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "initialBalance": {
+            "type": "number",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "currency": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "ignored": {
+            "type": "boolean",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "deletedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "createdAt": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "balance": {
+            "type": "number",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          }
+        },
+        "required": [
+          "_id",
+          "userId",
+          "name",
+          "type",
+          "initialBalance",
+          "currency",
+          "ignored",
+          "deletedAt",
+          "createdAt",
+          "updatedAt",
+          "balance"
+        ]
+      },
       "UpdateAccountDto": {
         "type": "object",
         "properties": {
@@ -1068,6 +1383,83 @@
           }
         }
       },
+      "AccountDto": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "userId": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "name": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "bank",
+              "cash",
+              "savings",
+              "upi",
+              "credit_card",
+              "wallet"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "icon": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "initialBalance": {
+            "type": "number",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "currency": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "ignored": {
+            "type": "boolean",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "deletedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "createdAt": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          }
+        },
+        "required": [
+          "_id",
+          "userId",
+          "name",
+          "type",
+          "initialBalance",
+          "currency",
+          "ignored",
+          "deletedAt",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
       "CreateCategoryDto": {
         "type": "object",
         "properties": {
@@ -1095,6 +1487,73 @@
         "required": [
           "name",
           "type"
+        ]
+      },
+      "CategoryDto": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "userId": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "name": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "income",
+              "expense"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "icon": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "color": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "ignored": {
+            "type": "boolean",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "deletedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "createdAt": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          }
+        },
+        "required": [
+          "_id",
+          "userId",
+          "name",
+          "type",
+          "ignored",
+          "deletedAt",
+          "createdAt",
+          "updatedAt"
         ]
       },
       "UpdateCategoryDto": {
@@ -1179,6 +1638,188 @@
           "date"
         ]
       },
+      "TransactionDto": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "userId": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "income",
+              "expense",
+              "transfer"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "amount": {
+            "type": "number",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "description": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "note": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "categoryId": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "accountId": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "toAccountId": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "date": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "deletedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "syncVersion": {
+            "type": "number",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "createdAt": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          }
+        },
+        "required": [
+          "_id",
+          "userId",
+          "type",
+          "amount",
+          "accountId",
+          "date",
+          "deletedAt",
+          "syncVersion",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "TransactionListDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string"
+                },
+                "userId": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "income",
+                    "expense",
+                    "transfer"
+                  ]
+                },
+                "amount": {
+                  "type": "number"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "categoryId": {
+                  "type": "string"
+                },
+                "accountId": {
+                  "type": "string"
+                },
+                "toAccountId": {
+                  "type": "string"
+                },
+                "date": {
+                  "type": "string"
+                },
+                "deletedAt": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "syncVersion": {
+                  "type": "number"
+                },
+                "createdAt": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "_id",
+                "userId",
+                "type",
+                "amount",
+                "accountId",
+                "date",
+                "deletedAt",
+                "syncVersion",
+                "createdAt",
+                "updatedAt"
+              ]
+            },
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      },
       "UpdateTransactionDto": {
         "type": "object",
         "properties": {
@@ -1256,6 +1897,96 @@
           "period"
         ]
       },
+      "BudgetWithStatusDto": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "userId": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "categoryId": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "amount": {
+            "type": "number",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "period": {
+            "type": "string",
+            "enum": [
+              "weekly",
+              "monthly",
+              "yearly"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "deletedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "syncVersion": {
+            "type": "number",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "createdAt": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "spent": {
+            "type": "number",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "remaining": {
+            "type": "number",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "percentageUsed": {
+            "type": "number",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "periodStart": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "periodEnd": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          }
+        },
+        "required": [
+          "_id",
+          "userId",
+          "categoryId",
+          "amount",
+          "period",
+          "deletedAt",
+          "syncVersion",
+          "createdAt",
+          "updatedAt",
+          "spent",
+          "remaining",
+          "percentageUsed",
+          "periodStart",
+          "periodEnd"
+        ]
+      },
       "UpdateBudgetDto": {
         "type": "object",
         "properties": {
@@ -1279,6 +2010,260 @@
             "x-nestjs_zod-uses-3-point-1-syntax": true
           }
         }
+      },
+      "BudgetDto": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "userId": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "categoryId": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "amount": {
+            "type": "number",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "period": {
+            "type": "string",
+            "enum": [
+              "weekly",
+              "monthly",
+              "yearly"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "deletedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "syncVersion": {
+            "type": "number",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "createdAt": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          }
+        },
+        "required": [
+          "_id",
+          "userId",
+          "categoryId",
+          "amount",
+          "period",
+          "deletedAt",
+          "syncVersion",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "OverviewDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string"
+              },
+              "end": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ],
+            "x-nestjs_zod-self-required": true
+          },
+          "income": {
+            "type": "number"
+          },
+          "expense": {
+            "type": "number"
+          },
+          "net": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "period",
+          "income",
+          "expense",
+          "net"
+        ]
+      },
+      "CategoryBreakdownDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string"
+              },
+              "end": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ],
+            "x-nestjs_zod-self-required": true
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "categoryId": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "income",
+                    "expense"
+                  ]
+                },
+                "total": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "categoryId",
+                "type",
+                "total"
+              ]
+            }
+          }
+        },
+        "required": [
+          "period",
+          "categories"
+        ]
+      },
+      "CashFlowDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string"
+              },
+              "end": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ],
+            "x-nestjs_zod-self-required": true
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string"
+                },
+                "income": {
+                  "type": "number"
+                },
+                "expense": {
+                  "type": "number"
+                },
+                "net": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "date",
+                "income",
+                "expense",
+                "net"
+              ]
+            }
+          }
+        },
+        "required": [
+          "period",
+          "days"
+        ]
+      },
+      "AccountBreakdownDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string"
+              },
+              "end": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ],
+            "x-nestjs_zod-self-required": true
+          },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "accountId": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "income": {
+                  "type": "number"
+                },
+                "expense": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "accountId",
+                "name",
+                "income",
+                "expense"
+              ]
+            }
+          }
+        },
+        "required": [
+          "period",
+          "accounts"
+        ]
       }
     }
   }

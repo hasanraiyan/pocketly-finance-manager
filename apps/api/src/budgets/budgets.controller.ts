@@ -7,10 +7,16 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import type { UserDocument } from '../users/schemas/user.schema';
 import { BudgetsService } from './budgets.service';
+import { BudgetDto, BudgetWithStatusDto } from './dto/budget-response.dto';
 import { CreateBudgetDto, UpdateBudgetDto } from './dto/budget.dto';
 
 @ApiTags('budgets')
@@ -20,21 +26,25 @@ export class BudgetsController {
   constructor(private readonly budgetsService: BudgetsService) {}
 
   @Post()
+  @ApiCreatedResponse({ type: BudgetWithStatusDto })
   create(@CurrentUser() user: UserDocument, @Body() dto: CreateBudgetDto) {
     return this.budgetsService.create(user, dto);
   }
 
   @Get()
+  @ApiOkResponse({ type: [BudgetWithStatusDto] })
   findAll(@CurrentUser() user: UserDocument) {
     return this.budgetsService.findAll(user);
   }
 
   @Get(':id')
+  @ApiOkResponse({ type: BudgetWithStatusDto })
   findOne(@CurrentUser() user: UserDocument, @Param('id') id: string) {
     return this.budgetsService.findOne(user, id);
   }
 
   @Patch(':id')
+  @ApiOkResponse({ type: BudgetWithStatusDto })
   update(
     @CurrentUser() user: UserDocument,
     @Param('id') id: string,
@@ -44,6 +54,10 @@ export class BudgetsController {
   }
 
   @Delete(':id')
+  @ApiOkResponse({
+    type: BudgetDto,
+    description: 'The archived (soft-deleted) budget',
+  })
   remove(@CurrentUser() user: UserDocument, @Param('id') id: string) {
     return this.budgetsService.remove(user, id);
   }

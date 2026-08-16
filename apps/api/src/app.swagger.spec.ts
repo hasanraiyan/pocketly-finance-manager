@@ -67,4 +67,33 @@ describe('OpenAPI document generation', () => {
       ),
     ).toEqual(expect.arrayContaining(['name', 'type']));
   });
+
+  it('declares a response content schema for every 2xx response (except 204)', () => {
+    const document = buildOpenApiDocument(app);
+    const httpMethods = ['get', 'post', 'put', 'patch', 'delete'] as const;
+
+    const undocumented: string[] = [];
+    for (const [path, pathItem] of Object.entries(document.paths)) {
+      for (const method of httpMethods) {
+        const operation = pathItem[method];
+        if (!operation) continue;
+
+        for (const [status, response] of Object.entries(operation.responses)) {
+          if (!status.startsWith('2') || status === '204') continue;
+          const hasContent =
+            response !== undefined &&
+            'content' in response &&
+            Object.keys(response.content ?? {}).length > 0;
+          if (!hasContent) {
+            undocumented.push(`${method.toUpperCase()} ${path} -> ${status}`);
+          }
+        }
+      }
+    }
+
+    // A route with no declared response schema types as `never` for SDK
+    // consumers (see AppController.health's history) - every route must
+    // declare what it actually returns.
+    expect(undocumented).toEqual([]);
+  });
 });

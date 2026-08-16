@@ -20,6 +20,8 @@ pnpm --filter api docs:generate
 
 This writes `apps/api/openapi.json` and `apps/api/postman/pocketly-api.postman_collection.json`. Re-run it whenever routes or DTOs change and commit the result.
 
+Every route declares its response schema (`@ApiOkResponse`/`@ApiCreatedResponse`/`@ApiNoContentResponse` in each controller, backed by Zod schemas in each domain's `dto/*-response.dto.ts`), not just its request body — otherwise `@pocketly/sdk`'s generated type for that route's response is `never`. `app.swagger.spec.ts` asserts this holds for every route as a regression test.
+
 ## Routes
 
 | Resource | Routes |

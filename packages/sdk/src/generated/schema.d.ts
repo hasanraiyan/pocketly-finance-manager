@@ -248,6 +248,17 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        UserDto: {
+            _id: string;
+            clerkUserId: string;
+            email: string;
+            name: string;
+            imageUrl?: string;
+            currency: string;
+            timezone: string;
+            createdAt: string;
+            updatedAt: string;
+        };
         DeleteAccountDto: {
             /** @constant */
             confirm: true;
@@ -262,6 +273,21 @@ export interface components {
             /** @default INR */
             currency: string;
         };
+        AccountWithBalanceDto: {
+            _id: string;
+            userId: string;
+            name: string;
+            /** @enum {string} */
+            type: "bank" | "cash" | "savings" | "upi" | "credit_card" | "wallet";
+            icon?: string;
+            initialBalance: number;
+            currency: string;
+            ignored: boolean;
+            deletedAt: string | null;
+            createdAt: string;
+            updatedAt: string;
+            balance: number;
+        };
         UpdateAccountDto: {
             name?: string;
             /** @enum {string} */
@@ -273,12 +299,39 @@ export interface components {
             currency: string;
             ignored?: boolean;
         };
+        AccountDto: {
+            _id: string;
+            userId: string;
+            name: string;
+            /** @enum {string} */
+            type: "bank" | "cash" | "savings" | "upi" | "credit_card" | "wallet";
+            icon?: string;
+            initialBalance: number;
+            currency: string;
+            ignored: boolean;
+            deletedAt: string | null;
+            createdAt: string;
+            updatedAt: string;
+        };
         CreateCategoryDto: {
             name: string;
             /** @enum {string} */
             type: "income" | "expense";
             icon?: string;
             color?: string;
+        };
+        CategoryDto: {
+            _id: string;
+            userId: string;
+            name: string;
+            /** @enum {string} */
+            type: "income" | "expense";
+            icon?: string;
+            color?: string;
+            ignored: boolean;
+            deletedAt: string | null;
+            createdAt: string;
+            updatedAt: string;
         };
         UpdateCategoryDto: {
             name?: string;
@@ -300,6 +353,43 @@ export interface components {
             /** Format: date-time */
             date: string;
         };
+        TransactionDto: {
+            _id: string;
+            userId: string;
+            /** @enum {string} */
+            type: "income" | "expense" | "transfer";
+            amount: number;
+            description?: string;
+            note?: string;
+            categoryId?: string;
+            accountId: string;
+            toAccountId?: string;
+            date: string;
+            deletedAt: string | null;
+            syncVersion: number;
+            createdAt: string;
+            updatedAt: string;
+        };
+        TransactionListDto: {
+            items: {
+                _id: string;
+                userId: string;
+                /** @enum {string} */
+                type: "income" | "expense" | "transfer";
+                amount: number;
+                description?: string;
+                note?: string;
+                categoryId?: string;
+                accountId: string;
+                toAccountId?: string;
+                date: string;
+                deletedAt: string | null;
+                syncVersion: number;
+                createdAt: string;
+                updatedAt: string;
+            }[];
+            nextCursor: string | null;
+        };
         UpdateTransactionDto: {
             /** @enum {string} */
             type?: "income" | "expense" | "transfer";
@@ -318,11 +408,85 @@ export interface components {
             /** @enum {string} */
             period: "weekly" | "monthly" | "yearly";
         };
+        BudgetWithStatusDto: {
+            _id: string;
+            userId: string;
+            categoryId: string;
+            amount: number;
+            /** @enum {string} */
+            period: "weekly" | "monthly" | "yearly";
+            deletedAt: string | null;
+            syncVersion: number;
+            createdAt: string;
+            updatedAt: string;
+            spent: number;
+            remaining: number;
+            percentageUsed: number;
+            periodStart: string;
+            periodEnd: string;
+        };
         UpdateBudgetDto: {
             categoryId?: string;
             amount?: number;
             /** @enum {string} */
             period?: "weekly" | "monthly" | "yearly";
+        };
+        BudgetDto: {
+            _id: string;
+            userId: string;
+            categoryId: string;
+            amount: number;
+            /** @enum {string} */
+            period: "weekly" | "monthly" | "yearly";
+            deletedAt: string | null;
+            syncVersion: number;
+            createdAt: string;
+            updatedAt: string;
+        };
+        OverviewDto: {
+            period: {
+                start: string;
+                end: string;
+            };
+            income: number;
+            expense: number;
+            net: number;
+        };
+        CategoryBreakdownDto: {
+            period: {
+                start: string;
+                end: string;
+            };
+            categories: {
+                categoryId: string;
+                /** @enum {string} */
+                type: "income" | "expense";
+                total: number;
+            }[];
+        };
+        CashFlowDto: {
+            period: {
+                start: string;
+                end: string;
+            };
+            days: {
+                date: string;
+                income: number;
+                expense: number;
+                net: number;
+            }[];
+        };
+        AccountBreakdownDto: {
+            period: {
+                start: string;
+                end: string;
+            };
+            accounts: {
+                accountId: string;
+                name: string;
+                income: number;
+                expense: number;
+            }[];
         };
     };
     responses: never;
@@ -369,7 +533,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["UserDto"];
+                };
             };
         };
     };
@@ -386,6 +552,7 @@ export interface operations {
             };
         };
         responses: {
+            /** @description Account and all owned financial data deleted */
             204: {
                 headers: {
                     [name: string]: unknown;
@@ -407,7 +574,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AccountWithBalanceDto"][];
+                };
             };
         };
     };
@@ -428,7 +597,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AccountWithBalanceDto"];
+                };
             };
         };
     };
@@ -447,7 +618,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AccountWithBalanceDto"];
+                };
             };
         };
     };
@@ -462,11 +635,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description The archived (soft-deleted) account */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AccountDto"];
+                };
             };
         };
     };
@@ -489,7 +665,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AccountWithBalanceDto"];
+                };
             };
         };
     };
@@ -506,7 +684,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"][];
+                };
             };
         };
     };
@@ -527,7 +707,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"];
+                };
             };
         };
     };
@@ -546,7 +728,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"];
+                };
             };
         };
     };
@@ -561,11 +745,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description The archived (soft-deleted) category */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"];
+                };
             };
         };
     };
@@ -588,7 +775,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"];
+                };
             };
         };
     };
@@ -614,7 +803,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TransactionListDto"];
+                };
             };
         };
     };
@@ -635,7 +826,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TransactionDto"];
+                };
             };
         };
     };
@@ -654,7 +847,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TransactionDto"];
+                };
             };
         };
     };
@@ -669,11 +864,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description The soft-deleted transaction */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TransactionDto"];
+                };
             };
         };
     };
@@ -696,7 +894,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TransactionDto"];
+                };
             };
         };
     };
@@ -715,7 +915,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TransactionDto"];
+                };
             };
         };
     };
@@ -732,7 +934,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BudgetWithStatusDto"][];
+                };
             };
         };
     };
@@ -753,7 +957,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BudgetWithStatusDto"];
+                };
             };
         };
     };
@@ -772,7 +978,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BudgetWithStatusDto"];
+                };
             };
         };
     };
@@ -787,11 +995,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description The archived (soft-deleted) budget */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BudgetDto"];
+                };
             };
         };
     };
@@ -814,7 +1025,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["BudgetWithStatusDto"];
+                };
             };
         };
     };
@@ -835,7 +1048,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["OverviewDto"];
+                };
             };
         };
     };
@@ -856,7 +1071,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["CategoryBreakdownDto"];
+                };
             };
         };
     };
@@ -877,7 +1094,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["CashFlowDto"];
+                };
             };
         };
     };
@@ -898,7 +1117,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AccountBreakdownDto"];
+                };
             };
         };
     };

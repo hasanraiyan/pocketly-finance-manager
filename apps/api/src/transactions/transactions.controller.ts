@@ -8,9 +8,18 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import type { UserDocument } from '../users/schemas/user.schema';
+import {
+  TransactionDto,
+  TransactionListDto,
+} from './dto/transaction-response.dto';
 import {
   CreateTransactionDto,
   TransactionQueryDto,
@@ -25,11 +34,13 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Post()
+  @ApiCreatedResponse({ type: TransactionDto })
   create(@CurrentUser() user: UserDocument, @Body() dto: CreateTransactionDto) {
     return this.transactionsService.create(user._id, dto);
   }
 
   @Get()
+  @ApiOkResponse({ type: TransactionListDto })
   findAll(
     @CurrentUser() user: UserDocument,
     @Query() query: TransactionQueryDto,
@@ -38,11 +49,13 @@ export class TransactionsController {
   }
 
   @Get(':id')
+  @ApiOkResponse({ type: TransactionDto })
   findOne(@CurrentUser() user: UserDocument, @Param('id') id: string) {
     return this.transactionsService.findOne(user._id, id);
   }
 
   @Patch(':id')
+  @ApiOkResponse({ type: TransactionDto })
   update(
     @CurrentUser() user: UserDocument,
     @Param('id') id: string,
@@ -52,11 +65,16 @@ export class TransactionsController {
   }
 
   @Patch(':id/restore')
+  @ApiOkResponse({ type: TransactionDto })
   restore(@CurrentUser() user: UserDocument, @Param('id') id: string) {
     return this.transactionsService.restore(user._id, id);
   }
 
   @Delete(':id')
+  @ApiOkResponse({
+    type: TransactionDto,
+    description: 'The soft-deleted transaction',
+  })
   remove(@CurrentUser() user: UserDocument, @Param('id') id: string) {
     return this.transactionsService.remove(user._id, id);
   }

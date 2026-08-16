@@ -18,8 +18,9 @@ export class AccountsService {
     private readonly transactionModel: Model<TransactionDocument>,
   ) {}
 
-  create(userId: Types.ObjectId, dto: CreateAccountDto) {
-    return this.accountModel.create({ ...dto, userId });
+  async create(userId: Types.ObjectId, dto: CreateAccountDto) {
+    const account = await this.accountModel.create({ ...dto, userId });
+    return this.withBalance(account);
   }
 
   async findAll(userId: Types.ObjectId) {
