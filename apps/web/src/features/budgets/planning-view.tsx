@@ -107,13 +107,29 @@ export function PlanningView({
         <BudgetFormDialog
           expenseCategories={expenseCategories}
           trigger={
-            <Button>
+            <Button className="hidden md:inline-flex">
               <Plus />
               Create budget
             </Button>
           }
         />
       </div>
+
+      {/* The empty-state CTA below already covers "create your first budget" --
+          skip the FAB there so mobile doesn't show two add affordances. */}
+      {!(budgets.length === 0 && !showError) && (
+        <BudgetFormDialog
+          expenseCategories={expenseCategories}
+          trigger={
+            <Button
+              aria-label="Create budget"
+              className="fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-20 size-14 rounded-full shadow-lg md:hidden [&_svg:not([class*='size-'])]:size-6"
+            >
+              <Plus />
+            </Button>
+          }
+        />
+      )}
 
       {showError ? (
         <ErrorState

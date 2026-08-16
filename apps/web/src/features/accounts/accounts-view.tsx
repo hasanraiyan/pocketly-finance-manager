@@ -113,7 +113,7 @@ export function AccountsView({
         </div>
         <AccountFormDialog
           trigger={
-            <Button>
+            <Button className="hidden md:inline-flex">
               <Plus />
               Add account
             </Button>
@@ -189,6 +189,21 @@ export function AccountsView({
                 </div>
               </li>
             ))}
+            <li>
+              <AccountFormDialog
+                trigger={
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-3 py-3 text-left text-sm text-muted-foreground outline-none hover:text-foreground focus-visible:text-foreground"
+                  >
+                    <span className="flex size-9 shrink-0 items-center justify-center border border-dashed border-border">
+                      <Plus className="size-4" />
+                    </span>
+                    Add account
+                  </button>
+                }
+              />
+            </li>
           </ul>
 
           <Table className="hidden md:table">

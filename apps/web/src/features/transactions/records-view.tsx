@@ -1,9 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { PenLine, Plus, Receipt, Trash2 } from "lucide-react";
+import { Filter, PenLine, Plus, Receipt, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Spinner } from "@/components/ui/spinner";
 import {
   NativeSelect,
@@ -87,6 +92,72 @@ function TypeFilterPills({
   );
 }
 
+function MobileFilterPopover({
+  type,
+  onTypeChange,
+  accountId,
+  onAccountChange,
+  accounts,
+}: {
+  type: Transaction["type"] | "";
+  onTypeChange: (value: Transaction["type"] | "") => void;
+  accountId: string;
+  onAccountChange: (value: string) => void;
+  accounts: Account[];
+}) {
+  const activeCount = (type ? 1 : 0) + (accountId ? 1 : 0);
+
+  return (
+    <Popover>
+      <PopoverTrigger
+        render={
+          <button
+            type="button"
+            aria-label={
+              activeCount > 0
+                ? `Filters (${activeCount} active)`
+                : "Filter records"
+            }
+            className="relative flex h-9 w-9 shrink-0 items-center justify-center border border-input bg-transparent text-foreground outline-none hover:bg-muted focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50"
+          />
+        }
+      >
+        <Filter className="size-4" />
+        {activeCount > 0 && (
+          <span className="absolute top-1 right-1 size-1.5 rounded-full bg-primary" />
+        )}
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-72">
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs font-medium text-muted-foreground">
+              Type
+            </span>
+            <TypeFilterPills value={type} onChange={onTypeChange} />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs font-medium text-muted-foreground">
+              Account
+            </span>
+            <NativeSelect
+              className="w-full"
+              value={accountId}
+              onChange={(e) => onAccountChange(e.target.value)}
+            >
+              <NativeSelectOption value="">All accounts</NativeSelectOption>
+              {accounts.map((a) => (
+                <NativeSelectOption key={a._id} value={a._id}>
+                  {a.name}
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function RecordsView({
   initialData,
   initialLoadFailed = false,
@@ -146,7 +217,7 @@ export function RecordsView({
           accountsInitialData={accounts}
           categoriesInitialData={categories}
           trigger={
-            <Button>
+            <Button className="hidden md:inline-flex">
               <Plus />
               Add record
             </Button>
@@ -154,9 +225,27 @@ export function RecordsView({
         />
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* The empty-state CTA below already covers "add your first record" --
+          skip the FAB there so mobile doesn't show two add affordances. */}
+      {!(isDefaultFilters && data.items.length === 0 && !showError) && (
+        <TransactionFormDialog
+          filters={filters}
+          accountsInitialData={accounts}
+          categoriesInitialData={categories}
+          trigger={
+            <Button
+              aria-label="Add record"
+              className="fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-20 size-14 rounded-full shadow-lg md:hidden [&_svg:not([class*='size-'])]:size-6"
+            >
+              <Plus />
+            </Button>
+          }
+        />
+      )}
+
+      <div className="hidden items-center justify-between gap-3 md:flex">
         <TypeFilterPills value={type} onChange={setType} />
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-3">
           <NativeSelect
             value={accountId}
             onChange={(e) => setAccountId(e.target.value)}
@@ -176,9 +265,29 @@ export function RecordsView({
             }}
             onBlur={() => setQ(qInput)}
             placeholder="Search description..."
-            className="w-full sm:w-48"
+            className="w-48"
           />
         </div>
+      </div>
+
+      <div className="flex items-center gap-2 md:hidden">
+        <Input
+          value={qInput}
+          onChange={(e) => setQInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") setQ(qInput);
+          }}
+          onBlur={() => setQ(qInput)}
+          placeholder="Search description..."
+          className="flex-1"
+        />
+        <MobileFilterPopover
+          type={type}
+          onTypeChange={setType}
+          accountId={accountId}
+          onAccountChange={setAccountId}
+          accounts={accounts}
+        />
       </div>
 
       {showError ? (
