@@ -17,6 +17,7 @@ import {
   TransactionQueryDto,
   UpdateTransactionDto,
 } from './dto/transaction.dto';
+import { NotificationDispatcherService } from '../notifications/notification-dispatcher.service';
 import { Transaction, TransactionDocument } from './schemas/transaction.schema';
 
 @Injectable()
@@ -28,11 +29,26 @@ export class TransactionsService {
     private readonly accountModel: Model<AccountDocument>,
     @InjectModel(Category.name)
     private readonly categoryModel: Model<CategoryDocument>,
+    private readonly notificationDispatcher: NotificationDispatcherService,
   ) {}
 
   async create(userId: Types.ObjectId, dto: CreateTransactionDto) {
     await this.assertOwnedReferences(userId, dto);
-    return this.transactionModel.create({ ...dto, userId });
+    const created = await this.transactionModel.create({ ...dto, userId });
+
+    // Asynchronously evaluate budget thresholds in background
+    if (dto.type === 'expense' && dto.categoryId) {
+      void this.notificationDispatcher.checkBudgetThresholdAfterTransaction(
+        userId,
+        {
+          type: dto.type,
+          categoryId: new Types.ObjectId(dto.categoryId),
+          amount: dto.amount,
+        },
+      );
+    }
+
+    return created;
   }
 
   async findAll(userId: Types.ObjectId, query: TransactionQueryDto) {

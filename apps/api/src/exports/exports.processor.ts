@@ -15,6 +15,7 @@ import {
   Transaction,
   TransactionDocument,
 } from '../transactions/schemas/transaction.schema';
+import { NotificationDispatcherService } from '../notifications/notification-dispatcher.service';
 import { MailerService } from './mail/mailer.service';
 import {
   renderPocketlyReport,
@@ -55,6 +56,7 @@ export class ExportProcessor extends WorkerHost {
     @InjectModel(Category.name)
     private readonly categoryModel: Model<CategoryDocument>,
     private readonly mailer: MailerService,
+    private readonly notificationDispatcher: NotificationDispatcherService,
   ) {
     super();
   }
@@ -183,6 +185,12 @@ export class ExportProcessor extends WorkerHost {
       pdfBuffer,
       filename,
     });
+
+    // 9. Send Push + In-App Notification
+    void this.notificationDispatcher.sendMonthlyReportNotification(
+      userObjectId,
+      periodLabel,
+    );
 
     this.logger.log(
       `Export job ${job.id} complete — emailed ${filename} to ${email}`,

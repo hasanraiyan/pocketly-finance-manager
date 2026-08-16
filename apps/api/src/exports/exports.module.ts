@@ -10,6 +10,7 @@ import {
   Transaction,
   TransactionSchema,
 } from '../transactions/schemas/transaction.schema';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { ExportsController } from './exports.controller';
 import { EXPORTS_QUEUE, ExportProcessor } from './exports.processor';
 import { ExportsService } from './exports.service';
@@ -17,6 +18,7 @@ import { MailerService } from './mail/mailer.service';
 
 @Module({
   imports: [
+    NotificationsModule,
     // Register the exports queue with BullMQ
     BullModule.registerQueue({ name: EXPORTS_QUEUE }),
 
