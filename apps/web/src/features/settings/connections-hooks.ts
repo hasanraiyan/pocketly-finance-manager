@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authClient } from "@/lib/auth-client";
+import { usePocketlyClient } from "@/lib/use-pocketly-client";
 import { toast } from "@/components/ui/toast";
 
 export interface OAuthConnection {
@@ -49,20 +50,34 @@ export function useOAuthConnections() {
 }
 
 export function useDisconnectOAuthClient() {
+  const client = usePocketlyClient();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await authClient.oauth2.deleteConsent({ id });
-      if (error) throw error;
+    mutationFn: async ({ id, clientId }: { id: string; clientId: string }) => {
+      // Deleting the consent blocks a future silent re-authorization: on
+      // its own it does NOT invalidate an already-issued access token
+      // (Better Auth doesn't check consent existence on token refresh/use,
+      // and JWTs have no server-side revocation list). The second call is
+      // Pocketly's own instant-revocation deny-list (see McpAuthGuard) --
+      // together these make disconnecting take effect immediately, not
+      // just for future connections.
+      const [{ error: consentError }, { error: revokeError }] =
+        await Promise.all([
+          authClient.oauth2.deleteConsent({ id }),
+          client.DELETE("/mcp-connections/{clientId}", {
+            params: { path: { clientId } },
+          }),
+        ]);
+      if (consentError) throw consentError;
+      if (revokeError) throw revokeError;
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: CONNECTIONS_QUERY_KEY });
       toast.add({
         title: "Disconnected",
-        description:
-          "It can no longer read or change your data. Already-issued access may take up to an hour to fully expire.",
+        description: "It can no longer read or change your data.",
         type: "success",
-        timeout: 5000,
+        timeout: 4000,
       });
     },
     onError: () => {

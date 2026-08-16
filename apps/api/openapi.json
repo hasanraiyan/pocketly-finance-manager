@@ -1242,6 +1242,41 @@
           "analysis"
         ]
       }
+    },
+    "/mcp-connections/{clientId}": {
+      "delete": {
+        "operationId": "McpConnectionsController_revoke",
+        "parameters": [
+          {
+            "name": "clientId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevokeConnectionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "mcp-connections"
+        ]
+      }
     }
   },
   "info": {
@@ -1580,13 +1615,11 @@
             "maxLength": 50
           },
           "initialBalance": {
-            "default": 0,
             "type": "integer",
             "minimum": -9007199254740991,
             "maximum": 9007199254740991
           },
           "currency": {
-            "default": "INR",
             "type": "string",
             "minLength": 3,
             "maxLength": 3
@@ -2692,6 +2725,28 @@
               "period",
               "accounts"
             ],
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "RevokeConnectionResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "revoked": {
+                "type": "boolean",
+                "const": true
+              }
+            },
+            "required": [
+              "revoked"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
             "x-nestjs_zod-self-required": true
           }
         },

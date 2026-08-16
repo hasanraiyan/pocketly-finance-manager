@@ -1,5 +1,7 @@
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Model } from 'mongoose';
 import { McpAuthGuard } from './mcp-auth.guard';
+import { McpRevocation } from './schemas/mcp-revocation.schema';
 import { UsersService } from '../users/users.service';
 import { mcpResourceClientActions } from '../auth/auth.config';
 
@@ -25,6 +27,7 @@ function contextWithAuthHeader(header?: string): ExecutionContext {
 
 describe('McpAuthGuard', () => {
   let usersService: { findByAuthUserId: jest.Mock };
+  let revocationModel: { exists: jest.Mock };
   let guard: McpAuthGuard;
   const verifyAccessToken =
     mcpResourceClientActions.verifyAccessToken as jest.Mock;
@@ -32,7 +35,11 @@ describe('McpAuthGuard', () => {
   beforeEach(() => {
     verifyAccessToken.mockReset();
     usersService = { findByAuthUserId: jest.fn() };
-    guard = new McpAuthGuard(usersService as unknown as UsersService);
+    revocationModel = { exists: jest.fn().mockResolvedValue(null) };
+    guard = new McpAuthGuard(
+      usersService as unknown as UsersService,
+      revocationModel as unknown as Model<McpRevocation>,
+    );
   });
 
   it('rejects requests with no bearer token', async () => {
@@ -47,6 +54,42 @@ describe('McpAuthGuard', () => {
     await expect(
       guard.canActivate(contextWithAuthHeader('Bearer bad-token')),
     ).rejects.toThrow(UnauthorizedException);
+  });
+
+  it('rejects a token issued before the connection was revoked', async () => {
+    verifyAccessToken.mockResolvedValue({
+      sub: 'auth-user-1',
+      client_id: 'client-1',
+      iat: 1_000,
+    });
+    revocationModel.exists.mockResolvedValue({ _id: 'revocation-1' });
+
+    await expect(
+      guard.canActivate(contextWithAuthHeader('Bearer stale-token')),
+    ).rejects.toThrow(UnauthorizedException);
+    expect(revocationModel.exists).toHaveBeenCalledWith({
+      authUserId: 'auth-user-1',
+      clientId: 'client-1',
+      createdAt: { $gt: new Date(1_000 * 1000) },
+    });
+    // A revoked connection is a hard stop -- never reaches the profile
+    // lookup, since there's nothing left to authenticate against.
+    expect(usersService.findByAuthUserId).not.toHaveBeenCalled();
+  });
+
+  it('allows a token issued after the last revocation for that client', async () => {
+    verifyAccessToken.mockResolvedValue({
+      sub: 'auth-user-1',
+      client_id: 'client-1',
+      iat: 1_000,
+    });
+    revocationModel.exists.mockResolvedValue(null);
+    const user = { _id: 'user-doc-1', authUserId: 'auth-user-1' };
+    usersService.findByAuthUserId.mockResolvedValue(user);
+
+    await expect(
+      guard.canActivate(contextWithAuthHeader('Bearer fresh-token')),
+    ).resolves.toBe(true);
   });
 
   it('rejects a valid token for a user with no Pocketly profile yet', async () => {

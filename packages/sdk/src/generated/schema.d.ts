@@ -244,6 +244,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/mcp-connections/{clientId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["McpConnectionsController_revoke"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -320,10 +336,8 @@ export interface components {
             /** @enum {string} */
             type?: "bank" | "cash" | "savings" | "upi" | "credit_card" | "wallet";
             icon?: string;
-            /** @default 0 */
-            initialBalance: number;
-            /** @default INR */
-            currency: string;
+            initialBalance?: number;
+            currency?: string;
             ignored?: boolean;
         };
         AccountDto: {
@@ -573,6 +587,12 @@ export interface components {
                     income: number;
                     expense: number;
                 }[];
+            };
+        };
+        RevokeConnectionResponseDto: {
+            data: {
+                /** @constant */
+                revoked: true;
             };
         };
     };
@@ -1249,6 +1269,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AccountBreakdownDto"];
+                };
+            };
+        };
+    };
+    McpConnectionsController_revoke: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clientId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RevokeConnectionResponseDto"];
                 };
             };
         };

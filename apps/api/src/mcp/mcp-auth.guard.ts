@@ -4,6 +4,8 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { Request, Response } from 'express';
 import {
   apiBaseURL,
@@ -12,10 +14,11 @@ import {
   mcpResourceClientActions,
   mcpResourceUri,
 } from '../auth/auth.config';
-
-const RESOURCE_METADATA_URL = `${apiBaseURL}/.well-known/oauth-protected-resource/mcp`;
 import { UsersService } from '../users/users.service';
 import { UserDocument } from '../users/schemas/user.schema';
+import { McpRevocation } from './schemas/mcp-revocation.schema';
+
+const RESOURCE_METADATA_URL = `${apiBaseURL}/.well-known/oauth-protected-resource/mcp`;
 
 export type McpAuthenticatedRequest = Request & {
   mcpUser: UserDocument;
@@ -30,7 +33,11 @@ export type McpAuthenticatedRequest = Request & {
  */
 @Injectable()
 export class McpAuthGuard implements CanActivate {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    @InjectModel(McpRevocation.name)
+    private readonly revocationModel: Model<McpRevocation>,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
@@ -59,6 +66,26 @@ export class McpAuthGuard implements CanActivate {
       });
     if (!payload?.sub) {
       throw new UnauthorizedException('Invalid or expired access token');
+    }
+
+    // JWTs can't be revoked before their natural expiry by nature (no
+    // server-side lookup to invalidate) -- this is Pocketly's own
+    // lightweight deny-list on top of that, see mcp-revocation.schema.ts.
+    // A token issued *before* the newest revocation for this user+client
+    // is rejected outright, regardless of its own unexpired `exp`.
+    const clientId = (payload.client_id ?? payload.azp) as string | undefined;
+    if (clientId && typeof payload.iat === 'number') {
+      const issuedAt = new Date(payload.iat * 1000);
+      const revoked = await this.revocationModel.exists({
+        authUserId: payload.sub,
+        clientId,
+        createdAt: { $gt: issuedAt },
+      });
+      if (revoked) {
+        throw new UnauthorizedException(
+          'This connection was disconnected. Reconnect to grant access again.',
+        );
+      }
     }
 
     // The token's user must already have a Pocketly profile -- OAuth

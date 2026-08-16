@@ -8,6 +8,10 @@ import {
   CategorySchema,
 } from '../../categories/schemas/category.schema';
 import {
+  McpRevocation,
+  McpRevocationSchema,
+} from '../../mcp/schemas/mcp-revocation.schema';
+import {
   Transaction,
   TransactionSchema,
 } from '../../transactions/schemas/transaction.schema';
@@ -35,6 +39,7 @@ import { User, UserSchema } from '../../users/schemas/user.schema';
       { name: Category.name, schema: CategorySchema },
       { name: Transaction.name, schema: TransactionSchema },
       { name: Budget.name, schema: BudgetSchema },
+      { name: McpRevocation.name, schema: McpRevocationSchema },
     ]),
   ],
   exports: [MongooseModule],

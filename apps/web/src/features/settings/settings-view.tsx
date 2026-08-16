@@ -291,9 +291,8 @@ function DisconnectAppButton({ connection }: { connection: OAuthConnection }) {
             Disconnect {connection.clientName}?
           </AlertDialogTitle>
           <AlertDialogDescription>
-            It won&apos;t be able to reconnect without going through consent
-            again. Access already issued to it may take up to an hour to
-            fully expire.
+            It loses access immediately and won&apos;t be able to reconnect
+            without going through consent again.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -302,7 +301,10 @@ function DisconnectAppButton({ connection }: { connection: OAuthConnection }) {
             variant="destructive"
             onClick={() => {
               setOpen(false);
-              disconnect.mutate(connection.id);
+              disconnect.mutate({
+                id: connection.id,
+                clientId: connection.clientId,
+              });
             }}
           >
             Disconnect
