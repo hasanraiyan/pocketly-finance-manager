@@ -1,12 +1,20 @@
-import { Settings as SettingsIcon } from "lucide-react";
-import { ComingSoon } from "@/components/coming-soon";
+import { getServerApiClient } from "@/lib/api-client";
+import { SettingsView } from "@/features/settings/settings-view";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const client = await getServerApiClient();
+  const [profileRes, categoriesRes] = await Promise.all([
+    client.GET("/users/me"),
+    client.GET("/categories", { params: { query: { limit: 100 } } }),
+  ]);
+
+  const profile = profileRes.data?.data;
+
   return (
-    <ComingSoon
-      icon={SettingsIcon}
-      title="Settings"
-      description="Update your currency, timezone, and account here soon."
+    <SettingsView
+      currency={profile?.currency ?? "INR"}
+      timezone={profile?.timezone ?? "UTC"}
+      categoriesInitialData={categoriesRes.data?.data.items ?? []}
     />
   );
 }

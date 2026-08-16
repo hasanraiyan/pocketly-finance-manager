@@ -1,12 +1,19 @@
-import { Target } from "lucide-react";
-import { ComingSoon } from "@/components/coming-soon";
+import { getServerApiClient } from "@/lib/api-client";
+import { PlanningView } from "@/features/budgets/planning-view";
 
-export default function PlanningPage() {
+export default async function PlanningPage() {
+  const client = await getServerApiClient();
+  const [profileRes, budgetsRes, categoriesRes] = await Promise.all([
+    client.GET("/users/me"),
+    client.GET("/budgets", { params: { query: { limit: 100 } } }),
+    client.GET("/categories", { params: { query: { limit: 100 } } }),
+  ]);
+
   return (
-    <ComingSoon
-      icon={Target}
-      title="Planning"
-      description="Create and track budgets by category here soon."
+    <PlanningView
+      initialData={budgetsRes.data?.data.items ?? []}
+      categories={categoriesRes.data?.data.items ?? []}
+      currency={profileRes.data?.data.currency ?? "INR"}
     />
   );
 }

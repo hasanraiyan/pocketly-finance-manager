@@ -1,12 +1,11 @@
-import { Wallet } from "lucide-react";
-import { ComingSoon } from "@/components/coming-soon";
+import { getServerApiClient } from "@/lib/api-client";
+import { AccountsView } from "@/features/accounts/accounts-view";
 
-export default function AccountsPage() {
-  return (
-    <ComingSoon
-      icon={Wallet}
-      title="Accounts"
-      description="Manage your bank accounts, cash, and wallets here soon."
-    />
-  );
+export default async function AccountsPage() {
+  const client = await getServerApiClient();
+  const { data } = await client.GET("/accounts", {
+    params: { query: { limit: 100 } },
+  });
+
+  return <AccountsView initialData={data?.data.items ?? []} />;
 }

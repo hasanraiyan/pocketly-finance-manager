@@ -1,12 +1,25 @@
-import { Receipt } from "lucide-react";
-import { ComingSoon } from "@/components/coming-soon";
+import { getServerApiClient } from "@/lib/api-client";
+import { RecordsView } from "@/features/transactions/records-view";
 
-export default function RecordsPage() {
+export default async function RecordsPage() {
+  const client = await getServerApiClient();
+  const [profileRes, transactionsRes, accountsRes, categoriesRes] =
+    await Promise.all([
+      client.GET("/users/me"),
+      client.GET("/transactions", { params: { query: { limit: 20 } } }),
+      client.GET("/accounts", { params: { query: { limit: 100 } } }),
+      client.GET("/categories", { params: { query: { limit: 100 } } }),
+    ]);
+
   return (
-    <ComingSoon
-      icon={Receipt}
-      title="Records"
-      description="Search, filter, and record income, expenses, and transfers here soon."
+    <RecordsView
+      initialData={{
+        items: transactionsRes.data?.data.items ?? [],
+        nextCursor: transactionsRes.data?.data.nextCursor ?? null,
+      }}
+      accounts={accountsRes.data?.data.items ?? []}
+      categories={categoriesRes.data?.data.items ?? []}
+      currency={profileRes.data?.data.currency ?? "INR"}
     />
   );
 }
