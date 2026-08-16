@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Test } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { AppModule } from './app.module';
+import { buildOpenApiDocument } from './swagger';
 
 describe('OpenAPI document generation', () => {
   let mongod: MongoMemoryServer;
@@ -25,10 +25,7 @@ describe('OpenAPI document generation', () => {
   });
 
   it('generates a document covering every core finance route, driven by the Zod DTOs', () => {
-    const document = SwaggerModule.createDocument(
-      app,
-      new DocumentBuilder().setTitle('Pocketly API').setVersion('1.0').build(),
-    );
+    const document = buildOpenApiDocument(app);
 
     expect(Object.keys(document.paths)).toEqual(
       expect.arrayContaining([
