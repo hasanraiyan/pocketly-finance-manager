@@ -44,11 +44,48 @@ const TYPE_FILTER_OPTIONS: Array<{
   value: Transaction["type"] | "";
   label: string;
 }> = [
-  { value: "", label: "All types" },
+  { value: "", label: "All" },
   { value: "expense", label: "Expense" },
   { value: "income", label: "Income" },
   { value: "transfer", label: "Transfer" },
 ];
+
+function TypeFilterPills({
+  value,
+  onChange,
+}: {
+  value: Transaction["type"] | "";
+  onChange: (value: Transaction["type"] | "") => void;
+}) {
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Filter by type"
+      className="flex min-w-0 snap-x snap-mandatory gap-2 overflow-x-auto scrollbar-none"
+    >
+      {TYPE_FILTER_OPTIONS.map((opt) => {
+        const active = opt.value === value;
+        return (
+          <button
+            key={opt.value || "all"}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            onClick={() => onChange(opt.value)}
+            className={cn(
+              "h-8 shrink-0 snap-start rounded-full border px-3.5 text-xs font-medium whitespace-nowrap outline-none transition-colors focus-visible:ring-1 focus-visible:ring-ring/50",
+              active
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground",
+            )}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export function RecordsView({
   initialData,
@@ -117,38 +154,31 @@ export function RecordsView({
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <NativeSelect
-          value={type}
-          onChange={(e) => setType(e.target.value as Transaction["type"] | "")}
-        >
-          {TYPE_FILTER_OPTIONS.map((opt) => (
-            <NativeSelectOption key={opt.value} value={opt.value}>
-              {opt.label}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
-        <NativeSelect
-          value={accountId}
-          onChange={(e) => setAccountId(e.target.value)}
-        >
-          <NativeSelectOption value="">All accounts</NativeSelectOption>
-          {accounts.map((a) => (
-            <NativeSelectOption key={a._id} value={a._id}>
-              {a.name}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
-        <Input
-          value={qInput}
-          onChange={(e) => setQInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") setQ(qInput);
-          }}
-          onBlur={() => setQ(qInput)}
-          placeholder="Search description..."
-          className="w-full sm:w-48"
-        />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <TypeFilterPills value={type} onChange={setType} />
+        <div className="flex flex-wrap items-center gap-3">
+          <NativeSelect
+            value={accountId}
+            onChange={(e) => setAccountId(e.target.value)}
+          >
+            <NativeSelectOption value="">All accounts</NativeSelectOption>
+            {accounts.map((a) => (
+              <NativeSelectOption key={a._id} value={a._id}>
+                {a.name}
+              </NativeSelectOption>
+            ))}
+          </NativeSelect>
+          <Input
+            value={qInput}
+            onChange={(e) => setQInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") setQ(qInput);
+            }}
+            onBlur={() => setQ(qInput)}
+            placeholder="Search description..."
+            className="w-full sm:w-48"
+          />
+        </div>
       </div>
 
       {showError ? (

@@ -262,7 +262,7 @@ export function TransactionFormDialog({
                     />
                     <Button
                       type="button"
-                      size="sm"
+                      className="h-9 md:h-8"
                       disabled={createCategory.isPending}
                       onClick={handleAddCategory}
                     >
@@ -271,7 +271,7 @@ export function TransactionFormDialog({
                     <Button
                       type="button"
                       variant="ghost"
-                      size="sm"
+                      className="h-9 md:h-8"
                       onClick={() => setAddingCategory(false)}
                     >
                       Cancel
