@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { usePocketlyClient } from "@/lib/use-pocketly-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/password-input";
@@ -13,6 +14,7 @@ import { Spinner } from "@/components/ui/spinner";
 
 export default function SignUpPage() {
   const router = useRouter();
+  const client = usePocketlyClient();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,6 +35,14 @@ export default function SignUpPage() {
       setError(authError.message ?? "Couldn't create your account.");
       return;
     }
+
+    // Best-effort: budget/analysis period boundaries run in the user's
+    // timezone, so save the browser's real one now instead of leaving new
+    // accounts on the UTC default. Silent -- signup already succeeded, so
+    // this shouldn't block or show its own error if it fails.
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    await client.PATCH("/users/me", { body: { timezone } }).catch(() => {});
+
     router.push("/dashboard");
   }
 
