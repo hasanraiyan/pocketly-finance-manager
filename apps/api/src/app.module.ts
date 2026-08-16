@@ -31,6 +31,10 @@ import { UsersModule } from './users/users.module';
           host: config.get<string>('REDIS_HOST', 'localhost'),
           port: Number(config.get<string>('REDIS_PORT', '6379')),
           password: config.get<string>('REDIS_PASSWORD') || undefined,
+          // Hosted providers (Upstash, Redis Cloud, etc.) require TLS; local
+          // Docker Redis doesn't support it at all, so this must stay opt-in
+          // rather than always-on. Set REDIS_TLS=true for those providers.
+          tls: config.get<string>('REDIS_TLS') === 'true' ? {} : undefined,
         },
       }),
     }),
