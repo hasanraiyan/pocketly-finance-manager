@@ -26,9 +26,13 @@ function SignInForm() {
 
   async function handleGoogleSignIn() {
     setGoogleLoading(true);
+    // Must be absolute: Better Auth resolves a relative callbackURL against
+    // its own origin (the API), not the web app's -- confirmed by getting
+    // redirected to http://localhost:4000/auth/callback (a 404) with a bare
+    // "/auth/callback" path.
     const callbackURL = isMcpConnect
-      ? `/auth/callback?mcp=${encodeURIComponent(searchParams.toString())}`
-      : "/auth/callback?next=/dashboard";
+      ? `${window.location.origin}/auth/callback?mcp=${encodeURIComponent(searchParams.toString())}`
+      : `${window.location.origin}/auth/callback?next=/dashboard`;
     const { error: authError } = await authClient.signIn.social({
       provider: "google",
       callbackURL,

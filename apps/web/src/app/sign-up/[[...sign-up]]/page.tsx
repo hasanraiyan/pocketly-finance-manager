@@ -32,9 +32,11 @@ export default function SignUpPage() {
     }
     setError(null);
     setGoogleLoading(true);
+    // Must be absolute: Better Auth resolves a relative callbackURL against
+    // its own origin (the API), not the web app's.
     const { error: authError } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/auth/callback?next=/dashboard",
+      callbackURL: `${window.location.origin}/auth/callback?next=/dashboard`,
     });
     if (authError) {
       setGoogleLoading(false);
