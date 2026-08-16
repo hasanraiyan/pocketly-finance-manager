@@ -7,3 +7,5 @@ Sentry.init({
   // apps/api's instrument.ts.
   sendDefaultPii: false,
 });
+
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

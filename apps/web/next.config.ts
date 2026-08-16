@@ -18,5 +18,4 @@ export default withSentryConfig(withMDX(nextConfig), {
   // No auth token configured yet -- skips source-map upload silently
   // instead of failing the build until Sentry is actually set up.
   silent: true,
-  disableLogger: true,
 });
