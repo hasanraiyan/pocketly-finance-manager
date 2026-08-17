@@ -48,6 +48,7 @@ import type { Account } from "@/features/accounts/hooks";
 import type { Category } from "@/features/categories/hooks";
 import { TransactionFormDialog } from "./transaction-form-dialog";
 import { ExportDialog } from "./export-dialog";
+import { RecordRowsSkeleton } from "./skeletons";
 import {
   useDeleteTransaction,
   useLoadMoreTransactions,
@@ -255,10 +256,8 @@ export function RecordsView({
   );
 
   const isDefaultFilters = !type && !accountId && !q;
-  const { data, isError, isFetching, refetch } = useTransactions(
-    filters,
-    isDefaultFilters ? initialData : undefined,
-  );
+  const { data, isError, isFetching, isPlaceholderData, refetch } =
+    useTransactions(filters, isDefaultFilters ? initialData : undefined);
   const showError = (isDefaultFilters && initialLoadFailed) || isError;
   const deleteTransaction = useDeleteTransaction(filters);
   const loadMore = useLoadMoreTransactions(filters);
@@ -309,7 +308,7 @@ export function RecordsView({
 
       {/* The empty-state CTA below already covers "add your first record" --
           skip the FAB there so mobile doesn't show two add affordances. */}
-      {!(isDefaultFilters && data.items.length === 0 && !showError) && (
+      {!(isDefaultFilters && data?.items.length === 0 && !showError) && (
         <TransactionFormDialog
           filters={filters}
           accountsInitialData={accounts}
@@ -378,6 +377,8 @@ export function RecordsView({
           onRetry={() => refetch()}
           retrying={isFetching}
         />
+      ) : !data ? (
+        <RecordRowsSkeleton />
       ) : data.items.length === 0 ? (
         <Empty>
           <EmptyHeader>
@@ -403,7 +404,16 @@ export function RecordsView({
           )}
         </Empty>
       ) : (
-        <>
+        <div
+          className={cn(
+            "flex flex-col gap-6",
+            // Results still belong to the previous filter while the new
+            // ones load -- dim them rather than blanking the list.
+            isPlaceholderData
+              ? "opacity-50 transition-opacity"
+              : "transition-opacity",
+          )}
+        >
           <ul className="divide-y divide-border md:hidden">
             {data.items.map((tx) => {
               const category = tx.categoryId
@@ -571,7 +581,7 @@ export function RecordsView({
               </Button>
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { components } from "@pocketly/sdk";
 import { usePocketlyClient } from "@/lib/use-pocketly-client";
 
@@ -19,16 +19,19 @@ export type CashFlow = components["schemas"]["CashFlowDto"]["data"];
 export type AccountBreakdown =
   components["schemas"]["AccountBreakdownDto"]["data"];
 
-const EMPTY_PERIOD = { start: "", end: "" };
-
+/**
+ * `initialData` is genuinely optional across these hooks. It used to
+ * default to a zero-filled object, which made react-query believe it
+ * already had data for a period it had never fetched -- so changing the
+ * period painted ₹0.00 for a moment before the real figures landed.
+ *
+ * `keepPreviousData` covers the gap instead: the previous period's numbers
+ * stay on screen, dimmed by the caller via `isPlaceholderData`, until the
+ * new ones arrive. Nothing flashes and nothing shifts.
+ */
 export function useAnalysisOverview(
   period: AnalysisPeriod,
-  initialData: Overview = {
-    period: EMPTY_PERIOD,
-    income: 0,
-    expense: 0,
-    net: 0,
-  },
+  initialData?: Overview,
 ) {
   const client = usePocketlyClient();
   return useQuery({
@@ -41,15 +44,13 @@ export function useAnalysisOverview(
       return data.data;
     },
     initialData,
+    placeholderData: keepPreviousData,
   });
 }
 
 export function useCategoryBreakdown(
   period: AnalysisPeriod,
-  initialData: CategoryBreakdown = {
-    period: EMPTY_PERIOD,
-    categories: [],
-  },
+  initialData?: CategoryBreakdown,
 ) {
   const client = usePocketlyClient();
   return useQuery({
@@ -62,12 +63,13 @@ export function useCategoryBreakdown(
       return data.data;
     },
     initialData,
+    placeholderData: keepPreviousData,
   });
 }
 
 export function useCashFlow(
   period: AnalysisPeriod,
-  initialData: CashFlow = { period: EMPTY_PERIOD, days: [] },
+  initialData?: CashFlow,
 ) {
   const client = usePocketlyClient();
   return useQuery({
@@ -80,12 +82,13 @@ export function useCashFlow(
       return data.data;
     },
     initialData,
+    placeholderData: keepPreviousData,
   });
 }
 
 export function useAccountBreakdown(
   period: AnalysisPeriod,
-  initialData: AccountBreakdown = { period: EMPTY_PERIOD, accounts: [] },
+  initialData?: AccountBreakdown,
 ) {
   const client = usePocketlyClient();
   return useQuery({
@@ -98,5 +101,6 @@ export function useAccountBreakdown(
       return data.data;
     },
     initialData,
+    placeholderData: keepPreviousData,
   });
 }

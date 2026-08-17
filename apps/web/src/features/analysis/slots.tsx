@@ -16,6 +16,10 @@ import {
  *
  * Only the default period is fetched here -- once you pick a different
  * one, the sections take over client-side via react-query.
+ *
+ * A failed call passes `undefined` rather than a zero-filled stand-in, so
+ * the section shows its loading and error states instead of presenting
+ * zeros as though they were real figures.
  */
 
 const period = DEFAULT_PERIOD;
@@ -43,17 +47,7 @@ export async function StatCardsSlot() {
   ]);
 
   return (
-    <StatCards
-      initialData={
-        data?.data ?? {
-          period: { start: "", end: "" },
-          income: 0,
-          expense: 0,
-          net: 0,
-        }
-      }
-      currency={currency}
-    />
+    <StatCards initialData={data?.data} currency={currency} />
   );
 }
 
@@ -64,9 +58,7 @@ export async function CashFlowSlot() {
   });
 
   return (
-    <CashFlowCard
-      initialData={data?.data ?? { period: { start: "", end: "" }, days: [] }}
-    />
+    <CashFlowCard initialData={data?.data} />
   );
 }
 
@@ -80,9 +72,7 @@ export async function CategoryBreakdownSlot() {
 
   return (
     <CategoryBreakdownCard
-      initialData={
-        data?.data ?? { period: { start: "", end: "" }, categories: [] }
-      }
+      initialData={data?.data}
       categories={categories}
       currency={currency}
     />
@@ -98,9 +88,7 @@ export async function AccountBreakdownSlot() {
 
   return (
     <AccountBreakdownCard
-      initialData={
-        data?.data ?? { period: { start: "", end: "" }, accounts: [] }
-      }
+      initialData={data?.data}
       currency={currency}
     />
   );

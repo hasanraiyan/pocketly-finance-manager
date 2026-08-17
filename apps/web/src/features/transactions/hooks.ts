@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type { components } from "@pocketly/sdk";
 import { usePocketlyClient } from "@/lib/use-pocketly-client";
 import { toast } from "@/components/ui/toast";
@@ -28,9 +33,19 @@ function transactionsKey(filters: TransactionFilters) {
   return ["transactions", filters] as const;
 }
 
+/**
+ * `initialData` is genuinely optional. It used to default to an empty
+ * page, which made react-query believe it already had results for a filter
+ * it had never fetched -- so typing a search or changing a filter flashed
+ * "No records found" before the real rows arrived.
+ *
+ * `keepPreviousData` covers the gap instead: the previous result set stays
+ * on screen, dimmed by the caller via `isPlaceholderData`, until the new
+ * one lands.
+ */
 export function useTransactions(
   filters: TransactionFilters,
-  initialData: TransactionsPage = { items: [], nextCursor: null },
+  initialData?: TransactionsPage,
 ) {
   const client = usePocketlyClient();
   return useQuery({
@@ -43,6 +58,7 @@ export function useTransactions(
       return { items: data.data.items, nextCursor: data.data.nextCursor };
     },
     initialData,
+    placeholderData: keepPreviousData,
   });
 }
 
