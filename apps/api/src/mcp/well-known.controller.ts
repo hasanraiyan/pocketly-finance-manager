@@ -8,6 +8,13 @@ function apiBaseUrl(): string {
   return process.env.API_BASE_URL ?? 'http://localhost:4000';
 }
 
+// The OAuth controller lives under the API's global `/api/v1` prefix (only
+// `mcp` and `.well-known/*` are excluded from it in main.ts) -- these
+// published URLs have to match that or a client following them 404s.
+function oauthBaseUrl(): string {
+  return `${apiBaseUrl()}/api/v1`;
+}
+
 /**
  * OAuth discovery for MCP clients. Pocketly is now both the protected
  * resource *and* its own authorization server (`mcp/oauth/`) -- no external
@@ -45,12 +52,13 @@ export class WellKnownController {
   ])
   getAuthorizationServerMetadata() {
     const base = apiBaseUrl();
+    const oauthBase = oauthBaseUrl();
     return {
       issuer: base,
-      authorization_endpoint: `${base}/oauth2/authorize`,
-      token_endpoint: `${base}/oauth2/token`,
-      registration_endpoint: `${base}/oauth2/register`,
-      jwks_uri: `${base}/oauth2/jwks`,
+      authorization_endpoint: `${oauthBase}/oauth2/authorize`,
+      token_endpoint: `${oauthBase}/oauth2/token`,
+      registration_endpoint: `${oauthBase}/oauth2/register`,
+      jwks_uri: `${oauthBase}/oauth2/jwks`,
       scopes_supported: DEFAULT_MCP_SCOPES,
       response_types_supported: ['code'],
       grant_types_supported: ['authorization_code'],

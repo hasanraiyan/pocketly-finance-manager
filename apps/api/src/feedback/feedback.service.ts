@@ -24,7 +24,8 @@ export class FeedbackService {
 
   async create(user: UserDocument, dto: CreateFeedbackDto) {
     const feedbackType =
-      dto.type ?? (dto.category === 'feature_request' ? 'feature_request' : 'feedback');
+      dto.type ??
+      (dto.category === 'feature_request' ? 'feature_request' : 'feedback');
 
     const created = await this.feedbackModel.create({
       userId: user._id,
@@ -69,9 +70,7 @@ export class FeedbackService {
     }
 
     const sort: Record<string, 1 | -1> =
-      query.sortBy === 'upvotes'
-        ? { upvoteCount: -1, _id: -1 }
-        : { _id: -1 };
+      query.sortBy === 'upvotes' ? { upvoteCount: -1, _id: -1 } : { _id: -1 };
 
     const limit = query.limit ?? 20;
 
@@ -85,12 +84,15 @@ export class FeedbackService {
     const hasMore = items.length > limit;
     const page = hasMore ? items.slice(0, limit) : items;
     const nextCursor = hasMore
-      ? encodeIdCursor(page[page.length - 1]._id as Types.ObjectId)
+      ? encodeIdCursor(page[page.length - 1]._id)
       : null;
 
     return {
       items: page.map((item) =>
-        this.serializeUserFeedback(item as any, user._id),
+        this.serializeUserFeedback(
+          item as unknown as FeedbackDocument,
+          user._id,
+        ),
       ),
       nextCursor,
     };
@@ -110,7 +112,7 @@ export class FeedbackService {
       throw new NotFoundException('Feedback not found');
     }
 
-    return this.serializeUserFeedback(item as any, user._id);
+    return this.serializeUserFeedback(item, user._id);
   }
 
   async toggleUpvote(user: UserDocument, id: string) {
@@ -118,15 +120,19 @@ export class FeedbackService {
       throw new NotFoundException('Feedback not found');
     }
 
-    const existing = await this.feedbackModel.findOne({ _id: id, deletedAt: null }).exec();
+    const existing = await this.feedbackModel
+      .findOne({ _id: id, deletedAt: null })
+      .exec();
     if (!existing) {
       throw new NotFoundException('Feedback not found');
     }
 
     const userIdStr = user._id.toString();
-    const alreadyUpvoted = (existing.upvotes || []).some((uId) => uId.toString() === userIdStr);
+    const alreadyUpvoted = (existing.upvotes || []).some(
+      (uId) => uId.toString() === userIdStr,
+    );
 
-    let updated: any;
+    let updated: FeedbackDocument | null;
 
     if (alreadyUpvoted) {
       updated = await this.feedbackModel
@@ -138,7 +144,7 @@ export class FeedbackService {
           },
           { new: true },
         )
-        .lean()
+        .lean<FeedbackDocument>()
         .exec();
     } else {
       updated = await this.feedbackModel
@@ -150,7 +156,7 @@ export class FeedbackService {
           },
           { new: true },
         )
-        .lean()
+        .lean<FeedbackDocument>()
         .exec();
     }
 
@@ -166,7 +172,9 @@ export class FeedbackService {
       throw new NotFoundException('Feedback not found');
     }
 
-    const item = await this.feedbackModel.findOne({ _id: id, deletedAt: null }).exec();
+    const item = await this.feedbackModel
+      .findOne({ _id: id, deletedAt: null })
+      .exec();
     if (!item) {
       throw new NotFoundException('Feedback not found');
     }
@@ -209,9 +217,7 @@ export class FeedbackService {
     }
 
     const sort: Record<string, 1 | -1> =
-      query.sortBy === 'upvotes'
-        ? { upvoteCount: -1, _id: -1 }
-        : { _id: -1 };
+      query.sortBy === 'upvotes' ? { upvoteCount: -1, _id: -1 } : { _id: -1 };
 
     const limit = query.limit ?? 20;
 
@@ -225,11 +231,13 @@ export class FeedbackService {
     const hasMore = items.length > limit;
     const page = hasMore ? items.slice(0, limit) : items;
     const nextCursor = hasMore
-      ? encodeIdCursor(page[page.length - 1]._id as Types.ObjectId)
+      ? encodeIdCursor(page[page.length - 1]._id)
       : null;
 
     return {
-      items: page.map((item) => this.serializeAdminFeedback(item as any)),
+      items: page.map((item) =>
+        this.serializeAdminFeedback(item as unknown as FeedbackDocument),
+      ),
       nextCursor,
     };
   }
@@ -239,7 +247,9 @@ export class FeedbackService {
       throw new NotFoundException('Feedback not found');
     }
 
-    const item = await this.feedbackModel.findOne({ _id: id, deletedAt: null }).exec();
+    const item = await this.feedbackModel
+      .findOne({ _id: id, deletedAt: null })
+      .exec();
     if (!item) {
       throw new NotFoundException('Feedback not found');
     }
@@ -258,7 +268,9 @@ export class FeedbackService {
       throw new NotFoundException('Feedback not found');
     }
 
-    const item = await this.feedbackModel.findOne({ _id: id, deletedAt: null }).exec();
+    const item = await this.feedbackModel
+      .findOne({ _id: id, deletedAt: null })
+      .exec();
     if (!item) {
       throw new NotFoundException('Feedback not found');
     }

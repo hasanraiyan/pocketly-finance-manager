@@ -32,7 +32,9 @@ export const adminFeedbackItemSchema = feedbackItemSchema.extend({
   internalNotes: z.string().nullable(),
 });
 
-export class FeedbackDto extends createZodDto(envelopeSchema(feedbackItemSchema)) {}
+export class FeedbackDto extends createZodDto(
+  envelopeSchema(feedbackItemSchema),
+) {}
 export class FeedbackListDto extends createZodDto(
   envelopeSchema(paginatedListSchema(feedbackItemSchema)),
 ) {}

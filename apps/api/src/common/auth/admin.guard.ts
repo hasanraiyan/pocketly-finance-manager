@@ -11,7 +11,9 @@ import type { UserDocument } from '../../users/schemas/user.schema';
 @Injectable()
 export class AdminGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest<Request & { user?: UserDocument }>();
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { user?: UserDocument }>();
     const user = request.user;
 
     if (!user) {

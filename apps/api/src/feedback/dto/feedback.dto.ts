@@ -47,5 +47,9 @@ export const adminUpdateFeedbackSchema = z.object({
 
 export class CreateFeedbackDto extends createZodDto(createFeedbackSchema) {}
 export class FeedbackQueryDto extends createZodDto(feedbackQuerySchema) {}
-export class AdminFeedbackQueryDto extends createZodDto(adminFeedbackQuerySchema) {}
-export class AdminUpdateFeedbackDto extends createZodDto(adminUpdateFeedbackSchema) {}
+export class AdminFeedbackQueryDto extends createZodDto(
+  adminFeedbackQuerySchema,
+) {}
+export class AdminUpdateFeedbackDto extends createZodDto(
+  adminUpdateFeedbackSchema,
+) {}

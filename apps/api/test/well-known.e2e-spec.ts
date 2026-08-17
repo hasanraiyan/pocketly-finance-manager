@@ -95,13 +95,18 @@ describe('OAuth discovery (e2e)', () => {
     const body = res.body as AuthorizationServerMetadata;
     expect(res.body).not.toHaveProperty('data');
     expect(body.issuer).toBe('http://localhost:4000');
+    // The oauth2 controller lives under the API's global /api/v1 prefix
+    // (unlike mcp and .well-known, which are excluded from it) -- these
+    // published URLs must match where the routes actually are.
     expect(body.authorization_endpoint).toBe(
-      'http://localhost:4000/oauth2/authorize',
+      'http://localhost:4000/api/v1/oauth2/authorize',
     );
-    expect(body.token_endpoint).toBe('http://localhost:4000/oauth2/token');
+    expect(body.token_endpoint).toBe(
+      'http://localhost:4000/api/v1/oauth2/token',
+    );
     expect(body.registration_endpoint).toBe(
-      'http://localhost:4000/oauth2/register',
+      'http://localhost:4000/api/v1/oauth2/register',
     );
-    expect(body.jwks_uri).toBe('http://localhost:4000/oauth2/jwks');
+    expect(body.jwks_uri).toBe('http://localhost:4000/api/v1/oauth2/jwks');
   });
 });

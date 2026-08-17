@@ -8,11 +8,7 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AdminOnly } from '../common/auth/admin-only.decorator';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import {

@@ -27,46 +27,31 @@ export class FeedbackController {
 
   @Post()
   @ApiCreatedResponse({ type: FeedbackDto })
-  create(
-    @CurrentUser() user: UserDocument,
-    @Body() dto: CreateFeedbackDto,
-  ) {
+  create(@CurrentUser() user: UserDocument, @Body() dto: CreateFeedbackDto) {
     return this.feedbackService.create(user, dto);
   }
 
   @Get()
   @ApiOkResponse({ type: FeedbackListDto })
-  findAll(
-    @CurrentUser() user: UserDocument,
-    @Query() query: FeedbackQueryDto,
-  ) {
+  findAll(@CurrentUser() user: UserDocument, @Query() query: FeedbackQueryDto) {
     return this.feedbackService.findAll(user, query);
   }
 
   @Get(':id')
   @ApiOkResponse({ type: FeedbackDto })
-  findOne(
-    @CurrentUser() user: UserDocument,
-    @Param('id') id: string,
-  ) {
+  findOne(@CurrentUser() user: UserDocument, @Param('id') id: string) {
     return this.feedbackService.findOne(user, id);
   }
 
   @Post(':id/upvote')
   @ApiOkResponse({ type: FeedbackDto })
-  toggleUpvote(
-    @CurrentUser() user: UserDocument,
-    @Param('id') id: string,
-  ) {
+  toggleUpvote(@CurrentUser() user: UserDocument, @Param('id') id: string) {
     return this.feedbackService.toggleUpvote(user, id);
   }
 
   @Delete(':id')
   @ApiOkResponse({ type: FeedbackDto })
-  remove(
-    @CurrentUser() user: UserDocument,
-    @Param('id') id: string,
-  ) {
+  remove(@CurrentUser() user: UserDocument, @Param('id') id: string) {
     return this.feedbackService.remove(user, id);
   }
 }

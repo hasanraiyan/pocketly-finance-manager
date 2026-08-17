@@ -54,7 +54,7 @@ export class AdminAuditLogService {
     const hasMore = items.length > limit;
     const page = hasMore ? items.slice(0, limit) : items;
     const nextCursor = hasMore
-      ? encodeIdCursor(page[page.length - 1]._id as Types.ObjectId)
+      ? encodeIdCursor(page[page.length - 1]._id)
       : null;
 
     return {

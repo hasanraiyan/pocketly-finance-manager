@@ -54,11 +54,22 @@ describe('AdminController', () => {
   });
 
   it('updates feedback and writes audit log', async () => {
-    const updateDto = { status: 'planned' as const, internalNotes: 'Top priority' };
+    const updateDto = {
+      status: 'planned' as const,
+      internalNotes: 'Top priority',
+    };
     const req = { ip: '127.0.0.1' };
-    const result = await controller.updateFeedback(mockAdmin, '123', updateDto, req);
+    const result = await controller.updateFeedback(
+      mockAdmin,
+      '123',
+      updateDto,
+      req,
+    );
 
-    expect(mockFeedbackService.adminUpdate).toHaveBeenCalledWith('123', updateDto);
+    expect(mockFeedbackService.adminUpdate).toHaveBeenCalledWith(
+      '123',
+      updateDto,
+    );
     expect(mockAuditLogService.log).toHaveBeenCalledWith(
       expect.objectContaining({
         adminUserId: mockAdmin._id,

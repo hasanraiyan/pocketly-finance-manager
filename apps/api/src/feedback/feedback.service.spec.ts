@@ -76,7 +76,9 @@ describe('FeedbackService', () => {
 
   describe('toggleUpvote', () => {
     it('adds an upvote when user has not upvoted yet', async () => {
-      const feedbackId = new Types.ObjectId('65f1a2b3c4d5e6f7a8b9c0d3').toString();
+      const feedbackId = new Types.ObjectId(
+        '65f1a2b3c4d5e6f7a8b9c0d3',
+      ).toString();
       const existingDoc = {
         _id: feedbackId,
         upvotes: [],
@@ -123,7 +125,9 @@ describe('FeedbackService', () => {
     });
 
     it('removes an upvote when user has already upvoted', async () => {
-      const feedbackId = new Types.ObjectId('65f1a2b3c4d5e6f7a8b9c0d3').toString();
+      const feedbackId = new Types.ObjectId(
+        '65f1a2b3c4d5e6f7a8b9c0d3',
+      ).toString();
       const existingDoc = {
         _id: feedbackId,
         upvotes: [mockUser._id],
@@ -172,7 +176,9 @@ describe('FeedbackService', () => {
 
   describe('remove', () => {
     it('throws ForbiddenException when a user attempts to delete someone else feedback', async () => {
-      const feedbackId = new Types.ObjectId('65f1a2b3c4d5e6f7a8b9c0d3').toString();
+      const feedbackId = new Types.ObjectId(
+        '65f1a2b3c4d5e6f7a8b9c0d3',
+      ).toString();
       const existingDoc = {
         _id: feedbackId,
         userId: otherUser._id,

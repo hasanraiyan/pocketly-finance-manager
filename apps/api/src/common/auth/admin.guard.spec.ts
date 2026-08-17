@@ -1,4 +1,8 @@
-import { ExecutionContext, ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import {
+  ExecutionContext,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AdminGuard } from './admin.guard';
 
 describe('AdminGuard', () => {
@@ -17,12 +21,18 @@ describe('AdminGuard', () => {
   }
 
   it('allows access for users with role="admin"', () => {
-    const context = createMockContext({ role: 'admin', email: 'admin@pocketly.app' });
+    const context = createMockContext({
+      role: 'admin',
+      email: 'admin@pocketly.app',
+    });
     expect(guard.canActivate(context)).toBe(true);
   });
 
   it('throws ForbiddenException for users with role="user"', () => {
-    const context = createMockContext({ role: 'user', email: 'user@pocketly.app' });
+    const context = createMockContext({
+      role: 'user',
+      email: 'user@pocketly.app',
+    });
     expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
   });
 

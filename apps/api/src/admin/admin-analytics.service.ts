@@ -4,25 +4,47 @@ import { Model } from 'mongoose';
 import { Account, AccountDocument } from '../accounts/schemas/account.schema';
 import { Budget, BudgetDocument } from '../budgets/schemas/budget.schema';
 import { Goal, GoalDocument } from '../goals/schemas/goal.schema';
-import { McpConnection, McpConnectionDocument } from '../mcp/schemas/mcp-connection.schema';
-import { MoneyRule, MoneyRuleDocument } from '../money-rules/schemas/money-rule.schema';
-import { Recurrence, RecurrenceDocument } from '../recurrences/schemas/recurrence.schema';
-import { Transaction, TransactionDocument } from '../transactions/schemas/transaction.schema';
+import {
+  McpConnection,
+  McpConnectionDocument,
+} from '../mcp/schemas/mcp-connection.schema';
+import {
+  MoneyRule,
+  MoneyRuleDocument,
+} from '../money-rules/schemas/money-rule.schema';
+import {
+  Recurrence,
+  RecurrenceDocument,
+} from '../recurrences/schemas/recurrence.schema';
+import {
+  Transaction,
+  TransactionDocument,
+} from '../transactions/schemas/transaction.schema';
 import { User, UserDocument } from '../users/schemas/user.schema';
-import { Feedback, FeedbackDocument } from '../feedback/schemas/feedback.schema';
+import {
+  Feedback,
+  FeedbackDocument,
+} from '../feedback/schemas/feedback.schema';
 
 @Injectable()
 export class AdminAnalyticsService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(Account.name) private readonly accountModel: Model<AccountDocument>,
-    @InjectModel(Transaction.name) private readonly transactionModel: Model<TransactionDocument>,
-    @InjectModel(Budget.name) private readonly budgetModel: Model<BudgetDocument>,
+    @InjectModel(Account.name)
+    private readonly accountModel: Model<AccountDocument>,
+    @InjectModel(Transaction.name)
+    private readonly transactionModel: Model<TransactionDocument>,
+    @InjectModel(Budget.name)
+    private readonly budgetModel: Model<BudgetDocument>,
     @InjectModel(Goal.name) private readonly goalModel: Model<GoalDocument>,
-    @InjectModel(MoneyRule.name) private readonly moneyRuleModel: Model<MoneyRuleDocument>,
-    @InjectModel(Recurrence.name) private readonly recurrenceModel: Model<RecurrenceDocument>,
-    @InjectModel(McpConnection.name) private readonly mcpConnectionModel: Model<McpConnectionDocument>,
-    @InjectModel(Feedback.name) private readonly feedbackModel: Model<FeedbackDocument>,
+    @InjectModel(MoneyRule.name)
+    private readonly moneyRuleModel: Model<MoneyRuleDocument>,
+    @InjectModel(Recurrence.name)
+    private readonly recurrenceModel: Model<RecurrenceDocument>,
+    @InjectModel(McpConnection.name)
+    private readonly mcpConnectionModel: Model<McpConnectionDocument>,
+    @InjectModel(Feedback.name)
+    private readonly feedbackModel: Model<FeedbackDocument>,
   ) {}
 
   async getPlatformAnalytics() {
@@ -61,90 +83,118 @@ export class AdminAnalyticsService {
       usersWithMcp,
     ] = await Promise.all([
       this.userModel.countDocuments().exec(),
-      this.userModel.countDocuments({ createdAt: { $gte: thirtyDaysAgo } }).exec(),
+      this.userModel
+        .countDocuments({ createdAt: { $gte: thirtyDaysAgo } })
+        .exec(),
       this.accountModel.countDocuments({ deletedAt: null }).exec(),
       this.transactionModel.countDocuments({ deletedAt: null }).exec(),
       this.budgetModel.countDocuments({ deletedAt: null }).exec(),
       this.goalModel.countDocuments({ deletedAt: null }).exec(),
-      this.goalModel.countDocuments({
-        deletedAt: null,
-        $expr: { $gte: ['$savedAmount', '$targetAmount'] },
-      }).exec(),
+      this.goalModel
+        .countDocuments({
+          deletedAt: null,
+          $expr: { $gte: ['$savedAmount', '$targetAmount'] },
+        })
+        .exec(),
       this.moneyRuleModel.countDocuments({ deletedAt: null }).exec(),
-      this.moneyRuleModel.countDocuments({ deletedAt: null, enabled: true }).exec(),
+      this.moneyRuleModel
+        .countDocuments({ deletedAt: null, enabled: true })
+        .exec(),
       this.recurrenceModel.countDocuments({ deletedAt: null }).exec(),
-      this.recurrenceModel.countDocuments({ deletedAt: null, enabled: true }).exec(),
+      this.recurrenceModel
+        .countDocuments({ deletedAt: null, enabled: true })
+        .exec(),
       this.mcpConnectionModel.countDocuments({ revokedAt: null }).exec(),
-      this.feedbackModel.countDocuments({ deletedAt: null, type: 'feedback' }).exec(),
-      this.feedbackModel.countDocuments({ deletedAt: null, type: 'feature_request' }).exec(),
+      this.feedbackModel
+        .countDocuments({ deletedAt: null, type: 'feedback' })
+        .exec(),
+      this.feedbackModel
+        .countDocuments({ deletedAt: null, type: 'feature_request' })
+        .exec(),
 
       // Active users in 7d (distinct users who created/updated transactions)
-      this.transactionModel.distinct('userId', {
-        deletedAt: null,
-        date: { $gte: sevenDaysAgo },
-      }).exec(),
+      this.transactionModel
+        .distinct('userId', {
+          deletedAt: null,
+          date: { $gte: sevenDaysAgo },
+        })
+        .exec(),
 
       // Active users in 30d
-      this.transactionModel.distinct('userId', {
-        deletedAt: null,
-        date: { $gte: thirtyDaysAgo },
-      }).exec(),
+      this.transactionModel
+        .distinct('userId', {
+          deletedAt: null,
+          date: { $gte: thirtyDaysAgo },
+        })
+        .exec(),
 
       // User growth by day (last 30 days)
-      this.userModel.aggregate<{ _id: string; count: number }>([
-        { $match: { createdAt: { $gte: thirtyDaysAgo } } },
-        {
-          $group: {
-            _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-            count: { $sum: 1 },
+      this.userModel
+        .aggregate<{ _id: string; count: number }>([
+          { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+          {
+            $group: {
+              _id: {
+                $dateToString: { format: '%Y-%m-%d', date: '$createdAt' },
+              },
+              count: { $sum: 1 },
+            },
           },
-        },
-        { $sort: { _id: 1 } },
-      ]).exec(),
+          { $sort: { _id: 1 } },
+        ])
+        .exec(),
 
       // Aggregate transaction volume trends by month (last 6 months) - strictly anonymized totals
-      this.transactionModel.aggregate<{
-        _id: string;
-        incomeTotal: number;
-        expenseTotal: number;
-        transactionCount: number;
-      }>([
-        { $match: { deletedAt: null, date: { $gte: sixMonthsAgo } } },
-        {
-          $group: {
-            _id: { $dateToString: { format: '%Y-%m', date: '$date' } },
-            incomeTotal: {
-              $sum: { $cond: [{ $eq: ['$type', 'income'] }, '$amount', 0] },
+      this.transactionModel
+        .aggregate<{
+          _id: string;
+          incomeTotal: number;
+          expenseTotal: number;
+          transactionCount: number;
+        }>([
+          { $match: { deletedAt: null, date: { $gte: sixMonthsAgo } } },
+          {
+            $group: {
+              _id: { $dateToString: { format: '%Y-%m', date: '$date' } },
+              incomeTotal: {
+                $sum: { $cond: [{ $eq: ['$type', 'income'] }, '$amount', 0] },
+              },
+              expenseTotal: {
+                $sum: { $cond: [{ $eq: ['$type', 'expense'] }, '$amount', 0] },
+              },
+              transactionCount: { $sum: 1 },
             },
-            expenseTotal: {
-              $sum: { $cond: [{ $eq: ['$type', 'expense'] }, '$amount', 0] },
-            },
-            transactionCount: { $sum: 1 },
           },
-        },
-        { $sort: { _id: 1 } },
-      ]).exec(),
+          { $sort: { _id: 1 } },
+        ])
+        .exec(),
 
       // Account breakdown by type
-      this.accountModel.aggregate<{ _id: string; count: number }>([
-        { $match: { deletedAt: null } },
-        { $group: { _id: '$type', count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-      ]).exec(),
+      this.accountModel
+        .aggregate<{ _id: string; count: number }>([
+          { $match: { deletedAt: null } },
+          { $group: { _id: '$type', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+        ])
+        .exec(),
 
       // Feedback by category
-      this.feedbackModel.aggregate<{ _id: string; count: number }>([
-        { $match: { deletedAt: null } },
-        { $group: { _id: '$category', count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-      ]).exec(),
+      this.feedbackModel
+        .aggregate<{ _id: string; count: number }>([
+          { $match: { deletedAt: null } },
+          { $group: { _id: '$category', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+        ])
+        .exec(),
 
       // Feedback by status
-      this.feedbackModel.aggregate<{ _id: string; count: number }>([
-        { $match: { deletedAt: null } },
-        { $group: { _id: '$status', count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-      ]).exec(),
+      this.feedbackModel
+        .aggregate<{ _id: string; count: number }>([
+          { $match: { deletedAt: null } },
+          { $group: { _id: '$status', count: { $sum: 1 } } },
+          { $sort: { count: -1 } },
+        ])
+        .exec(),
 
       // Distinct users per feature for adoption rates
       this.accountModel.distinct('userId', { deletedAt: null }).exec(),
@@ -194,19 +244,25 @@ export class AdminAnalyticsService {
       {
         feature: 'Accounts',
         activeUsers: usersWithAccounts.length,
-        adoptionRate: Math.round((usersWithAccounts.length / safeUserCount) * 100),
+        adoptionRate: Math.round(
+          (usersWithAccounts.length / safeUserCount) * 100,
+        ),
         totalItems: totalAccounts,
       },
       {
         feature: 'Transactions',
         activeUsers: activeUsers30dList.length,
-        adoptionRate: Math.round((activeUsers30dList.length / safeUserCount) * 100),
+        adoptionRate: Math.round(
+          (activeUsers30dList.length / safeUserCount) * 100,
+        ),
         totalItems: totalTransactions,
       },
       {
         feature: 'Budgets',
         activeUsers: usersWithBudgets.length,
-        adoptionRate: Math.round((usersWithBudgets.length / safeUserCount) * 100),
+        adoptionRate: Math.round(
+          (usersWithBudgets.length / safeUserCount) * 100,
+        ),
         totalItems: totalBudgets,
       },
       {
@@ -218,13 +274,17 @@ export class AdminAnalyticsService {
       {
         feature: 'Money Rules',
         activeUsers: usersWithMoneyRules.length,
-        adoptionRate: Math.round((usersWithMoneyRules.length / safeUserCount) * 100),
+        adoptionRate: Math.round(
+          (usersWithMoneyRules.length / safeUserCount) * 100,
+        ),
         totalItems: totalMoneyRules,
       },
       {
         feature: 'Recurrences',
         activeUsers: usersWithRecurrences.length,
-        adoptionRate: Math.round((usersWithRecurrences.length / safeUserCount) * 100),
+        adoptionRate: Math.round(
+          (usersWithRecurrences.length / safeUserCount) * 100,
+        ),
         totalItems: totalRecurrences,
       },
       {
