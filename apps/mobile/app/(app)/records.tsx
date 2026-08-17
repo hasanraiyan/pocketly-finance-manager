@@ -15,6 +15,7 @@ import { Card, CardContent } from "@/components/Card";
 import { useAccounts } from "@/features/accounts/hooks";
 import { useCategories } from "@/features/categories/hooks";
 import { ExportModal } from "@/features/transactions/ExportModal";
+import { RecordsSkeleton } from "@/features/transactions/RecordsSkeleton";
 import {
   useDeleteTransaction,
   useLoadMoreTransactions,
@@ -291,12 +292,7 @@ export default function RecordsScreen() {
 
         {/* List Content */}
         {isLoading && !isRefetching ? (
-          <View className="items-center justify-center py-16">
-            <ActivityIndicator size="large" color={theme.primary} />
-            <Text className="mt-3 text-sm text-muted-foreground">
-              Loading records...
-            </Text>
-          </View>
+          <RecordsSkeleton />
         ) : isError ? (
           <View className="items-center justify-center rounded-2xl bg-card border border-border p-8 text-center">
             <Feather name="alert-circle" size={32} color={theme.negative} />

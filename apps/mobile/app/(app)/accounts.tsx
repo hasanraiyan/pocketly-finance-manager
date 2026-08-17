@@ -21,6 +21,7 @@ import {
   type AccountType,
 } from "@/features/accounts/account-icons";
 import { AccountModal } from "@/features/accounts/AccountModal";
+import { AccountsSkeleton } from "@/features/accounts/AccountsSkeleton";
 import {
   useAccounts,
   useDeleteAccount,
@@ -120,70 +121,8 @@ export default function AccountsScreen() {
           />
         }
       >
-        {/* Total Net Worth / Balance Card */}
-        <Card className="bg-card border border-border/80">
-          <CardContent className="p-5">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Total Balance
-              </Text>
-              <View className="h-7 w-7 items-center justify-center rounded-full bg-primary/10">
-                <Feather name="credit-card" size={14} color={theme.primary} />
-              </View>
-            </View>
-            <Text className="mt-2 font-mono text-3xl font-bold tracking-tight text-foreground">
-              {formatCurrency(totalBalance, user?.currency ?? "USD")}
-            </Text>
-            <Text className="mt-1 text-xs text-muted-foreground">
-              Across all linked wallets, cash, and banking accounts
-            </Text>
-          </CardContent>
-        </Card>
-
-        {/* Filter Pills */}
-        {accounts.length > 0 && filters.length > 2 && (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="-mx-1"
-          >
-            <View className="flex-row gap-2 px-1">
-              {filters.map((f) => {
-                const isActive = activeFilter === f.key;
-                return (
-                  <Pressable
-                    key={f.key}
-                    onPress={() => setActiveFilter(f.key)}
-                    className={`rounded-full px-3.5 py-1.5 border ${
-                      isActive
-                        ? "bg-primary border-primary"
-                        : "bg-card border-border"
-                    }`}
-                  >
-                    <Text
-                      className={`text-xs font-medium ${
-                        isActive
-                          ? "text-primary-foreground"
-                          : "text-muted-foreground"
-                      }`}
-                    >
-                      {f.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </ScrollView>
-        )}
-
-        {/* Loading state */}
         {isLoading && !isRefetching ? (
-          <View className="items-center justify-center py-16">
-            <ActivityIndicator size="large" color={theme.primary} />
-            <Text className="mt-3 text-sm text-muted-foreground">
-              Loading your accounts...
-            </Text>
-          </View>
+          <AccountsSkeleton />
         ) : isError ? (
           /* Error State */
           <View className="items-center justify-center rounded-2xl bg-card border border-border p-8 text-center">
@@ -219,8 +158,65 @@ export default function AccountsScreen() {
             </Button>
           </View>
         ) : (
-          /* Accounts List */
-          <View className="gap-3">
+          <View className="gap-6">
+            {/* Total Net Worth / Balance Card */}
+            <Card className="bg-card border border-border/80">
+              <CardContent className="p-5">
+                <View className="flex-row items-center justify-between">
+                  <Text className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Total Balance
+                  </Text>
+                  <View className="h-7 w-7 items-center justify-center rounded-full bg-primary/10">
+                    <Feather name="credit-card" size={14} color={theme.primary} />
+                  </View>
+                </View>
+                <Text className="mt-2 font-mono text-3xl font-bold tracking-tight text-foreground">
+                  {formatCurrency(totalBalance, user?.currency ?? "USD")}
+                </Text>
+                <Text className="mt-1 text-xs text-muted-foreground">
+                  Across all linked wallets, cash, and banking accounts
+                </Text>
+              </CardContent>
+            </Card>
+
+            {/* Filter Pills */}
+            {accounts.length > 0 && filters.length > 2 && (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                className="-mx-1"
+              >
+                <View className="flex-row gap-2 px-1">
+                  {filters.map((f) => {
+                    const isActive = activeFilter === f.key;
+                    return (
+                      <Pressable
+                        key={f.key}
+                        onPress={() => setActiveFilter(f.key)}
+                        className={`rounded-full px-3.5 py-1.5 border ${
+                          isActive
+                            ? "bg-primary border-primary"
+                            : "bg-card border-border"
+                        }`}
+                      >
+                        <Text
+                          className={`text-xs font-medium ${
+                            isActive
+                              ? "text-primary-foreground"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {f.label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </ScrollView>
+            )}
+
+            {/* Accounts List */}
+            <View className="gap-3">
             {filteredAccounts.map((account) => {
               const iconInfo =
                 ACCOUNT_ICONS[
@@ -292,6 +288,7 @@ export default function AccountsScreen() {
                 </View>
               );
             })}
+            </View>
           </View>
         )}
       </ScrollView>
