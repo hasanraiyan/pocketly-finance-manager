@@ -14,8 +14,11 @@ export class AuthUser extends Document {
   })
   email: string;
 
-  @Prop({ required: true })
-  passwordHash: string;
+  @Prop({ required: false, default: null })
+  passwordHash?: string;
+
+  @Prop({ required: false, sparse: true, index: true })
+  googleId?: string;
 
   @Prop({ default: false })
   emailVerified: boolean;

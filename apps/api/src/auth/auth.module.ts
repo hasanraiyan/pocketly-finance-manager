@@ -5,6 +5,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { PasswordService } from './password.service';
 import { TokenService } from './token.service';
+import { GoogleAuthService } from './oauth/google.service';
 import { OAuthController } from './oauth/oauth.controller';
 import { OAuthService } from './oauth/oauth.service';
 import { JwtService } from './oauth/jwt.service';
@@ -31,6 +32,7 @@ import { OAuthCode, OAuthCodeSchema } from './schemas/oauth-code.schema';
     AuthService,
     PasswordService,
     TokenService,
+    GoogleAuthService,
     OAuthService,
     JwtService,
   ],
@@ -38,6 +40,7 @@ import { OAuthCode, OAuthCodeSchema } from './schemas/oauth-code.schema';
     AuthService,
     PasswordService,
     TokenService,
+    GoogleAuthService,
     OAuthService,
     JwtService,
   ],

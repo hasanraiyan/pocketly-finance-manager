@@ -75,6 +75,14 @@ export const authClient = {
         error: error ? { message: (error as any)?.message || "Sign in failed" } : null,
       };
     },
+    social: async (params: { provider: "google"; callbackURL?: string }) => {
+      const redirect = params.callbackURL || "/dashboard";
+      window.location.href = `${authBaseUrl}/google?redirect=${encodeURIComponent(redirect)}`;
+    },
+    google: async (params?: { callbackURL?: string }) => {
+      const redirect = params?.callbackURL || "/dashboard";
+      window.location.href = `${authBaseUrl}/google?redirect=${encodeURIComponent(redirect)}`;
+    },
   },
   signUp: {
     email: async (params: { email: string; password: string; name: string }) => {

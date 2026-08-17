@@ -5,12 +5,14 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   Req,
   Res,
 } from '@nestjs/common';
-import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOkResponse, ApiExcludeEndpoint } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
+import { GoogleAuthService } from './oauth/google.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
@@ -30,7 +32,10 @@ const COOKIE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 @ApiTags('auth')
 @Controller('api/auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly googleAuthService: GoogleAuthService,
+  ) {}
 
   @Public()
   @Post(['sign-up', 'sign-up/email'])
@@ -79,6 +84,56 @@ export class AuthController {
     this.setSessionCookie(res, result.token);
     res.setHeader('set-auth-token', result.token);
     return result;
+  }
+
+  @Public()
+  @ApiExcludeEndpoint()
+  @Get('google')
+  async getGoogleAuthUrl(
+    @Query('redirect') redirect: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const { url } = await this.googleAuthService.getAuthorizationUrl(redirect);
+    // If request accepts JSON or requested via API
+    if (req.headers.accept?.includes('application/json')) {
+      return res.json({ url });
+    }
+    return res.redirect(url);
+  }
+
+  @Public()
+  @ApiExcludeEndpoint()
+  @Get('callback/google')
+  async handleGoogleCallback(
+    @Query('code') code: string,
+    @Query('state') state: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const webBaseUrl = process.env.WEB_BASE_URL ?? 'http://localhost:3000';
+    try {
+      const result = await this.googleAuthService.handleCallback({
+        code,
+        state,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+      });
+
+      this.setSessionCookie(res, result.token);
+
+      // Redirect to frontend destination with token for mobile / cross-site web
+      const redirectUrl = new URL(result.webRedirectUri, webBaseUrl);
+      return res.redirect(redirectUrl.toString());
+    } catch (err: any) {
+      console.error('[Google OAuth Error]:', err);
+      const errorUrl = new URL('/sign-in', webBaseUrl);
+      errorUrl.searchParams.set(
+        'error',
+        err?.message || 'Google sign-in failed',
+      );
+      return res.redirect(errorUrl.toString());
+    }
   }
 
   @Public()

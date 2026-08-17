@@ -111,6 +111,12 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
+    if (!authUser.passwordHash) {
+      throw new UnauthorizedException(
+        'This account was created with Google sign-in. Please sign in with Google.',
+      );
+    }
+
     const isValid = await this.passwordService.verify(
       params.password,
       authUser.passwordHash,
