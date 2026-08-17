@@ -6,6 +6,7 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
+  Switch,
   Text,
   View,
 } from "react-native";
@@ -28,11 +29,18 @@ import {
   useGoals,
   type Goal,
 } from "@/features/goals/hooks";
+import {
+  useDeleteMoneyRule,
+  useMoneyRules,
+  useUpdateMoneyRule,
+  type MoneyRule,
+} from "@/features/money-rules/hooks";
+import { MoneyRuleModal } from "@/features/money-rules/MoneyRuleModal";
 import { useAuth } from "@/lib/auth-provider";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { theme } from "@/lib/theme";
 
-type PlanningTab = "budgets" | "goals" | "rule503020";
+type PlanningTab = "budgets" | "goals" | "alerts";
 
 const STATUS_CONFIG: Record<
   Goal["status"],
@@ -45,6 +53,32 @@ const STATUS_CONFIG: Record<
   stalled: { label: "Stalled", bg: "bg-muted", text: "text-muted-foreground" },
 };
 
+function describeRule(
+  rule: MoneyRule,
+  currency: string,
+  categoryName?: string,
+): string {
+  const amount = formatCurrency(rule.threshold ?? 0, currency);
+  switch (rule.kind) {
+    case "balance_under":
+      return `Balance drops below ${amount}`;
+    case "category_over":
+      return `${categoryName ?? "Category"} spending exceeds ${amount}`;
+    case "large_transaction":
+      return `Any single expense greater than ${amount}`;
+    case "weekly_summary":
+      return rule.cadenceDays === 7
+        ? "Weekly financial summary digest"
+        : `Financial summary every ${rule.cadenceDays} days`;
+    case "goal_progress":
+      return rule.cadenceDays === 7
+        ? "Weekly savings goals check-in"
+        : `Goals check-in every ${rule.cadenceDays} days`;
+    default:
+      return rule.kind;
+  }
+}
+
 export default function PlanningScreen() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<PlanningTab>("budgets");
@@ -52,7 +86,6 @@ export default function PlanningScreen() {
   const {
     data: budgets = [],
     isLoading: budgetsLoading,
-    isError: budgetsError,
     refetch: refetchBudgets,
     isRefetching: budgetsRefetching,
   } = useBudgets();
@@ -60,16 +93,24 @@ export default function PlanningScreen() {
   const {
     data: goals = [],
     isLoading: goalsLoading,
-    isError: goalsError,
     refetch: refetchGoals,
     isRefetching: goalsRefetching,
   } = useGoals();
+
+  const {
+    data: moneyRules = [],
+    isLoading: rulesLoading,
+    refetch: refetchRules,
+    isRefetching: rulesRefetching,
+  } = useMoneyRules();
 
   const { data: categories = [] } = useCategories();
   const { data: accounts = [] } = useAccounts();
 
   const deleteBudget = useDeleteBudget();
   const deleteGoal = useDeleteGoal();
+  const updateRule = useUpdateMoneyRule();
+  const deleteRule = useDeleteMoneyRule();
 
   // Modals state
   const [budgetModalVisible, setBudgetModalVisible] = useState(false);
@@ -81,8 +122,12 @@ export default function PlanningScreen() {
   const [contributeModalVisible, setContributeModalVisible] = useState(false);
   const [contributeGoal, setContributeGoal] = useState<Goal | null>(null);
 
-  const isLoading = (budgetsLoading || goalsLoading) && (!budgetsRefetching && !goalsRefetching);
-  const isRefetching = budgetsRefetching || goalsRefetching;
+  const [ruleModalVisible, setRuleModalVisible] = useState(false);
+  const [selectedRule, setSelectedRule] = useState<MoneyRule | null>(null);
+
+  const isRefetching = budgetsRefetching || goalsRefetching || rulesRefetching;
+  const isLoading =
+    (budgetsLoading || goalsLoading || rulesLoading) && !isRefetching;
 
   const categoryMap = useMemo(() => {
     return new Map(categories.map((c) => [c._id, c.name]));
@@ -173,8 +218,49 @@ export default function PlanningScreen() {
     setContributeModalVisible(true);
   }
 
+  function handleAddRule() {
+    setSelectedRule(null);
+    setRuleModalVisible(true);
+  }
+
+  function handleEditRule(r: MoneyRule) {
+    setSelectedRule(r);
+    setRuleModalVisible(true);
+  }
+
+  function handleToggleRule(r: MoneyRule) {
+    updateRule.mutate({
+      id: r._id,
+      input: {
+        enabled: !r.enabled,
+      },
+    });
+  }
+
+  function handleDeleteRule(r: MoneyRule) {
+    const desc = describeRule(r, user?.currency ?? "USD", categoryMap.get(r.categoryId ?? ""));
+    Alert.alert(
+      "Delete Alert?",
+      `Are you sure you want to remove alert: "${desc}"?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteRule.mutateAsync(r._id);
+            } catch {
+              Alert.alert("Error", "Could not delete alert.");
+            }
+          },
+        },
+      ],
+    );
+  }
+
   async function handleRefresh() {
-    await Promise.all([refetchBudgets(), refetchGoals()]);
+    await Promise.all([refetchBudgets(), refetchGoals(), refetchRules()]);
   }
 
   return (
@@ -184,7 +270,7 @@ export default function PlanningScreen() {
         <View>
           <Text className="font-heading text-2xl text-foreground">Planning</Text>
           <Text className="text-xs text-muted-foreground">
-            Budgets, savings goals & allocations
+            Budgets, savings goals & automated alerts
           </Text>
         </View>
 
@@ -210,7 +296,18 @@ export default function PlanningScreen() {
               New Goal
             </Text>
           </Pressable>
-        ) : null}
+        ) : (
+          <Pressable
+            onPress={handleAddRule}
+            hitSlop={8}
+            className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 active:opacity-80"
+          >
+            <Feather name="plus" size={16} color={theme.primaryForeground} />
+            <Text className="text-xs font-semibold text-primary-foreground">
+              Add Alert
+            </Text>
+          </Pressable>
+        )}
       </View>
 
       <ScrollView
@@ -260,19 +357,19 @@ export default function PlanningScreen() {
           </Pressable>
 
           <Pressable
-            onPress={() => setActiveTab("rule503020")}
+            onPress={() => setActiveTab("alerts")}
             className={`flex-1 items-center justify-center rounded-lg py-2.5 ${
-              activeTab === "rule503020" ? "bg-primary" : "bg-transparent"
+              activeTab === "alerts" ? "bg-primary" : "bg-transparent"
             }`}
           >
             <Text
               className={`text-xs font-semibold ${
-                activeTab === "rule503020"
+                activeTab === "alerts"
                   ? "text-primary-foreground"
                   : "text-muted-foreground"
               }`}
             >
-              50/30/20 Rule
+              Alerts ({moneyRules.length})
             </Text>
           </Pressable>
         </View>
@@ -539,86 +636,109 @@ export default function PlanningScreen() {
           </View>
         ) : (
           /* ===================================================
-           * 50/30/20 RULE TAB
+           * ALERTS & RULES TAB
            * =================================================== */
-          <View className="gap-4">
+          <View className="gap-5">
+            {/* Overview Card */}
             <Card className="bg-card border border-border/80">
-              <CardContent className="p-5 gap-3">
+              <CardContent className="p-5 gap-2">
+                <View className="flex-row items-center justify-between">
+                  <Text className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Automated Rules & Thresholds
+                  </Text>
+                  <View className="h-7 w-7 items-center justify-center rounded-full bg-primary/10">
+                    <Feather name="bell" size={14} color={theme.primary} />
+                  </View>
+                </View>
+                <Text className="text-xs text-muted-foreground leading-relaxed mt-1">
+                  Get notified whenever account balances dip below a floor, category spending exceeds limits, or single big transactions occur.
+                </Text>
+              </CardContent>
+            </Card>
+
+            {/* Rules List */}
+            {moneyRules.length === 0 ? (
+              <View className="items-center justify-center rounded-2xl bg-card border border-border/80 p-8 text-center">
+                <View className="mb-4 h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
+                  <Feather name="bell" size={32} color={theme.primary} />
+                </View>
                 <Text className="font-heading text-lg text-foreground">
-                  The 50/30/20 Financial Framework
+                  No alert rules yet
                 </Text>
-                <Text className="text-xs leading-relaxed text-muted-foreground">
-                  A proven cash-flow allocation rule to balance necessary living costs,
-                  personal fulfillment, and future wealth creation.
+                <Text className="mt-1 max-w-xs text-center text-xs text-muted-foreground">
+                  Create automated alerts to guard your spending and account balances.
                 </Text>
-              </CardContent>
-            </Card>
+                <Button onPress={handleAddRule} className="mt-5">
+                  Set Up an Alert
+                </Button>
+              </View>
+            ) : (
+              <View className="gap-3">
+                {moneyRules.map((rule) => {
+                  const desc = describeRule(
+                    rule,
+                    user?.currency ?? "USD",
+                    categoryMap.get(rule.categoryId ?? ""),
+                  );
 
-            {/* 50% Needs */}
-            <Card className="bg-card border border-border/80">
-              <CardContent className="p-4 gap-2">
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-row items-center gap-2">
-                    <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                      <Feather name="home" size={14} color={theme.primary} />
-                    </View>
-                    <Text className="text-sm font-semibold text-foreground">
-                      50% • Needs & Essentials
-                    </Text>
-                  </View>
-                  <Text className="font-mono text-xs font-semibold text-primary">
-                    50% of Income
-                  </Text>
-                </View>
-                <Text className="text-xs text-muted-foreground leading-relaxed">
-                  Rent, mortgages, groceries, electricity, essential transport, medical care, and minimum debt payments.
-                </Text>
-              </CardContent>
-            </Card>
+                  return (
+                    <Card
+                      key={rule._id}
+                      className={`bg-card border ${
+                        rule.enabled ? "border-border/80" : "border-border/40 opacity-70"
+                      }`}
+                    >
+                      <CardContent className="p-4 gap-3">
+                        <View className="flex-row items-start justify-between">
+                          <View className="flex-1 pr-3">
+                            <Text className="text-sm font-semibold text-foreground leading-snug">
+                              {desc}
+                            </Text>
+                            <Text className="text-xs text-muted-foreground mt-1">
+                              {!rule.enabled
+                                ? "Disabled"
+                                : rule.lastFiredAt
+                                ? `Last sent ${new Date(rule.lastFiredAt).toLocaleDateString()}`
+                                : "Active • Not triggered yet"}
+                            </Text>
+                          </View>
 
-            {/* 30% Wants */}
-            <Card className="bg-card border border-border/80">
-              <CardContent className="p-4 gap-2">
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-row items-center gap-2">
-                    <View className="h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10">
-                      <Feather name="shopping-bag" size={14} color="#d97706" />
-                    </View>
-                    <Text className="text-sm font-semibold text-foreground">
-                      30% • Wants & Lifestyle
-                    </Text>
-                  </View>
-                  <Text className="font-mono text-xs font-semibold text-amber-600">
-                    30% of Income
-                  </Text>
-                </View>
-                <Text className="text-xs text-muted-foreground leading-relaxed">
-                  Dining out, entertainment, subscriptions, hobbies, travel, shopping, and leisure activities.
-                </Text>
-              </CardContent>
-            </Card>
+                          <Switch
+                            value={rule.enabled}
+                            onValueChange={() => handleToggleRule(rule)}
+                            trackColor={{ false: theme.muted, true: theme.primary }}
+                            thumbColor="#ffffff"
+                          />
+                        </View>
 
-            {/* 20% Savings & Debt */}
-            <Card className="bg-card border border-border/80">
-              <CardContent className="p-4 gap-2">
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-row items-center gap-2">
-                    <View className="h-7 w-7 items-center justify-center rounded-lg bg-positive/10">
-                      <Feather name="trending-up" size={14} color={theme.positive} />
-                    </View>
-                    <Text className="text-sm font-semibold text-foreground">
-                      20% • Savings & Investments
-                    </Text>
-                  </View>
-                  <Text className="font-mono text-xs font-semibold text-positive">
-                    20% of Income
-                  </Text>
-                </View>
-                <Text className="text-xs text-muted-foreground leading-relaxed">
-                  Emergency fund reserve, retirement accounts, investments, extra debt payoff, and long-term targets.
-                </Text>
-              </CardContent>
-            </Card>
+                        <View className="flex-row justify-end items-center gap-2 pt-2 border-t border-border/50">
+                          <Pressable
+                            onPress={() => handleEditRule(rule)}
+                            hitSlop={6}
+                            className="flex-row items-center gap-1 rounded-md bg-muted/60 px-2.5 py-1"
+                          >
+                            <Feather name="edit-2" size={12} color={theme.foreground} />
+                            <Text className="text-xs font-medium text-foreground">
+                              Edit
+                            </Text>
+                          </Pressable>
+                          <Pressable
+                            onPress={() => handleDeleteRule(rule)}
+                            hitSlop={6}
+                            className="flex-row items-center gap-1 rounded-md bg-negative/10 px-2.5 py-1"
+                          >
+                            <Feather name="trash-2" size={12} color={theme.negative} />
+                            <Text className="text-xs font-medium text-negative">
+                              Delete
+                            </Text>
+                          </Pressable>
+                        </View>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </View>
+            )}
           </View>
         )}
       </ScrollView>
@@ -643,6 +763,13 @@ export default function PlanningScreen() {
         onClose={() => setContributeModalVisible(false)}
         goal={contributeGoal}
         currency={user?.currency ?? "USD"}
+      />
+
+      {/* Money Rule Modal */}
+      <MoneyRuleModal
+        visible={ruleModalVisible}
+        onClose={() => setRuleModalVisible(false)}
+        rule={selectedRule}
       />
     </View>
   );
