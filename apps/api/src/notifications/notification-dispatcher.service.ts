@@ -7,6 +7,7 @@ import { Budget, BudgetDocument } from '../budgets/schemas/budget.schema';
 import { Category, CategoryDocument } from '../categories/schemas/category.schema';
 import { Transaction, TransactionDocument } from '../transactions/schemas/transaction.schema';
 import { User, UserDocument } from '../users/schemas/user.schema';
+import { formatMoney } from '../common/finance/format-money';
 import { getPeriodWindow } from '../common/finance/get-period-window';
 import { NOTIFICATIONS_QUEUE } from './notifications.processor';
 import { SendPushOptions } from './fcm.service';
@@ -120,8 +121,8 @@ export class NotificationDispatcherService implements OnModuleInit {
       const percentageUsed = Math.round((totalSpent / budget.amount) * 100);
 
       const currency = user.currency ?? 'INR';
-      const formattedSpent = `${currency} ${totalSpent.toLocaleString()}`;
-      const formattedBudget = `${currency} ${budget.amount.toLocaleString()}`;
+      const formattedSpent = formatMoney(totalSpent, currency);
+      const formattedBudget = formatMoney(budget.amount, currency);
 
       if (percentageUsed >= 100) {
         await this.enqueueNotification(userId, {

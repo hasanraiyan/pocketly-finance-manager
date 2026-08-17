@@ -9,6 +9,7 @@ import {
   Category,
   CategoryDocument,
 } from '../categories/schemas/category.schema';
+import { toMajorUnits } from '../common/finance/format-money';
 import { resolveAnalysisRange } from '../common/finance/resolve-analysis-range';
 import type { AnalysisPeriod } from '../common/finance/resolve-analysis-range';
 import {
@@ -180,7 +181,9 @@ export class ExportProcessor extends WorkerHost {
         const row = [
           escapeCsv(format(new Date(tx.date), 'yyyy-MM-dd HH:mm:ss')),
           escapeCsv(tx.type),
-          escapeCsv(tx.amount),
+          // Unquoted so spreadsheets read the column as a number, and in
+          // major units so it reads as actual money.
+          toMajorUnits(tx.amount),
           escapeCsv(currency),
           escapeCsv(
             categoryMap.get(tx.categoryId?.toString() ?? '') ?? 'Uncategorised',

@@ -8,6 +8,7 @@ import {
   View,
   renderToBuffer,
 } from '@react-pdf/renderer';
+import { formatMoney } from '../../common/finance/format-money';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -49,17 +50,11 @@ export interface ReportData {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function fmt(amount: number, currency: string): string {
-  try {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency,
-      maximumFractionDigits: 2,
-    }).format(amount);
-  } catch {
-    return `${currency} ${amount.toFixed(2)}`;
-  }
-}
+/**
+ * Every amount on this report arrives as integer minor units, so it must
+ * go through here rather than straight into a `<Text>`.
+ */
+const fmt = formatMoney;
 
 // ---------------------------------------------------------------------------
 // Styles
