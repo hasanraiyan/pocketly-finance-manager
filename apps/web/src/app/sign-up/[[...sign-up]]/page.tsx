@@ -67,7 +67,7 @@ function SignUpForm() {
       );
       return;
     }
-    router.push("/dashboard");
+    window.location.href = "/dashboard";
   }
 
   function handleGoogleSignUp() {

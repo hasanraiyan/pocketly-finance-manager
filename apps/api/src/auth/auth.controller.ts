@@ -32,9 +32,6 @@ import {
 import { Public } from '../common/auth/public.decorator';
 import { Throttle } from '@nestjs/throttler';
 
-const COOKIE_NAME = 'pocketly_session';
-const COOKIE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
-
 @ApiTags('auth')
 @Controller('api/auth')
 export class AuthController {
@@ -65,7 +62,6 @@ export class AuthController {
     });
 
     if (result.token) {
-      this.setSessionCookie(res, result.token);
       res.setHeader('set-auth-token', result.token);
     }
     return result;
@@ -90,7 +86,6 @@ export class AuthController {
       webBaseUrl,
     });
 
-    this.setSessionCookie(res, result.token);
     res.setHeader('set-auth-token', result.token);
     return result;
   }
@@ -104,7 +99,6 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const { url } = await this.googleAuthService.getAuthorizationUrl(redirect);
-    // If request accepts JSON or requested via API
     if (req.headers.accept?.includes('application/json')) {
       return res.json({ url });
     }
@@ -129,9 +123,7 @@ export class AuthController {
         userAgent: req.headers['user-agent'],
       });
 
-      this.setSessionCookie(res, result.token);
-
-      // Redirect to /auth/callback with token so web frontend securely saves pocketly_auth_token cookie
+      // Redirect to /auth/callback with JWT token
       const redirectPath = result.webRedirectUri || '/dashboard';
       const callbackRedirectUrl = new URL('/auth/callback', webBaseUrl);
       callbackRedirectUrl.searchParams.set('token', result.token);
@@ -164,7 +156,6 @@ export class AuthController {
       userAgent: req.headers['user-agent'],
     });
 
-    this.setSessionCookie(res, result.token);
     res.setHeader('set-auth-token', result.token);
     return result;
   }
@@ -183,15 +174,11 @@ export class AuthController {
   @Post('sign-out')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: AuthMessageResponseDto })
-  async signOut(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async signOut(@Req() req: Request) {
     const token = this.extractToken(req);
     if (token) {
       await this.authService.signOut(token);
     }
-    this.clearSessionCookie(res);
     return { success: true };
   }
 
@@ -347,27 +334,6 @@ export class AuthController {
     );
   }
 
-  private setSessionCookie(res: Response, token: string) {
-    const isProd = process.env.NODE_ENV === 'production';
-    res.cookie(COOKIE_NAME, token, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? 'none' : 'lax',
-      path: '/',
-      maxAge: COOKIE_MAX_AGE_MS,
-    });
-  }
-
-  private clearSessionCookie(res: Response) {
-    const isProd = process.env.NODE_ENV === 'production';
-    res.clearCookie(COOKIE_NAME, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? 'none' : 'lax',
-      path: '/',
-    });
-  }
-
   private extractToken(req: Request): string | undefined {
     const authHeader = req.headers.authorization;
     if (authHeader?.startsWith('Bearer ')) {
@@ -375,14 +341,10 @@ export class AuthController {
       if (token) return token;
     }
 
-    if (req.cookies && req.cookies[COOKIE_NAME]) {
-      return req.cookies[COOKIE_NAME];
-    }
-
     const cookieHeader = req.headers.cookie;
     if (cookieHeader) {
       const match = cookieHeader.match(
-        new RegExp(`(?:^|;\\s*)${COOKIE_NAME}=([^;]+)`),
+        /(?:^|;\s*)(?:pocketly_auth_token|pocketly_session)=([^;]+)/,
       );
       if (match) return decodeURIComponent(match[1]);
     }

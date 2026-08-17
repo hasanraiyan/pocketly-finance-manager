@@ -66,7 +66,7 @@ function SignInForm() {
       window.location.href = `${authBaseUrl}/oauth2/authorize?${searchParams.toString()}`;
       return;
     }
-    router.push("/dashboard");
+    window.location.href = "/dashboard";
   }
 
   function handleGoogleSignIn() {
