@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useSyncExternalStore } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { components } from "@pocketly/sdk";
 import { usePocketlyClient } from "@/lib/use-pocketly-client";
@@ -115,21 +115,50 @@ export function useSendTestNotification() {
   });
 }
 
+function subscribeNotificationState(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("focus", callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    window.removeEventListener("focus", callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
+function getPermissionSnapshot(): NotificationPermission | "unsupported" {
+  if (typeof window !== "undefined" && "Notification" in window) {
+    return Notification.permission;
+  }
+  return typeof window !== "undefined" ? "unsupported" : "default";
+}
+
+function getPermissionServerSnapshot(): NotificationPermission | "unsupported" {
+  return "default";
+}
+
+function getDeviceRegisteredSnapshot(): boolean {
+  if (typeof window === "undefined" || !("Notification" in window)) return false;
+  const savedToken = localStorage.getItem("pocketly_device_token");
+  return Boolean(savedToken && Notification.permission === "granted");
+}
+
+function getDeviceRegisteredServerSnapshot(): boolean {
+  return false;
+}
+
 export function usePushNotificationManager() {
   const client = usePocketlyClient();
-  const [permissionStatus, setPermissionStatus] = useState<NotificationPermission | "unsupported">("default");
+  const permissionStatus = useSyncExternalStore(
+    subscribeNotificationState,
+    getPermissionSnapshot,
+    getPermissionServerSnapshot
+  );
+  const isDeviceRegistered = useSyncExternalStore(
+    subscribeNotificationState,
+    getDeviceRegisteredSnapshot,
+    getDeviceRegisteredServerSnapshot
+  );
   const [isRegistering, setIsRegistering] = useState(false);
-  const [isDeviceRegistered, setIsDeviceRegistered] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && "Notification" in window) {
-      setPermissionStatus(Notification.permission);
-      const savedToken = localStorage.getItem("pocketly_device_token");
-      setIsDeviceRegistered(Boolean(savedToken && Notification.permission === "granted"));
-    } else {
-      setPermissionStatus("unsupported");
-    }
-  }, []);
 
   const enablePushNotifications = useCallback(async () => {
     setIsRegistering(true);
@@ -139,9 +168,8 @@ export function usePushNotificationManager() {
         throw new Error("Unable to retrieve FCM token.");
       }
 
-      setPermissionStatus("granted");
       localStorage.setItem("pocketly_device_token", token);
-      setIsDeviceRegistered(true);
+      window.dispatchEvent(new Event("storage"));
 
       // Register token with backend
       await client.POST("/notifications/devices", {
@@ -158,13 +186,15 @@ export function usePushNotificationManager() {
         type: "success",
         timeout: 5000,
       });
-    } catch (err: any) {
-      if (typeof window !== "undefined" && "Notification" in window) {
-        setPermissionStatus(Notification.permission);
-      }
+    } catch (err: unknown) {
+      window.dispatchEvent(new Event("storage"));
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Please allow notifications in your browser settings.";
       toast.add({
         title: "Couldn't enable notifications",
-        description: err?.message || "Please allow notifications in your browser settings.",
+        description: message,
         type: "error",
       });
     } finally {
@@ -181,9 +211,9 @@ export function usePushNotificationManager() {
           params: { path: { token: savedToken } },
         }).catch(() => {});
         localStorage.removeItem("pocketly_device_token");
+        window.dispatchEvent(new Event("storage"));
       }
 
-      setIsDeviceRegistered(false);
       toast.add({
         title: "Notifications disabled",
         description: "You will no longer receive background alerts on this device.",

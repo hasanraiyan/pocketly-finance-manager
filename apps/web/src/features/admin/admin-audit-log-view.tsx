@@ -1,6 +1,6 @@
 "use client";
 
-import { ShieldAlert, Clock, User, Terminal } from "lucide-react";
+import { ShieldAlert, User, Terminal } from "lucide-react";
 import {
   Card,
   CardContent,

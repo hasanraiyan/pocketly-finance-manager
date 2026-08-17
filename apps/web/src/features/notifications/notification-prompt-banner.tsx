@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, Sparkles, X } from "lucide-react";
+import { Bell, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { usePushNotificationManager } from "./hooks";
@@ -15,7 +15,6 @@ export function NotificationPromptBanner() {
 
   useEffect(() => {
     if (permissionStatus !== "default") {
-      setVisible(false);
       return;
     }
 
@@ -24,7 +23,6 @@ export function NotificationPromptBanner() {
       const daysSinceDismiss =
         (Date.now() - Number(dismissedAt)) / (1000 * 60 * 60 * 24);
       if (daysSinceDismiss < 7) {
-        setVisible(false);
         return;
       }
     }
@@ -47,7 +45,7 @@ export function NotificationPromptBanner() {
     setVisible(false);
   }
 
-  if (!visible) return null;
+  if (!visible || permissionStatus !== "default") return null;
 
   return (
     <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-border bg-accent/40 p-4 transition-all animate-in fade-in slide-in-from-top-2">

@@ -9,7 +9,6 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +21,6 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
-import { Separator } from "@/components/ui/separator";
 
 type Currency = {
   symbol: string;

@@ -1,5 +1,4 @@
 // Firebase Cloud Messaging Background Service Worker
-/* eslint-disable no-restricted-globals */
 
 self.addEventListener("push", (event) => {
   if (!event.data) return;

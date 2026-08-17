@@ -270,17 +270,26 @@ export class FeedbackService {
   }
 
   private serializeUserFeedback(
-    item: any,
+    item: FeedbackDocument,
     currentUserId: Types.ObjectId,
   ) {
     const userIdStr = currentUserId.toString();
-    const upvotes = (item.upvotes || []).map((id: any) => id.toString());
-    const itemUserIdStr = (item.userId?._id ?? item.userId ?? '').toString();
-    const createdAt = item.createdAt ? new Date(item.createdAt).toISOString() : new Date().toISOString();
-    const updatedAt = item.updatedAt ? new Date(item.updatedAt).toISOString() : new Date().toISOString();
+    const upvotes = (item.upvotes || []).map((id) => id.toString());
+    const rawUserId = item.userId as Types.ObjectId | { _id: Types.ObjectId };
+    const itemUserIdStr = (
+      typeof rawUserId === 'object' && rawUserId && '_id' in rawUserId
+        ? rawUserId._id
+        : rawUserId
+    ).toString();
+    const createdAt = item.createdAt
+      ? new Date(item.createdAt).toISOString()
+      : new Date().toISOString();
+    const updatedAt = item.updatedAt
+      ? new Date(item.updatedAt).toISOString()
+      : new Date().toISOString();
 
     return {
-      _id: (item._id ?? '').toString(),
+      _id: item._id.toString(),
       type: item.type,
       category: item.category,
       title: item.title,
@@ -297,13 +306,23 @@ export class FeedbackService {
     };
   }
 
-  private serializeAdminFeedback(item: any) {
-    const createdAt = item.createdAt ? new Date(item.createdAt).toISOString() : new Date().toISOString();
-    const updatedAt = item.updatedAt ? new Date(item.updatedAt).toISOString() : new Date().toISOString();
+  private serializeAdminFeedback(item: FeedbackDocument) {
+    const rawUserId = item.userId as Types.ObjectId | { _id: Types.ObjectId };
+    const itemUserIdStr = (
+      typeof rawUserId === 'object' && rawUserId && '_id' in rawUserId
+        ? rawUserId._id
+        : rawUserId
+    ).toString();
+    const createdAt = item.createdAt
+      ? new Date(item.createdAt).toISOString()
+      : new Date().toISOString();
+    const updatedAt = item.updatedAt
+      ? new Date(item.updatedAt).toISOString()
+      : new Date().toISOString();
 
     return {
-      _id: (item._id ?? '').toString(),
-      userId: (item.userId?._id ?? item.userId ?? '').toString(),
+      _id: item._id.toString(),
+      userId: itemUserIdStr,
       userName: item.userName,
       userEmail: item.userEmail,
       type: item.type,

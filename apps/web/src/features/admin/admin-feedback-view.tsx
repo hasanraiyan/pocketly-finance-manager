@@ -3,32 +3,16 @@
 import { useState } from "react";
 import {
   Search,
-  Filter,
   Trash2,
   Edit,
-  Sparkles,
-  MessageSquare,
-  Bug,
-  Lightbulb,
-  Palette,
-  Bot,
-  CircleHelp,
-  Clock,
-  RotateCcw,
-  Hammer,
-  CheckCircle2,
   Star,
   User,
   Mail,
   Loader2,
-  ExternalLink,
 } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -160,7 +144,9 @@ export function AdminFeedbackView() {
 
           <Select
             value={category}
-            onValueChange={(val) => setCategory(val as any)}
+            onValueChange={(val) =>
+              setCategory(val as AdminFeedbackItem["category"] | "all")
+            }
           >
             <SelectTrigger className="w-[150px] h-9 text-xs">
               <SelectValue placeholder="Category" />
@@ -176,7 +162,9 @@ export function AdminFeedbackView() {
 
           <Select
             value={status}
-            onValueChange={(val) => setStatus(val as any)}
+            onValueChange={(val) =>
+              setStatus(val as AdminFeedbackItem["status"] | "all")
+            }
           >
             <SelectTrigger className="w-[140px] h-9 text-xs">
               <SelectValue placeholder="Status" />
@@ -351,7 +339,9 @@ export function AdminFeedbackView() {
                 <Label htmlFor="manage-status">Lifecycle Status</Label>
                 <Select
                   value={editStatus}
-                  onValueChange={(val) => setEditStatus(val as any)}
+                  onValueChange={(val) =>
+                    setEditStatus(val as AdminFeedbackItem["status"])
+                  }
                 >
                   <SelectTrigger id="manage-status">
                     <SelectValue />

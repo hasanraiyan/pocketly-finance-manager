@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Shield, User, ShieldCheck, Mail, Calendar } from "lucide-react";
+import { Search, Shield, ShieldCheck, Mail, Calendar } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -27,7 +27,6 @@ import { formatDate } from "@/lib/format";
 import {
   useAdminUsers,
   useAdminUpdateUserRole,
-  type AdminUserItem,
 } from "./hooks";
 
 export function AdminUsersView() {

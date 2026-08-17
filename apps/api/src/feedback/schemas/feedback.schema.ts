@@ -25,7 +25,10 @@ export type FeedbackStatus = (typeof FEEDBACK_STATUSES)[number];
 export const FEEDBACK_TYPES = ['feedback', 'feature_request'] as const;
 export type FeedbackType = (typeof FEEDBACK_TYPES)[number];
 
-export type FeedbackDocument = HydratedDocument<Feedback>;
+export type FeedbackDocument = HydratedDocument<Feedback> & {
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 
 @Schema({ timestamps: true })
 export class Feedback {
@@ -80,7 +83,10 @@ export class Feedback {
   status!: FeedbackStatus;
 
   /** User IDs who upvoted this item. */
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }], default: [] })
+  @Prop({
+    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }],
+    default: [],
+  })
   upvotes!: Types.ObjectId[];
 
   @Prop({ type: Number, default: 0, index: true })

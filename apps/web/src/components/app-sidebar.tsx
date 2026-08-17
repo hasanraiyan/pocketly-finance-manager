@@ -45,7 +45,6 @@ export const NAV_ITEMS = [
   { title: "Analysis", url: "/analysis", icon: LineChart },
   { title: "Goals", url: "/goals", icon: Flag },
   { title: "Planning", url: "/planning", icon: Target },
-  { title: "Feedback", url: "/feedback", icon: MessageSquarePlus },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
@@ -144,6 +143,10 @@ function UserMenu({ name, email }: { name?: string; email?: string }) {
         <DropdownMenuItem render={<Link href="/settings" />}>
           <Settings />
           Settings
+        </DropdownMenuItem>
+        <DropdownMenuItem render={<Link href="/feedback" />}>
+          <MessageSquarePlus />
+          Feedback & Ideas
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => void handleSignOut()}>
           <LogOut />

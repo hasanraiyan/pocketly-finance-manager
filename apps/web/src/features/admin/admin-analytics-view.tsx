@@ -6,7 +6,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from "recharts";
@@ -21,8 +20,6 @@ import {
   Bot,
   MessageSquare,
   TrendingUp,
-  Sparkles,
-  Layers,
 } from "lucide-react";
 import {
   Card,

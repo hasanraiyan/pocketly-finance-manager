@@ -44,7 +44,9 @@ export function AdminDashboardView({
       {/* Tabs */}
       <Tabs
         value={activeTab}
-        onValueChange={(val) => setActiveTab(val as any)}
+        onValueChange={(val) =>
+          setActiveTab(val as "analytics" | "feedback" | "users" | "audit")
+        }
         className="w-full space-y-6"
       >
         <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full sm:w-auto h-auto p-1 gap-1">

@@ -17,7 +17,6 @@ import {
   Tags,
   Trash2,
   Unplug,
-  Upload,
   X,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -76,7 +75,11 @@ import {
   useDeleteCategory,
   type Category,
 } from "@/features/categories/hooks";
-import { useUpdateProfile, useDeleteMyAccount } from "./hooks";
+import {
+  useUpdateProfile,
+  useDeleteMyAccount,
+  type UserProfile,
+} from "./hooks";
 import {
   useDisconnectOAuthClient,
   useOAuthConnections,
@@ -107,7 +110,7 @@ function ProfileCard({
   currency,
   timezone,
 }: {
-  profile?: any;
+  profile?: UserProfile;
   currency: string;
   timezone: string;
 }) {
@@ -1019,7 +1022,7 @@ export function SettingsView({
   categoriesInitialData,
   categoriesLoadFailed = false,
 }: {
-  profile?: any;
+  profile?: UserProfile;
   currency: string;
   timezone: string;
   profileLoadFailed?: boolean;
