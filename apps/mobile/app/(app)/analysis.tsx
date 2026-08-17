@@ -87,16 +87,20 @@ export default function AnalysisScreen() {
 
   // Sorted Expense Categories
   const expenseCategories = useMemo(() => {
-    return (categoryData?.expenses ?? []).slice(0, 8);
+    return (categoryData?.categories ?? [])
+      .filter((c) => c.type === "expense")
+      .slice(0, 8);
   }, [categoryData]);
 
   const totalCategoryExpense = useMemo(() => {
-    return expenseCategories.reduce((sum, item) => sum + item.total, 0) || 1;
+    return (
+      expenseCategories.reduce((sum: number, item) => sum + item.total, 0) || 1
+    );
   }, [expenseCategories]);
 
   // Daily Trends for Timeline
   const recentDays = useMemo(() => {
-    return (trendData?.daily ?? []).slice(-7);
+    return (trendData?.days ?? []).slice(-7);
   }, [trendData]);
 
   const maxDayVolume = useMemo(() => {
