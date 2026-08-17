@@ -12,12 +12,27 @@ import {
   clearStoredAuthToken,
 } from "./auth-token";
 
-export const apiServerOrigin =
-  process.env.NEXT_PUBLIC_API_AUTH_URL
-    ? process.env.NEXT_PUBLIC_API_AUTH_URL.replace(/\/api\/auth\/?$/, "")
-    : (process.env.NEXT_PUBLIC_API_URL
-        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/v1\/?$/, "")
-        : "http://localhost:4000");
+function getProductionOrLocalOrigin(): string {
+  if (process.env.NEXT_PUBLIC_API_AUTH_URL) {
+    return process.env.NEXT_PUBLIC_API_AUTH_URL.replace(/\/api\/auth\/?$/, "");
+  }
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/v1\/?$/, "");
+  }
+  if (
+    typeof window !== "undefined" &&
+    (window.location.hostname.includes("pocketly") ||
+      window.location.hostname.includes("hasanraiyan.me") ||
+      window.location.hostname.includes("vercel.app"))
+  ) {
+    return "https://api.pocketly.hasanraiyan.me";
+  }
+  return process.env.NODE_ENV === "production"
+    ? "https://api.pocketly.hasanraiyan.me"
+    : "http://localhost:4000";
+}
+
+export const apiServerOrigin = getProductionOrLocalOrigin();
 
 export const authBaseUrl =
   process.env.NEXT_PUBLIC_API_AUTH_URL ?? `${apiServerOrigin}/api/auth`;
@@ -68,6 +83,17 @@ export interface ConsentRecord {
   createdAt: string | Date;
 }
 
+function extractErrorMessage(error: any, fallback: string): string {
+  if (!error) return fallback;
+  if (typeof error === "string") return error;
+  if (typeof error.message === "string") return error.message;
+  if (Array.isArray(error.message) && error.message.length > 0) {
+    return error.message.join(". ");
+  }
+  if (typeof error.error === "string") return error.error;
+  return fallback;
+}
+
 export const authClient = {
   signIn: {
     email: async (params: { email: string; password: string }) => {
@@ -79,7 +105,7 @@ export const authClient = {
       }
       return {
         data,
-        error: error ? { message: (error as any)?.message || "Sign in failed" } : null,
+        error: error ? { message: extractErrorMessage(error, "Sign in failed") } : null,
       };
     },
     social: async (params: { provider: "google"; callbackURL?: string }) => {
@@ -101,7 +127,7 @@ export const authClient = {
       }
       return {
         data,
-        error: error ? { message: (error as any)?.message || "Sign up failed" } : null,
+        error: error ? { message: extractErrorMessage(error, "Sign up failed") } : null,
       };
     },
   },
@@ -110,7 +136,7 @@ export const authClient = {
     clearStoredAuthToken();
     return {
       data,
-      error: error ? { message: (error as any)?.message || "Sign out failed" } : null,
+      error: error ? { message: extractErrorMessage(error, "Sign out failed") } : null,
     };
   },
   requestPasswordReset: async (params: { email: string; redirectTo?: string }) => {
@@ -119,7 +145,7 @@ export const authClient = {
     });
     return {
       data,
-      error: error ? { message: (error as any)?.message || "Password reset failed" } : null,
+      error: error ? { message: extractErrorMessage(error, "Password reset failed") } : null,
     };
   },
   forgetPassword: async (params: { email: string; redirectTo?: string }) => {
@@ -128,7 +154,7 @@ export const authClient = {
     });
     return {
       data,
-      error: error ? { message: (error as any)?.message || "Password reset failed" } : null,
+      error: error ? { message: extractErrorMessage(error, "Password reset failed") } : null,
     };
   },
   resetPassword: async (params: { newPassword: string; token: string }) => {
@@ -137,7 +163,7 @@ export const authClient = {
     });
     return {
       data,
-      error: error ? { message: (error as any)?.message || "Reset password failed" } : null,
+      error: error ? { message: extractErrorMessage(error, "Reset password failed") } : null,
     };
   },
   verifyEmail: async (params: { token: string }) => {
@@ -149,7 +175,7 @@ export const authClient = {
     }
     return {
       data,
-      error: error ? { message: (error as any)?.message || "Verification failed" } : null,
+      error: error ? { message: extractErrorMessage(error, "Verification failed") } : null,
     };
   },
   sendVerificationEmail: async (params: { email: string }) => {
@@ -162,7 +188,7 @@ export const authClient = {
     return {
       data,
       error: error
-        ? { message: (error as any)?.message || "Failed to send verification email" }
+        ? { message: extractErrorMessage(error, "Failed to send verification email") }
         : null,
     };
   },
@@ -173,7 +199,7 @@ export const authClient = {
     return {
       data,
       error: error
-        ? { message: (error as any)?.message || "Failed to change password" }
+        ? { message: extractErrorMessage(error, "Failed to change password") }
         : null,
     };
   },
@@ -182,7 +208,7 @@ export const authClient = {
     return {
       data: data?.items ?? [],
       error: error
-        ? { message: (error as any)?.message || "Failed to fetch active sessions" }
+        ? { message: extractErrorMessage(error, "Failed to fetch active sessions") }
         : null,
     };
   },
@@ -193,7 +219,7 @@ export const authClient = {
     return {
       data,
       error: error
-        ? { message: (error as any)?.message || "Failed to revoke session" }
+        ? { message: extractErrorMessage(error, "Failed to revoke session") }
         : null,
     };
   },
@@ -202,7 +228,7 @@ export const authClient = {
     return {
       data,
       error: error
-        ? { message: (error as any)?.message || "Failed to revoke other sessions" }
+        ? { message: extractErrorMessage(error, "Failed to revoke other sessions") }
         : null,
     };
   },

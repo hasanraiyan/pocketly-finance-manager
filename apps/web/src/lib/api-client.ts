@@ -2,7 +2,19 @@ import { cookies } from "next/headers";
 import { createPocketlyClient } from "@pocketly/sdk";
 import { AUTH_TOKEN_COOKIE_NAME } from "./auth-token";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
+function getBaseUrl(): string {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (process.env.NEXT_PUBLIC_API_AUTH_URL) {
+    return process.env.NEXT_PUBLIC_API_AUTH_URL.replace(/\/api\/auth\/?$/, "/api/v1");
+  }
+  return process.env.NODE_ENV === "production"
+    ? "https://api.pocketly.hasanraiyan.me/api/v1"
+    : "http://localhost:4000/api/v1";
+}
+
+const baseUrl = getBaseUrl();
 
 /** Unauthenticated client, usable only for public endpoints (e.g. /health). */
 export const apiClient = createPocketlyClient({ baseUrl });
