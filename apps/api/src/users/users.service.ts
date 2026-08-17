@@ -116,9 +116,10 @@ export class UsersService {
     user: UserDocument,
     dto: UpdateProfileDto,
   ): Promise<UserDocument> {
-    const { onboarded, ...fields } = dto;
+    const { onboarded, dismissChecklist, ...fields } = dto;
     Object.assign(user, fields);
     if (onboarded) user.onboardedAt = new Date();
+    if (dismissChecklist) user.checklistDismissedAt = new Date();
     await user.save();
     return user;
   }

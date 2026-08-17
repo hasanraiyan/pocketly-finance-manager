@@ -498,6 +498,7 @@ export interface components {
                 currency: string;
                 timezone: string;
                 onboardedAt?: string | null;
+                checklistDismissedAt?: string | null;
                 createdAt: string;
                 updatedAt: string;
             };
@@ -510,6 +511,8 @@ export interface components {
             timezone?: string;
             /** @constant */
             onboarded?: true;
+            /** @constant */
+            dismissChecklist?: true;
         };
         DeleteAccountDto: {
             /** @constant */

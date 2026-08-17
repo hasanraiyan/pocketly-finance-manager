@@ -25,6 +25,7 @@ export const updateProfileSchema = z
     // A flag, not a timestamp: the server stamps the time, so a client
     // can't backdate or forge when onboarding happened.
     onboarded: z.literal(true).optional(),
+    dismissChecklist: z.literal(true).optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: 'At least one field must be provided to update profile',

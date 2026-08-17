@@ -14,9 +14,7 @@ import {
   AccountsCardSkeleton,
   BalanceCardSkeleton,
   BudgetsCardSkeleton,
-  GetStartedCardSkeleton,
   GreetingSkeleton,
-  InsightsCardSkeleton,
   RecentRecordsSkeleton,
 } from "@/features/dashboard/skeletons";
 
@@ -41,7 +39,14 @@ export default function DashboardPage() {
         <Greeting />
       </Suspense>
 
-      <Suspense fallback={<GetStartedCardSkeleton />}>
+      {/*
+        No fallback, deliberately. Both this and InsightsCard render nothing
+        at all in the common case -- checklist finished, no insight worth
+        showing -- so a skeleton would draw a card, hold the space, and then
+        delete it once the data arrived. A placeholder for something that
+        may not exist is worse than a slightly later appearance.
+      */}
+      <Suspense fallback={null}>
         <GetStartedCard />
       </Suspense>
 
@@ -49,7 +54,7 @@ export default function DashboardPage() {
         <BalanceCard />
       </Suspense>
 
-      <Suspense fallback={<InsightsCardSkeleton />}>
+      <Suspense fallback={null}>
         <InsightsCard />
       </Suspense>
 

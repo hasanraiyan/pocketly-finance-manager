@@ -47,6 +47,14 @@ export class User {
    */
   @Prop({ type: Date, default: null })
   onboardedAt?: Date | null;
+
+  /**
+   * When the user dismissed the get-started checklist. Separate from
+   * `onboardedAt`: the walkthrough explains what things are, the checklist
+   * tracks what's left, and someone may well want one without the other.
+   */
+  @Prop({ type: Date, default: null })
+  checklistDismissedAt?: Date | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

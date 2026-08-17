@@ -1967,6 +1967,16 @@
                   }
                 ]
               },
+              "checklistDismissedAt": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "createdAt": {
                 "type": "string"
               },
@@ -2020,6 +2030,11 @@
             "x-nestjs_zod-uses-3-point-1-syntax": true
           },
           "onboarded": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "dismissChecklist": {
             "type": "boolean",
             "const": true,
             "x-nestjs_zod-uses-3-point-1-syntax": true

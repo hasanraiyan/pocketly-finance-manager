@@ -11,6 +11,7 @@ export const userSchema = z.object({
   currency: z.string(),
   timezone: z.string(),
   onboardedAt: z.string().nullish(),
+  checklistDismissedAt: z.string().nullish(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
