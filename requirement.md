@@ -1,4 +1,4 @@
-Absolutely. I’d rewrite it as the **actual engineering SRS for the standalone Pocketly product**, with **Better Auth, MongoDB, Next.js, TypeScript, Zod, Expo/React Native, AI, MCP, Telegram, and the existing Pocketly functionality** treated as first-class parts of the architecture.
+Absolutely. I’d rewrite it as the **actual engineering SRS for the standalone Pocketly product**, with **Clerk, MongoDB, Next.js, TypeScript, Zod, Expo/React Native, AI, MCP, Telegram, and the existing Pocketly functionality** treated as first-class parts of the architecture.
 
 I’d also remove the unnecessary custom-auth requirements from the previous version.
 
@@ -160,7 +160,7 @@ The initial standalone application will use the following technologies.
 | UI               | React                |
 | Styling          | Tailwind CSS         |
 | Components       | shadcn/ui            |
-| Authentication   | **Better Auth**      |
+| Authentication   | **Clerk**            |
 | Database         | MongoDB              |
 | ODM              | Mongoose             |
 | Validation       | Zod                  |
@@ -178,9 +178,9 @@ The architecture should remain flexible enough to replace individual infrastruct
 
 # 7. Authentication
 
-## 7.1 Better Auth
+## 7.1 Clerk
 
-Pocketly MUST use **Better Auth**, self-hosted inside the API (`apps/api`), as its authentication library.
+Pocketly MUST use **Clerk** as its identity provider.
 
 Pocketly MUST NOT hand-roll:
 
@@ -188,18 +188,30 @@ Pocketly MUST NOT hand-roll:
 * Session/token issuance
 * OAuth provider implementation (used for MCP client authorization)
 
-Better Auth handles identity, session issuance, and OAuth -- Pocketly's own code only reads the resulting session/token, it never re-implements auth primitives itself.
+Clerk handles identity, session issuance, email verification, password reset, social sign-in, and
+the OAuth authorization server that MCP clients authenticate against. Pocketly's own code only
+reads the resulting session — it never re-implements auth primitives itself.
+
+Integration points:
+
+* API — `@clerk/express`: `clerkMiddleware()` plus a global `ClerkAuthGuard`.
+* Web — `@clerk/nextjs`: `ClerkProvider`, `clerkMiddleware()` in `src/proxy.ts`, and Clerk's prebuilt sign-in/sign-up components.
+* Sync — `POST /webhooks/clerk` (Svix-verified) keeps the Pocketly profile aligned on `user.updated` / `user.deleted`.
+
+Earlier revisions of this document specified Better Auth, self-hosted inside the API. It was
+replaced by Clerk; see `docs/clerk-migration-plan.md` for the migration and its consequences —
+notably §37's scope limitation, which is a direct result of this choice.
 
 ---
 
-# 8. Better Auth User Identity
+# 8. Clerk User Identity
 
-Every Pocketly user MUST be associated with a Better Auth user.
+Every Pocketly user MUST be associated with a Clerk user.
 
 Example:
 
 ```text
-Better Auth
+Clerk
   │
   │ authUserId
   ↓
@@ -229,7 +241,7 @@ User
 
 Authentication and authorization are separate concerns.
 
-Better Auth answers:
+Clerk answers:
 
 > Who is this user?
 
@@ -253,7 +265,7 @@ Transaction
 The backend MUST verify:
 
 ```text
-authenticated Better Auth user
+authenticated Clerk user
         ↓
 Pocketly user
         ↓
@@ -266,7 +278,6 @@ A user MUST NEVER be able to access another user's:
 * Transactions
 * Categories
 * Budgets
-* AI conversations
 * Connections
 * Reminder settings
 * Exports
@@ -775,11 +786,10 @@ The system MUST use consistent timezone handling when calculating date ranges.
 
 # 33. AI Finance Assistant
 
-AI is a major feature of Pocketly.
+AI is a major feature of Pocketly — delivered as **bring-your-own-model over MCP**, not as an
+in-app chatbot.
 
-The assistant should allow users to interact with their financial information using natural language.
-
-Examples:
+Users MUST be able to interact with their financial information using natural language:
 
 ```text
 How much did I spend this month?
@@ -794,6 +804,28 @@ How much is left in my food budget?
 
 Show me my expenses from last week.
 ```
+
+They do this by connecting their own AI client (Claude, ChatGPT, or any MCP-compatible client) to
+Pocketly's MCP server (§39). The user brings the model and pays for it through their own
+subscription.
+
+## 33.1 Why not an in-app assistant
+
+An in-app chatbot was specified in earlier revisions of this document and deliberately dropped
+(see `docs/ai-assistant-plan.md` for the full analysis). Two reasons:
+
+* **Cost.** Pocketly would pay per token for every user, on a product with no revenue. The cost is
+  unbounded and grows with adoption.
+* **Duplication.** The MCP server already exposes the same tools over the same domain services, and
+  the model on the user's side is better than one Pocketly would host.
+
+Pocketly's inference cost under this architecture is **zero**.
+
+## 33.2 What Pocketly is still responsible for
+
+Choosing BYO-model does not outsource the requirements — §35–38 still bind the MCP tool surface:
+the tools are the AI's only source of financial data, they enforce the same authorization as the
+REST API, and they never expose one user's data to another.
 
 ---
 
@@ -860,7 +892,7 @@ AI interprets request
      ↓
 AI generates proposed action
      ↓
-User confirmation
+User confirmation          ← rendered by the MCP client, not by Pocketly
      ↓
 Pocketly API
      ↓
@@ -888,6 +920,22 @@ HDFC Bank
 ```
 
 Only after confirmation should the transaction be created.
+
+**Where this happens.** Under the BYO-model architecture (§33) the confirmation prompt is rendered
+by the user's AI client, which asks before invoking a write tool. Pocketly does not render it, and
+therefore cannot guarantee it: a client that chose not to prompt would not be blocked by the
+server.
+
+What Pocketly guarantees instead:
+
+* Every write is attributable to a connection the user explicitly authorized (§39, §60).
+* Connections are listed in Settings, and disconnecting takes effect immediately — including for
+  access tokens already issued.
+* Write tools are described so that a client understands they mutate data.
+
+**Known limitation.** Pocketly's authorization provider does not yet support custom OAuth scopes,
+so a connection is all-or-nothing read **and** write; a read-only connection cannot currently be
+offered. This MUST be stated plainly wherever a user connects a client. See `docs/security.md`.
 
 ---
 
@@ -1012,6 +1060,15 @@ Always
 
 # 44. Mobile Application
 
+> **⚠️ DEPRECATED — the Expo app is not being developed.**
+>
+> Mobile access is delivered by the **responsive web application** (§70), which is what acceptance
+> criterion 18 requires. `apps/mobile` still exists in the repository but is excluded from the dev
+> loop (`turbo run dev --filter=!mobile`) and is not maintained.
+>
+> §44–46 are kept for reference in case a native app is revived. Everything in them describes work
+> that is **not** in scope.
+
 Pocketly SHOULD have an official mobile application.
 
 Recommended technology:
@@ -1020,7 +1077,7 @@ Recommended technology:
 
 The mobile application should provide:
 
-* Authentication through Better Auth
+* Authentication through Clerk
 * Dashboard
 * Accounts
 * Transactions
@@ -1034,7 +1091,7 @@ The mobile application should provide:
 
 # 45. Mobile Authentication
 
-The mobile application MUST use Better Auth-supported authentication mechanisms.
+The mobile application MUST use Clerk-supported authentication mechanisms.
 
 Pocketly MUST NOT implement an insecure custom authentication system merely for mobile.
 
@@ -1166,25 +1223,25 @@ The API SHOULD be versioned.
 
 # 52. Authentication API
 
-Better Auth manages authentication, mounted inside the API at its own
-prefix rather than under `/api/v1`:
+Clerk hosts authentication. Pocketly exposes **no** authentication endpoints of its own — there is
+no `/api/auth/*` route tree. Sign-up, sign-in, email verification, password reset, social sign-in
+and session management all happen against Clerk, through its components in the web app.
+
+The API's only auth-related routes are:
 
 ```text
-/api/auth/sign-up
-/api/auth/sign-in
-/api/auth/forgot-password
-...
+POST /webhooks/clerk    Clerk → Pocketly profile sync (Svix-verified, @Public())
 ```
 
-Pocketly's own `/api/v1` route tree does NOT re-implement any of these --
-it only ever reads the session Better Auth has already resolved.
-
-Authenticated requests to `/api/v1` arrive with a Better Auth session/token.
+Authenticated requests to `/api/v1` arrive with a Clerk session token in
+`Authorization: Bearer`. `clerkMiddleware()` verifies it and `ClerkAuthGuard` resolves it to a
+Pocketly `User`. Pocketly's own route tree never re-implements any auth primitive; it only reads
+the session Clerk has already resolved.
 
 The backend resolves:
 
 ```text
-Better Auth user
+Clerk user
     ↓
 Pocketly user
 ```
@@ -1250,10 +1307,21 @@ GET /api/v1/analysis/accounts
 
 # 58. AI API
 
+**Removed.** These endpoints described an in-app assistant and were never built; see §33.1.
+
 ```text
-POST /api/v1/ai/chat
-POST /api/v1/ai/action/preview
-POST /api/v1/ai/action/confirm
+POST /api/v1/ai/chat              ✗ not implemented — superseded by MCP
+POST /api/v1/ai/action/preview    ✗ not implemented — superseded by MCP
+POST /api/v1/ai/action/confirm    ✗ not implemented — superseded by MCP
+```
+
+The AI surface is the MCP server (§39) plus the Connection API (§60):
+
+```text
+POST   /mcp                                        MCP transport (OAuth bearer token)
+GET    /.well-known/oauth-protected-resource       discovery → authorization server
+GET    /api/v1/mcp-connections                     list connected clients
+DELETE /api/v1/mcp-connections/{clientId}          disconnect, effective immediately
 ```
 
 ---
@@ -1286,7 +1354,7 @@ Security is a critical requirement because Pocketly handles sensitive financial 
 The application MUST:
 
 * Use HTTPS in production.
-* Use Better Auth for authentication.
+* Use Clerk for authentication.
 * Validate authorization on every protected request.
 * Validate all input.
 * Avoid logging financial information unnecessarily.
@@ -1344,7 +1412,7 @@ Delete/anonymize Pocketly data
         ↓
 Delete Pocketly profile
         ↓
-Better Auth account deletion (auth.api.deleteUser)
+Clerk identity deletion (clerkClient.users.deleteUser)
 ```
 
 The exact deletion strategy should comply with the selected data-retention policy.
@@ -1571,7 +1639,7 @@ Existing Pocketly
        ↓
 Extract data
        ↓
-Create Better Auth user mapping
+Create Clerk user mapping
        ↓
 Create Pocketly user
        ↓
@@ -1608,7 +1676,7 @@ Pocketly
 
 New
 
-Better Auth User
+Clerk User
   ↓
 Pocketly User
   ↓
@@ -1821,7 +1889,7 @@ The standalone MVP MUST include:
 
 ### Authentication
 
-* Better Auth
+* Clerk
 * Protected routes
 * User-specific authorization
 
@@ -1838,9 +1906,9 @@ The standalone MVP MUST include:
 
 ### AI
 
-* Finance Assistant
-* Read-only financial questions
-* Transaction creation with confirmation
+* MCP server — connect any MCP-compatible AI client (§33, §39)
+* Read-only financial questions, through that client
+* Transaction creation, confirmed in that client
 
 ### Utility
 
@@ -1855,19 +1923,23 @@ The following should be added after the core product is stable:
 
 ### Phase 2
 
+* Recurring transactions — see `docs/post-mvp-plan.md` Track A
+* Rule-based insights — see `docs/post-mvp-plan.md` Track B
 * Telegram reminders
 * Telegram reports
-* Mobile app
-* Push notifications
-* Recurring transactions
+* ~~Mobile app~~ — deprecated, see §44
+* ~~Push notifications~~ — already shipped (web FCM)
 
 ### Phase 3
 
 * Receipt scanning
-* AI categorization
 * Voice transaction entry
 * Financial goals
 * Subscription tracking
+
+Anything requiring paid inference (receipt scanning, auto-categorization, voice entry) is out of
+scope while Pocketly has no revenue — see §33.1. Where a feature can be delivered as a tool on the
+MCP server instead, the user's own AI client pays for it and Pocketly does not.
 
 ### Phase 4
 
@@ -1884,7 +1956,7 @@ The following should be added after the core product is stable:
 Phase 1
 Standalone Core
 │
-├── Better Auth
+├── Clerk
 ├── MongoDB
 ├── Accounts
 ├── Transactions
@@ -1924,8 +1996,8 @@ Intelligence
 
 Pocketly MVP is ready when a new user can:
 
-1. Sign up through Better Auth.
-2. Sign in through Better Auth.
+1. Sign up through Clerk.
+2. Sign in through Clerk.
 3. Create a financial account.
 4. Create an expense.
 5. Create income.
@@ -1936,13 +2008,17 @@ Pocketly MVP is ready when a new user can:
 10. Search transactions.
 11. Filter transactions.
 12. View analysis.
-13. Ask the AI assistant about their finances.
-14. Request an AI transaction.
-15. Review the proposed transaction.
-16. Explicitly confirm it.
+13. Connect an AI client to Pocketly over MCP.
+14. Ask that client about their finances and get answers from their real data.
+15. Ask that client to record a transaction, and review what it proposes.
+16. Confirm it, and see the record appear in Pocketly.
 17. Export financial data.
-18. Access the application on mobile.
+18. Access the application on mobile web.
 19. Never access another user's data.
+
+Criteria 13–16 were rewritten when the in-app assistant was dropped in favour of MCP (§33.1).
+Criterion 18 is satisfied by the responsive web application (§70); the Expo app is deprecated
+(§44).
 
 ---
 
@@ -1971,7 +2047,7 @@ A feature is considered complete when:
 
 Existing Pocketly functionality should be extracted and improved instead of unnecessarily rewritten.
 
-## 87.2 Better Auth Handles Identity
+## 87.2 Clerk Handles Identity
 
 Pocketly does not implement its own authentication system.
 
@@ -2015,7 +2091,7 @@ The initial production architecture should look approximately like this:
                                    │
                                    ▼
                          ┌───────────────────┐
-                         │    Better Auth    │
+                         │    Clerk    │
                          │ Authentication    │
                          └─────────┬─────────┘
                                    │
@@ -2070,7 +2146,7 @@ The standalone product will transform it into a proper multi-user application by
 ```text
 Existing Pocketly
        +
-Better Auth
+Clerk
        +
 User-scoped authorization
        +
@@ -2089,6 +2165,6 @@ Standalone Pocketly
 
 The most important architectural rule is:
 
-> **Better Auth owns identity. Pocketly owns financial data. The Finance Domain owns financial rules. AI interacts with the Finance Domain through authorized tools.**
+> **Clerk owns identity. Pocketly owns financial data. The Finance Domain owns financial rules. AI interacts with the Finance Domain through authorized tools.**
 
 That gives us a clean foundation without overengineering the first version.

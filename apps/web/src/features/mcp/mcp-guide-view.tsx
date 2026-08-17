@@ -95,19 +95,57 @@ export function McpGuideView({ authenticated }: { authenticated: boolean }) {
                 create an account if you don&apos;t have one).
               </li>
               <li>
-                Approve the access it&apos;s requesting. You choose exactly
-                what it can read or change; nothing happens without that
-                approval.
+                Approve the connection when you&apos;re asked. Nothing is
+                shared until you do.
               </li>
               <li>
-                It can now use your Pocketly data based on what you
-                approved. See or revoke it anytime from{" "}
+                It can now use your Pocketly data. See or disconnect it
+                anytime from{" "}
                 <Link href="/settings" className="underline">
                   Settings
                 </Link>
                 .
               </li>
             </ol>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>What a connected client can do</CardTitle>
+            <CardDescription>
+              Worth reading before you connect one.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc space-y-2 pl-4 text-sm text-muted-foreground">
+              <li>
+                <span className="text-foreground">Read everything</span> --
+                accounts and balances, every record, budgets, categories and
+                your analysis.
+              </li>
+              <li>
+                <span className="text-foreground">Add and change records</span>
+                {" "}-- it can create, edit and delete records, accounts,
+                budgets and categories.
+              </li>
+              <li>
+                Access is all or nothing. There is no read-only connection
+                today, so only connect a client you trust with your money.
+              </li>
+              <li>
+                Good clients ask you to confirm before they change anything --
+                but that confirmation happens in the client, not in Pocketly.
+              </li>
+              <li>
+                Disconnecting from{" "}
+                <Link href="/settings" className="underline">
+                  Settings
+                </Link>{" "}
+                takes effect immediately, even for a client that is already
+                signed in.
+              </li>
+            </ul>
           </CardContent>
         </Card>
 
