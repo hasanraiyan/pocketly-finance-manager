@@ -1957,6 +1957,16 @@
               "timezone": {
                 "type": "string"
               },
+              "onboardedAt": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "createdAt": {
                 "type": "string"
               },
@@ -1973,6 +1983,7 @@
               "createdAt",
               "updatedAt"
             ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
             "x-nestjs_zod-self-required": true
           }
         },
@@ -1986,22 +1997,32 @@
           "name": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 100
+            "maxLength": 100,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
           },
           "imageUrl": {
-            "type": "string"
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
           },
           "phone": {
             "type": "string",
-            "maxLength": 20
+            "maxLength": 20,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
           },
           "currency": {
             "type": "string",
             "minLength": 3,
-            "maxLength": 3
+            "maxLength": 3,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
           },
           "timezone": {
-            "type": "string"
+            "type": "string",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "onboarded": {
+            "type": "boolean",
+            "const": true,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
           }
         }
       },

@@ -29,6 +29,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Progress } from "@/components/ui/progress";
+import { WelcomeDialog } from "@/features/onboarding/welcome-dialog";
 import {
   getAccounts,
   getBudgets,
@@ -454,5 +455,23 @@ export async function GetStartedCard() {
         ))}
       </CardContent>
     </Card>
+  );
+}
+
+/**
+ * First-run walkthrough. Reads the flag server-side from the profile that
+ * `Greeting` already fetched, so this costs no extra request, and mounts
+ * the dialog only for someone who hasn't seen it.
+ */
+export async function Welcome() {
+  const profileRes = await getProfile();
+  // If the profile can't be read, say nothing: showing a first-run
+  // walkthrough to an existing user is worse than showing it to nobody.
+  if (profileRes.error) return null;
+
+  return (
+    <WelcomeDialog
+      onboarded={Boolean(profileRes.data?.data.onboardedAt)}
+    />
   );
 }

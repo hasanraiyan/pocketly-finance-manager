@@ -8,6 +8,7 @@ import {
   Greeting,
   InsightsCard,
   RecentRecords,
+  Welcome,
 } from "@/features/dashboard/blocks";
 import {
   AccountsCardSkeleton,
@@ -29,6 +30,12 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8">
       <NotificationPromptBanner />
+
+      {/* No skeleton: a dialog that isn't shown yet has nothing to reserve
+          space for, and a placeholder would flash for returning users. */}
+      <Suspense fallback={null}>
+        <Welcome />
+      </Suspense>
 
       <Suspense fallback={<GreetingSkeleton />}>
         <Greeting />

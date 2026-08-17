@@ -22,6 +22,9 @@ export const updateProfileSchema = z
         message: 'Must be a valid IANA timezone (e.g. "Asia/Kolkata")',
       })
       .optional(),
+    // A flag, not a timestamp: the server stamps the time, so a client
+    // can't backdate or forge when onboarding happened.
+    onboarded: z.literal(true).optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: 'At least one field must be provided to update profile',

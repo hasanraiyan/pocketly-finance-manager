@@ -497,6 +497,7 @@ export interface components {
                 phone?: string;
                 currency: string;
                 timezone: string;
+                onboardedAt?: string | null;
                 createdAt: string;
                 updatedAt: string;
             };
@@ -507,6 +508,8 @@ export interface components {
             phone?: string;
             currency?: string;
             timezone?: string;
+            /** @constant */
+            onboarded?: true;
         };
         DeleteAccountDto: {
             /** @constant */

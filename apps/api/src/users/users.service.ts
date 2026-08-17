@@ -116,7 +116,9 @@ export class UsersService {
     user: UserDocument,
     dto: UpdateProfileDto,
   ): Promise<UserDocument> {
-    Object.assign(user, dto);
+    const { onboarded, ...fields } = dto;
+    Object.assign(user, fields);
+    if (onboarded) user.onboardedAt = new Date();
     await user.save();
     return user;
   }

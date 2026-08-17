@@ -39,6 +39,14 @@ export class User {
 
   @Prop({ default: 'UTC' })
   timezone!: string;
+
+  /**
+   * When the user finished (or skipped) the first-run walkthrough. Stored
+   * server-side rather than in localStorage so it doesn't reappear on a
+   * second device, and so clearing site data doesn't restart it.
+   */
+  @Prop({ type: Date, default: null })
+  onboardedAt?: Date | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
