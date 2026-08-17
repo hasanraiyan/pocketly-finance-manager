@@ -14,6 +14,7 @@ import { ApiTags, ApiOkResponse, ApiExcludeEndpoint } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { GoogleAuthService } from './oauth/google.service';
+import { UsersService } from '../users/users.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
@@ -40,6 +41,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly googleAuthService: GoogleAuthService,
+    private readonly usersService: UsersService,
   ) {}
 
   @Public()
@@ -129,9 +131,13 @@ export class AuthController {
 
       this.setSessionCookie(res, result.token);
 
-      // Redirect to frontend destination with token for mobile / cross-site web
-      const redirectUrl = new URL(result.webRedirectUri, webBaseUrl);
-      return res.redirect(redirectUrl.toString());
+      // Redirect to /auth/callback with token so web frontend securely saves pocketly_auth_token cookie
+      const redirectPath = result.webRedirectUri || '/dashboard';
+      const callbackRedirectUrl = new URL('/auth/callback', webBaseUrl);
+      callbackRedirectUrl.searchParams.set('token', result.token);
+      callbackRedirectUrl.searchParams.set('redirect', redirectPath);
+
+      return res.redirect(callbackRedirectUrl.toString());
     } catch (err: any) {
       console.error('[Google OAuth Error]:', err);
       const errorUrl = new URL('/sign-in', webBaseUrl);
@@ -190,7 +196,7 @@ export class AuthController {
   }
 
   @Public()
-  @Get('session')
+  @Get(['session', 'get-session'])
   @ApiOkResponse({ type: GetSessionResponseDto })
   async getSession(@Req() req: Request) {
     const token = this.extractToken(req);
@@ -203,10 +209,15 @@ export class AuthController {
       return null;
     }
 
+    const userProfile = await this.usersService.findByAuthUserId(
+      sessionData.authUser._id.toString(),
+    );
+
     return {
       user: {
         id: sessionData.authUser._id.toString(),
         email: sessionData.authUser.email,
+        name: userProfile?.name ?? sessionData.authUser.email.split('@')[0],
         emailVerified: sessionData.authUser.emailVerified,
       },
       session: {

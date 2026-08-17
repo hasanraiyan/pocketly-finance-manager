@@ -23,6 +23,7 @@ export const getSessionResponseSchema = z.object({
   user: z.object({
     id: z.string(),
     email: z.string(),
+    name: z.string().optional(),
     emailVerified: z.boolean(),
   }),
   session: z.object({

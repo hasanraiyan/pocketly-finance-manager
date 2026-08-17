@@ -155,7 +155,23 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["AuthController_getSession"];
+        get: operations["AuthController_getSession[0]"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/get-session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AuthController_getSession[1]"];
         put?: never;
         post?: never;
         delete?: never;
@@ -671,6 +687,7 @@ export interface components {
             user: {
                 id: string;
                 email: string;
+                name?: string;
                 emailVerified: boolean;
             };
             session: {
@@ -1337,7 +1354,26 @@ export interface operations {
             };
         };
     };
-    AuthController_getSession: {
+    "AuthController_getSession[0]": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetSessionResponseDto"];
+                };
+            };
+        };
+    };
+    "AuthController_getSession[1]": {
         parameters: {
             query?: never;
             header?: never;

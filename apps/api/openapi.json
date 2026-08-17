@@ -279,7 +279,28 @@
     },
     "/api/auth/session": {
       "get": {
-        "operationId": "AuthController_getSession",
+        "operationId": "AuthController_getSession[0]",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetSessionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/get-session": {
+      "get": {
+        "operationId": "AuthController_getSession[1]",
         "parameters": [],
         "responses": {
           "200": {
@@ -2145,6 +2166,9 @@
                 "type": "string"
               },
               "email": {
+                "type": "string"
+              },
+              "name": {
                 "type": "string"
               },
               "emailVerified": {

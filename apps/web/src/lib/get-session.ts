@@ -21,10 +21,12 @@ export async function getServerSession(): Promise<{
   user: SessionUser;
 } | null> {
   const cookieStore = await cookies();
-  const token = cookieStore.get(AUTH_TOKEN_COOKIE_NAME)?.value;
+  const token =
+    cookieStore.get(AUTH_TOKEN_COOKIE_NAME)?.value ||
+    cookieStore.get("pocketly_session")?.value;
   if (!token) return null;
 
-  const response = await fetch(`${authBaseUrl}/get-session`, {
+  const response = await fetch(`${authBaseUrl}/session`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-store",
   });
