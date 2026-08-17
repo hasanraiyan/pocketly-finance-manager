@@ -4,6 +4,11 @@ export const INSIGHT_KINDS = [
   'net_negative',
   'recurring_load',
   'largest_expense',
+  'forecast_shortfall',
+  'goal_delay',
+  'recurring_growth',
+  'savings_opportunity',
+  'positive_trend',
 ] as const;
 
 export type InsightKind = (typeof INSIGHT_KINDS)[number];
@@ -14,6 +19,12 @@ export interface Insight {
   weight: number;
   title: string;
   detail: string;
+  /**
+   * What the user can do about it. Optional because a few insights are
+   * genuinely just information -- but an insight that *could* name an action
+   * and doesn't is the difference between a dashboard and a decision.
+   */
+  action?: string;
 }
 
 /** Formats integer minor units for display. Injected so rules stay pure. */
@@ -78,6 +89,7 @@ export function categorySpikeInsight(
     detail: `${format(spend.total)} so far, against an average of ${format(
       Math.round(spend.averageTotal),
     )}.`,
+    action: `Check what changed in ${spend.name} this period.`,
   };
 }
 
@@ -126,6 +138,15 @@ export function budgetPaceInsight(
     detail: `${format(pace.spent)} of ${format(
       pace.limit,
     )} used. At this pace you'll finish the period around ${format(projected)}.`,
+    action: `Hold ${pace.categoryName} to ${format(
+      Math.max(
+        0,
+        Math.round(
+          (pace.limit - pace.spent) /
+            Math.max(1, pace.daysInPeriod - pace.daysElapsed),
+        ),
+      ),
+    )} a day to stay inside it.`,
   };
 }
 
@@ -148,6 +169,7 @@ export function netNegativeInsight(
     detail: `${format(totals.expense)} out against ${format(
       totals.income,
     )} in.`,
+    action: 'The gap came out of savings — check which category grew.',
   };
 }
 
@@ -171,6 +193,7 @@ export function recurringLoadInsight(
     detail: `Across ${ruleCount} repeat${
       ruleCount === 1 ? '' : 's'
     } before anything else you spend.`,
+    action: 'Worth a look if any of them have crept up.',
   };
 }
 
@@ -191,6 +214,163 @@ export function largestExpenseInsight(
     weight: 50 + share,
     title: `${largest.description} was your biggest expense`,
     detail: `${format(largest.amount)} — ${share}% of everything you spent.`,
+  };
+}
+
+/**
+ * The balance is projected to go negative before the period ends.
+ *
+ * Ranked above everything else: it is the only rule about money the user
+ * still has time to not spend.
+ */
+export function forecastShortfallInsight(
+  forecast: {
+    shortfallDate: string | null;
+    lowestBalance: number;
+    projectedBalance: number;
+  },
+  format: MoneyFormatter,
+): Insight | null {
+  if (!forecast.shortfallDate) return null;
+
+  const recovers = forecast.projectedBalance >= 0;
+
+  return {
+    kind: 'forecast_shortfall',
+    weight: 400,
+    title: `You're on track to run out around ${forecast.shortfallDate}`,
+    detail: recovers
+      ? `Money lands later in the period, but you dip to ${format(
+          forecast.lowestBalance,
+        )} first.`
+      : `At this rate the period ends at ${format(forecast.projectedBalance)}.`,
+    action: recovers
+      ? 'Move a bill later or hold off on non-essentials until then.'
+      : 'Cut back now, or bring income forward before that date.',
+  };
+}
+
+/**
+ * A goal that won't arrive on time, or isn't moving at all.
+ *
+ * Only fires for goals the user gave a deadline or a rate -- one with
+ * neither is a wish, not a plan, and nagging about it is noise.
+ */
+export function goalDelayInsight(
+  goal: {
+    name: string;
+    status: 'complete' | 'on_track' | 'at_risk' | 'stalled';
+    monthlyShortfall: number;
+    requiredMonthly: number | null;
+  },
+  format: MoneyFormatter,
+): Insight | null {
+  if (goal.status === 'at_risk' && goal.monthlyShortfall >= MATERIAL_AMOUNT) {
+    return {
+      kind: 'goal_delay',
+      weight: 250 + Math.min(goal.monthlyShortfall / MATERIAL_AMOUNT, 50),
+      title: `${goal.name} won't make its date`,
+      detail: `You'd need ${format(
+        goal.requiredMonthly ?? 0,
+      )} a month — that's ${format(goal.monthlyShortfall)} more than you're putting in.`,
+      action: `Raise the monthly amount, or move the date out.`,
+    };
+  }
+
+  if (goal.status === 'stalled') {
+    return {
+      kind: 'goal_delay',
+      weight: 220,
+      title: `${goal.name} isn't moving`,
+      detail:
+        'Nothing is being put aside for it, so it has no completion date.',
+      action: 'Set a monthly amount to give it one.',
+    };
+  }
+
+  return null;
+}
+
+/** Fixed commitments climbing against their own recent level. */
+export function recurringGrowthInsight(
+  current: number,
+  average: number,
+  format: MoneyFormatter,
+): Insight | null {
+  if (average <= 0 || current < MATERIAL_AMOUNT) return null;
+
+  const increase = current - average;
+  if (increase < MATERIAL_AMOUNT) return null;
+  if (current / average < SPIKE_RATIO) return null;
+
+  return {
+    kind: 'recurring_growth',
+    weight: 150 + Math.min(increase / MATERIAL_AMOUNT, 50),
+    title: `Your fixed costs are up ${format(increase)} a month`,
+    detail: `${format(current)} in repeats now, against ${format(
+      Math.round(average),
+    )} before.`,
+    action: 'Check your repeats for a subscription you no longer use.',
+  };
+}
+
+/**
+ * Money left over that nothing has a claim on.
+ *
+ * Deliberately silent for anyone already saving towards a goal -- telling
+ * someone with a plan that they should have a plan is how insight panels get
+ * ignored.
+ */
+export function savingsOpportunityInsight(
+  totals: { income: number; expense: number },
+  goalCommitments: number,
+  format: MoneyFormatter,
+): Insight | null {
+  if (goalCommitments > 0) return null;
+
+  const surplus = totals.income - totals.expense;
+  if (surplus < MATERIAL_AMOUNT) return null;
+
+  return {
+    kind: 'savings_opportunity',
+    weight: 80 + Math.min(surplus / MATERIAL_AMOUNT, 50),
+    title: `${format(surplus)} is sitting spare`,
+    detail: 'You came out ahead this period and none of it is earmarked.',
+    action: 'Set a goal so it goes somewhere on purpose.',
+  };
+}
+
+/**
+ * Spending genuinely down against the user's own recent months.
+ *
+ * `expectedByNow` must already be pro-rated for how much of the period has
+ * elapsed -- comparing a half-finished month against a whole one would
+ * congratulate everybody on the 10th.
+ *
+ * The one rule here that exists to say something good. Without it every
+ * insight is a warning, and a product that only ever tells you off gets
+ * closed.
+ */
+export function positiveTrendInsight(
+  currentExpense: number,
+  expectedByNow: number,
+  format: MoneyFormatter,
+): Insight | null {
+  if (expectedByNow <= 0 || currentExpense <= 0) return null;
+
+  const saved = expectedByNow - currentExpense;
+  if (saved < MATERIAL_AMOUNT) return null;
+
+  const percentBelow = Math.round((saved / expectedByNow) * 100);
+  if (percentBelow < 10) return null;
+
+  return {
+    kind: 'positive_trend',
+    weight: 40 + Math.min(percentBelow, 40),
+    title: `Spending is down ${percentBelow}%`,
+    detail: `${format(currentExpense)} so far, against ${format(
+      Math.round(expectedByNow),
+    )} expected by now.`,
   };
 }
 

@@ -31,26 +31,80 @@ export function GreetingSkeleton() {
   );
 }
 
-export function BalanceCardSkeleton() {
+/**
+ * The hero slot. Its deductions vary per user, so the skeleton holds three
+ * rows -- the common case -- rather than trying to guess the exact count.
+ */
+export function SafeToSpendCardSkeleton() {
   return (
     <Card className="overflow-hidden border-none bg-primary text-primary-foreground py-0">
       <CardContent className="flex flex-col gap-6 p-8">
         <span className="text-sm tracking-wide text-primary-foreground/70 uppercase">
-          Total balance
+          Safe to spend
         </span>
         <TextBlank
           size="hero"
           className="w-64 sm:w-80"
           barClassName="bg-primary-foreground/20"
         />
-        <div className="flex flex-wrap gap-x-6 gap-y-2 border-t border-primary-foreground/15 pt-4 font-mono text-sm">
-          {["w-32", "w-36", "w-24"].map((width, i) => (
-            <TextBlank
-              key={i}
-              className={width}
-              barClassName="bg-primary-foreground/20"
-            />
+        <div className="flex flex-col gap-1 border-t border-primary-foreground/15 pt-4 font-mono text-sm">
+          {["w-24", "w-32", "w-28", "w-20"].map((width, i) => (
+            <div key={i} className="flex justify-between gap-4">
+              <TextBlank
+                className={width}
+                barClassName="bg-primary-foreground/20"
+              />
+              <TextBlank
+                className="w-20"
+                barClassName="bg-primary-foreground/20"
+              />
+            </div>
           ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function BalanceCardSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Total balance</CardTitle>
+        <CardDescription>Across every account</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <TextBlank size="2xl" className="w-48" />
+        <div className="flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-4 font-mono text-sm">
+          {["w-32", "w-36", "w-24"].map((width, i) => (
+            <TextBlank key={i} className={width} />
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function ForecastCardSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Where this month ends</CardTitle>
+        <CardDescription>
+          Your repeats on their own dates, plus what you usually spend.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <TextBlank size="2xl" className="w-40" />
+        <div className="flex flex-col gap-1">
+          {["Coming in", "Repeats going out", "Everything else"].map(
+            (label) => (
+              <div key={label} className="flex justify-between gap-2">
+                <span className="text-xs text-muted-foreground">{label}</span>
+                <TextBlank size="xs" className="w-20" />
+              </div>
+            ),
+          )}
         </div>
       </CardContent>
     </Card>

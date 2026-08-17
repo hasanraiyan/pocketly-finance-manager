@@ -67,6 +67,8 @@ export const insightsSchema = z.object({
       weight: z.number(),
       title: z.string(),
       detail: z.string(),
+      /** Absent when the insight is purely informational. */
+      action: z.string().optional(),
     }),
   ),
 });

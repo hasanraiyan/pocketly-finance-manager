@@ -41,6 +41,14 @@ export class User {
   timezone!: string;
 
   /**
+   * The floor safe-to-spend keeps untouched, in minor units. Null means "no
+   * opinion" -- the calculation then derives one from the user's own spending
+   * rather than assuming zero, which would call an empty account safe.
+   */
+  @Prop({ type: Number, default: null })
+  minimumReserve?: number | null;
+
+  /**
    * When the user finished (or skipped) the first-run walkthrough. Stored
    * server-side rather than in localStorage so it doesn't reappear on a
    * second device, and so clearing site data doesn't restart it.

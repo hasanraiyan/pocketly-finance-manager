@@ -56,7 +56,17 @@ MongoDB
 TransformInterceptor    wraps the success response in { data: ... } on the way back out
 ```
 
-Each domain (`accounts`, `categories`, `transactions`, `budgets`, `analysis`, `users`) is one Nest module: schema + Zod DTOs + service + controller. There is no separate repository layer on top of the injected Mongoose models — the service is the only thing that touches the model, which already satisfies the SRS's "isolate the database layer" requirement without an extra abstraction.
+Each domain (`accounts`, `categories`, `transactions`, `budgets`, `goals`, `money-rules`, `analysis`, `users`) is one Nest module: schema + Zod DTOs + service + controller. There is no separate repository layer on top of the injected Mongoose models — the service is the only thing that touches the model, which already satisfies the SRS's "isolate the database layer" requirement without an extra abstraction.
+
+### Analysis vs intelligence
+
+Two modules, split along a line worth keeping: **`analysis` reports what happened, `intelligence` projects what will.**
+
+`intelligence` holds one loader, `FinancialContextService`, which gathers balances, active recurrence rules, budgets, goals, monthly history and a discretionary run-rate in a single pass. Everything else in the module — `ForecastService`, `SafeToSpendService`, `HealthScoreService`, `ScenarioService` — is a thin wrapper around a *pure* calculator in `common/finance/` operating on that context. No service in the module issues its own query.
+
+That constraint is the point. It makes every projected number unit-testable with no I/O (`forecast-balance.spec.ts`, `safe-to-spend.spec.ts`, `health-score.spec.ts`, `simulate-scenario.spec.ts`), and it is what stops the dashboard, the MCP tools and the money-rule worker from each growing their own slightly different arithmetic. `InsightsService` reads the same context, which is how an insight can talk about a forecast shortfall or a goal slipping without duplicating either calculation.
+
+The scenario simulator is the clearest case: it runs the same forecast twice — once on the context, once on a modified copy — and diffs them. A what-if that contradicts the what-is would be worse than no what-if at all.
 
 ### Shared model registration
 

@@ -10,13 +10,25 @@ import { formatMoney } from '../common/finance/format-money';
 import {
   budgetPaceInsight,
   categorySpikeInsight,
+  forecastShortfallInsight,
+  goalDelayInsight,
   largestExpenseInsight,
   netNegativeInsight,
+  positiveTrendInsight,
   rankInsights,
+  recurringGrowthInsight,
   recurringLoadInsight,
+  savingsOpportunityInsight,
   type Insight,
 } from '../common/finance/insight-rules';
+import {
+  monthlyGoalCommitment,
+  projectGoal,
+} from '../common/finance/goal-projection';
+import { FinancialContextService } from '../intelligence/financial-context.service';
+import { ForecastService } from '../intelligence/forecast.service';
 import { getPeriodWindow } from '../common/finance/get-period-window';
+import { monthlyCommitment } from '../common/finance/project-recurring';
 import { resolveAnalysisRange } from '../common/finance/resolve-analysis-range';
 import {
   Recurrence,
@@ -31,14 +43,6 @@ import { AnalysisQueryDto } from './dto/analysis-query.dto';
 
 /** How many complete months of history the spike rule averages over. */
 const HISTORY_MONTHS = 3;
-
-/** Rough monthly equivalents, for adding up recurring commitments. */
-const MONTHLY_FACTOR: Record<RecurrenceDocument['frequency'], number> = {
-  daily: 30,
-  weekly: 52 / 12,
-  monthly: 1,
-  yearly: 1 / 12,
-};
 
 /**
  * Insights are arithmetic over data the user already has -- no model, no
@@ -56,6 +60,8 @@ export class InsightsService {
     private readonly budgetModel: Model<BudgetDocument>,
     @InjectModel(Recurrence.name)
     private readonly recurrenceModel: Model<RecurrenceDocument>,
+    private readonly context: FinancialContextService,
+    private readonly forecastService: ForecastService,
   ) {}
 
   async getInsights(user: UserDocument, query: AnalysisQueryDto) {
@@ -65,15 +71,33 @@ export class InsightsService {
     });
     const format = (minor: number) => formatMoney(minor, user.currency);
 
-    const [totals, categorySpend, history, largest, budgets, recurrences] =
-      await Promise.all([
-        this.periodTotals(user, range),
-        this.spendByCategory(user, range),
-        this.historyByCategory(user, range),
-        this.largestExpense(user, range),
-        this.budgetPace(user),
-        this.recurringLoad(user),
-      ]);
+    const [
+      totals,
+      categorySpend,
+      history,
+      largest,
+      budgets,
+      recurrences,
+      context,
+      recurringActual,
+    ] = await Promise.all([
+      this.periodTotals(user, range),
+      this.spendByCategory(user, range),
+      this.historyByCategory(user, range),
+      this.largestExpense(user, range),
+      this.budgetPace(user),
+      this.recurringLoad(user),
+      this.context.load(user),
+      this.recurringActualAverage(user),
+    ]);
+
+    const forecast = this.forecastService.fromContext(context);
+    const goalInsights = context.goals.map((goal) =>
+      goalDelayInsight(
+        { name: goal.name, ...projectGoal({ ...goal, now: context.now }) },
+        format,
+      ),
+    );
 
     const categories = await this.categoryModel
       .find({ userId: user._id, deletedAt: null })
@@ -94,14 +118,102 @@ export class InsightsService {
     );
 
     const insights: Array<Insight | null> = [
+      forecastShortfallInsight(forecast, format),
       ...budgets.map((pace) => budgetPaceInsight(pace, format)),
+      ...goalInsights,
       ...spikes,
       netNegativeInsight(totals, format),
+      recurringGrowthInsight(recurrences.monthlyTotal, recurringActual, format),
       recurringLoadInsight(recurrences.monthlyTotal, recurrences.count, format),
+      savingsOpportunityInsight(
+        totals,
+        monthlyGoalCommitment(context.goals),
+        format,
+      ),
+      positiveTrendInsight(
+        totals.expense,
+        this.expectedExpenseByNow(context),
+        format,
+      ),
       largestExpenseInsight(largest, totals.expense, format),
     ];
 
     return { period: range, insights: rankInsights(insights) };
+  }
+
+  /**
+   * What a typical month's spending would have reached by today.
+   *
+   * Pro-rated deliberately: comparing a half-finished month against whole
+   * ones would congratulate every user on the 10th of every month.
+   */
+  private expectedExpenseByNow(
+    context: Awaited<ReturnType<FinancialContextService['load']>>,
+  ): number {
+    const months = context.monthlyHistory;
+    if (months.length === 0) return 0;
+
+    const average =
+      months.reduce((sum, month) => sum + month.expense, 0) / months.length;
+
+    const monthStart = getPeriodWindow(
+      'monthly',
+      context.timezone,
+      context.now,
+    );
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const elapsed = Math.max(
+      1,
+      (context.now.getTime() - monthStart.start.getTime()) / msPerDay,
+    );
+    const total = Math.max(
+      1,
+      (monthStart.end.getTime() - monthStart.start.getTime()) / msPerDay,
+    );
+
+    return Math.round(average * Math.min(1, elapsed / total));
+  }
+
+  /**
+   * Mean recurring spend per complete month, taken from what the rules
+   * actually posted rather than from the rules themselves -- a rule created
+   * yesterday has no history, and treating its full monthly value as "before"
+   * would make every new subscription look like a cut.
+   */
+  private async recurringActualAverage(user: UserDocument): Promise<number> {
+    const month = getPeriodWindow('monthly', user.timezone);
+    const start = new Date(month.start);
+    start.setMonth(start.getMonth() - HISTORY_MONTHS);
+
+    const rows = await this.transactionModel.aggregate<{
+      _id: string;
+      total: number;
+    }>([
+      {
+        $match: {
+          userId: user._id,
+          deletedAt: null,
+          type: 'expense',
+          recurrenceId: { $ne: null },
+          date: { $gte: start, $lt: month.start },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: '%Y-%m',
+              date: '$date',
+              timezone: user.timezone,
+            },
+          },
+          total: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    if (rows.length === 0) return 0;
+    return rows.reduce((sum, row) => sum + row.total, 0) / rows.length;
   }
 
   private async periodTotals(
@@ -289,14 +401,22 @@ export class InsightsService {
       })
       .exec();
 
-    const monthlyTotal = rules.reduce(
-      (sum, rule) =>
-        sum +
-        (rule.amount * MONTHLY_FACTOR[rule.frequency]) / (rule.interval || 1),
-      0,
+    const { count, total } = monthlyCommitment(
+      rules.map((rule) => ({
+        id: rule._id.toString(),
+        type: rule.type,
+        amount: rule.amount,
+        frequency: rule.frequency,
+        interval: rule.interval,
+        startDate: rule.startDate,
+        endDate: rule.endDate,
+        timezone: rule.timezone,
+        paused: rule.paused,
+      })),
+      'expense',
     );
 
-    return { count: rules.length, monthlyTotal: Math.round(monthlyTotal) };
+    return { count, monthlyTotal: total };
   }
 
   private match(user: UserDocument, range: { start: Date; end: Date }) {

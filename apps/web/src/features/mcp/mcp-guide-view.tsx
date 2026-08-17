@@ -127,11 +127,20 @@ export function McpGuideView({ authenticated }: { authenticated: boolean }) {
               <li>
                 <span className="text-foreground">Add and change records</span>
                 {" "}-- it can create, edit and delete records, accounts,
-                budgets and categories.
+                budgets, categories, goals and alerts.
+              </li>
+              <li>
+                <span className="text-foreground">Look ahead, not just back</span>
+                {" "}-- your forecast, what is safe to spend today, your
+                financial health score, and &ldquo;can I afford this?&rdquo;
+                run through the same tools. Every figure is arithmetic over
+                your own records, computed by Pocketly rather than guessed by
+                the model.
               </li>
               <li>
                 Access is all or nothing. There is no read-only connection
-                today, so only connect a client you trust with your money.
+                today, so only connect a client you trust with your money --
+                that includes letting it set up alerts that notify you.
               </li>
               <li>
                 Good clients ask you to confirm before they change anything --

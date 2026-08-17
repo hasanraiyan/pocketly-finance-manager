@@ -9,6 +9,7 @@ import {
   AccountSchema,
 } from '../accounts/schemas/account.schema';
 import { Budget, BudgetSchema } from '../budgets/schemas/budget.schema';
+import { Goal, GoalDocument, GoalSchema } from '../goals/schemas/goal.schema';
 import { CategoriesService } from '../categories/categories.service';
 import {
   Category,
@@ -36,6 +37,7 @@ describe('UsersService', () => {
   let accountModel: Model<AccountDocument>;
   let categoryModel: Model<CategoryDocument>;
   let transactionModel: Model<TransactionDocument>;
+  let goalModel: Model<GoalDocument>;
 
   beforeAll(async () => {
     mongod = await MongoMemoryServer.create();
@@ -49,6 +51,7 @@ describe('UsersService', () => {
           { name: Category.name, schema: CategorySchema },
           { name: Transaction.name, schema: TransactionSchema },
           { name: Budget.name, schema: BudgetSchema },
+          { name: Goal.name, schema: GoalSchema },
         ]),
       ],
       providers: [
@@ -76,6 +79,7 @@ describe('UsersService', () => {
     accountModel = moduleRef.get(getModelToken(Account.name));
     categoryModel = moduleRef.get(getModelToken(Category.name));
     transactionModel = moduleRef.get(getModelToken(Transaction.name));
+    goalModel = moduleRef.get(getModelToken(Goal.name));
   }, 60_000);
 
   afterAll(async () => {
@@ -108,12 +112,19 @@ describe('UsersService', () => {
       date: new Date(),
     });
 
+    await goalModel.create({
+      userId: user._id,
+      name: 'Emergency fund',
+      targetAmount: 1_000_000,
+    });
+
     await usersService.deleteAccount(user);
 
     expect(await userModel.findById(user._id)).toBeNull();
     expect(await accountModel.countDocuments({ userId: user._id })).toBe(0);
     expect(await categoryModel.countDocuments({ userId: user._id })).toBe(0);
     expect(await transactionModel.countDocuments({ userId: user._id })).toBe(0);
+    expect(await goalModel.countDocuments({ userId: user._id })).toBe(0);
   });
 
   it('updateProfile updates currency/timezone and persists them', async () => {

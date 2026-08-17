@@ -10,6 +10,7 @@ export const userSchema = z.object({
   phone: z.string().optional(),
   currency: z.string(),
   timezone: z.string(),
+  minimumReserve: z.number().nullish(),
   onboardedAt: z.string().nullish(),
   checklistDismissedAt: z.string().nullish(),
   createdAt: z.string(),

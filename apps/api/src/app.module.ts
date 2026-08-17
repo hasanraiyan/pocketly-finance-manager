@@ -15,7 +15,10 @@ import { TransformInterceptor } from './common/http/transform.interceptor';
 import { ClerkAuthGuard } from './common/auth/clerk-auth.guard';
 import { LoggingInterceptor } from './common/logging/logging.interceptor';
 import { ExportsModule } from './exports/exports.module';
+import { GoalsModule } from './goals/goals.module';
+import { IntelligenceModule } from './intelligence/intelligence.module';
 import { McpModule } from './mcp/mcp.module';
+import { MoneyRulesModule } from './money-rules/money-rules.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { RecurrencesModule } from './recurrences/recurrences.module';
 import { TransactionsModule } from './transactions/transactions.module';
@@ -49,7 +52,10 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     BudgetsModule,
     AnalysisModule,
     ExportsModule,
+    GoalsModule,
+    IntelligenceModule,
     McpModule,
+    MoneyRulesModule,
     NotificationsModule,
     RecurrencesModule,
     WebhooksModule,

@@ -9,6 +9,10 @@ export const NOTIFICATION_TYPES = [
   'MONTHLY_REPORT',
   'SECURITY',
   'SYSTEM',
+  // Raised by a rule the user defined, rather than by Pocketly deciding
+  // something was worth saying.
+  'MONEY_RULE',
+  'GOAL_PROGRESS',
 ] as const;
 
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];

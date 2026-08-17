@@ -1517,6 +1517,371 @@
         ]
       }
     },
+    "/intelligence/forecast": {
+      "get": {
+        "operationId": "IntelligenceController_getForecast",
+        "parameters": [
+          {
+            "name": "horizon",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "month",
+              "type": "string",
+              "enum": [
+                "month",
+                "30d",
+                "90d"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForecastDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "intelligence"
+        ]
+      }
+    },
+    "/intelligence/safe-to-spend": {
+      "get": {
+        "operationId": "IntelligenceController_getSafeToSpend",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SafeToSpendDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "intelligence"
+        ]
+      }
+    },
+    "/intelligence/health": {
+      "get": {
+        "operationId": "IntelligenceController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "intelligence"
+        ]
+      }
+    },
+    "/intelligence/scenario": {
+      "post": {
+        "operationId": "IntelligenceController_simulate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScenarioDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioResultDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "intelligence"
+        ]
+      }
+    },
+    "/goals": {
+      "post": {
+        "operationId": "GoalsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGoalDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalWithProjectionDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "goals"
+        ]
+      },
+      "get": {
+        "operationId": "GoalsController_findAll",
+        "parameters": [
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalListDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "goals"
+        ]
+      }
+    },
+    "/goals/{id}": {
+      "get": {
+        "operationId": "GoalsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalWithProjectionDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "goals"
+        ]
+      },
+      "patch": {
+        "operationId": "GoalsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGoalDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalWithProjectionDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "goals"
+        ]
+      },
+      "delete": {
+        "operationId": "GoalsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The archived (soft-deleted) goal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "goals"
+        ]
+      }
+    },
+    "/goals/{id}/contributions": {
+      "post": {
+        "operationId": "GoalsController_contribute",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContributeGoalDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoalWithProjectionDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "goals"
+        ]
+      }
+    },
     "/exports/pdf": {
       "post": {
         "operationId": "ExportsController_requestPdfExport",
@@ -1910,6 +2275,197 @@
           "recurrences"
         ]
       }
+    },
+    "/money-rules": {
+      "post": {
+        "operationId": "MoneyRulesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMoneyRuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoneyRuleDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "money-rules"
+        ]
+      },
+      "get": {
+        "operationId": "MoneyRulesController_findAll",
+        "parameters": [
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoneyRuleListDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "money-rules"
+        ]
+      }
+    },
+    "/money-rules/{id}": {
+      "get": {
+        "operationId": "MoneyRulesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoneyRuleDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "money-rules"
+        ]
+      },
+      "patch": {
+        "operationId": "MoneyRulesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMoneyRuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoneyRuleDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "money-rules"
+        ]
+      },
+      "delete": {
+        "operationId": "MoneyRulesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The archived (soft-deleted) rule",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoneyRuleDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "money-rules"
+        ]
+      }
     }
   },
   "info": {
@@ -1956,6 +2512,16 @@
               },
               "timezone": {
                 "type": "string"
+              },
+              "minimumReserve": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "onboardedAt": {
                 "anyOf": [
@@ -2028,6 +2594,20 @@
           "timezone": {
             "type": "string",
             "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "minimumReserve": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
           },
           "onboarded": {
             "type": "boolean",
@@ -3000,7 +3580,9 @@
                         "DAILY_REMINDER",
                         "MONTHLY_REPORT",
                         "SECURITY",
-                        "SYSTEM"
+                        "SYSTEM",
+                        "MONEY_RULE",
+                        "GOAL_PROGRESS"
                       ]
                     },
                     "read": {
@@ -3072,7 +3654,9 @@
                   "DAILY_REMINDER",
                   "MONTHLY_REPORT",
                   "SECURITY",
-                  "SYSTEM"
+                  "SYSTEM",
+                  "MONEY_RULE",
+                  "GOAL_PROGRESS"
                 ]
               },
               "read": {
@@ -3491,7 +4075,12 @@
                         "category_spike",
                         "net_negative",
                         "recurring_load",
-                        "largest_expense"
+                        "largest_expense",
+                        "forecast_shortfall",
+                        "goal_delay",
+                        "recurring_growth",
+                        "savings_opportunity",
+                        "positive_trend"
                       ]
                     },
                     "weight": {
@@ -3501,6 +4090,9 @@
                       "type": "string"
                     },
                     "detail": {
+                      "type": "string"
+                    },
+                    "action": {
                       "type": "string"
                     }
                   },
@@ -3738,6 +4330,1259 @@
               "period",
               "accounts"
             ],
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "ForecastDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "horizon": {
+                "type": "string",
+                "enum": [
+                  "month",
+                  "30d",
+                  "90d"
+                ]
+              },
+              "currency": {
+                "type": "string"
+              },
+              "window": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "string"
+                  },
+                  "end": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ]
+              },
+              "openingBalance": {
+                "type": "number"
+              },
+              "projectedBalance": {
+                "type": "number"
+              },
+              "projectedIncome": {
+                "type": "number"
+              },
+              "projectedExpense": {
+                "type": "number"
+              },
+              "projectedDiscretionary": {
+                "type": "number"
+              },
+              "lowestBalance": {
+                "type": "number"
+              },
+              "shortfallDate": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "days": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "string"
+                    },
+                    "balance": {
+                      "type": "number"
+                    },
+                    "income": {
+                      "type": "number"
+                    },
+                    "expense": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "date",
+                    "balance",
+                    "income",
+                    "expense"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "horizon",
+              "currency",
+              "window",
+              "openingBalance",
+              "projectedBalance",
+              "projectedIncome",
+              "projectedExpense",
+              "projectedDiscretionary",
+              "lowestBalance",
+              "shortfallDate",
+              "days"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "SafeToSpendDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "currency": {
+                "type": "string"
+              },
+              "window": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "string"
+                  },
+                  "end": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ]
+              },
+              "amount": {
+                "type": "number"
+              },
+              "totalBalance": {
+                "type": "number"
+              },
+              "expectedIncome": {
+                "type": "number"
+              },
+              "totalDeductions": {
+                "type": "number"
+              },
+              "shortfall": {
+                "type": "number"
+              },
+              "reserveIsDerived": {
+                "type": "boolean"
+              },
+              "deductions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "enum": [
+                        "upcoming_recurring",
+                        "budget_commitments",
+                        "goal_commitments",
+                        "minimum_reserve"
+                      ]
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "amount": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "label",
+                    "amount"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "currency",
+              "window",
+              "amount",
+              "totalBalance",
+              "expectedIncome",
+              "totalDeductions",
+              "shortfall",
+              "reserveIsDerived",
+              "deductions"
+            ],
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "HealthDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "currency": {
+                "type": "string"
+              },
+              "score": {
+                "type": "number"
+              },
+              "band": {
+                "type": "string",
+                "enum": [
+                  "strong",
+                  "steady",
+                  "fragile",
+                  "strained"
+                ]
+              },
+              "components": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "enum": [
+                        "savings_rate",
+                        "reserve_level",
+                        "cash_flow_stability",
+                        "budget_control",
+                        "goal_progress",
+                        "spending_consistency"
+                      ]
+                    },
+                    "label": {
+                      "type": "string"
+                    },
+                    "score": {
+                      "type": "number"
+                    },
+                    "weight": {
+                      "type": "number"
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "label",
+                    "score",
+                    "weight",
+                    "reason"
+                  ]
+                }
+              },
+              "unavailable": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "enum": [
+                        "savings_rate",
+                        "reserve_level",
+                        "cash_flow_stability",
+                        "budget_control",
+                        "goal_progress",
+                        "spending_consistency"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "reason"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "currency",
+              "score",
+              "band",
+              "components",
+              "unavailable"
+            ],
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "ScenarioDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "one_off",
+              "recurring",
+              "spending_change"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "amount": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "income",
+              "expense"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z||([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "frequency": {
+            "type": "string",
+            "enum": [
+              "daily",
+              "weekly",
+              "monthly",
+              "yearly"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "interval": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 365,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "percentChange": {
+            "type": "number",
+            "minimum": -100,
+            "maximum": 1000,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 100,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "ScenarioResultDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "currency": {
+                "type": "string"
+              },
+              "window": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "string"
+                  },
+                  "end": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ]
+              },
+              "scenario": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "one_off",
+                      "recurring",
+                      "spending_change"
+                    ]
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "income",
+                      "expense"
+                    ]
+                  },
+                  "date": {
+                    "type": "string"
+                  },
+                  "frequency": {
+                    "type": "string"
+                  },
+                  "interval": {
+                    "type": "number"
+                  },
+                  "percentChange": {
+                    "type": "number"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              },
+              "baseline": {
+                "type": "object",
+                "properties": {
+                  "projectedBalance": {
+                    "type": "number"
+                  },
+                  "lowestBalance": {
+                    "type": "number"
+                  },
+                  "shortfallDate": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "safeToSpend": {
+                    "type": "number"
+                  },
+                  "goals": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "complete",
+                            "on_track",
+                            "at_risk",
+                            "stalled"
+                          ]
+                        },
+                        "projectedCompletion": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "monthsRemaining": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "status",
+                        "projectedCompletion",
+                        "monthsRemaining"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "projectedBalance",
+                  "lowestBalance",
+                  "shortfallDate",
+                  "safeToSpend",
+                  "goals"
+                ]
+              },
+              "projected": {
+                "type": "object",
+                "properties": {
+                  "projectedBalance": {
+                    "type": "number"
+                  },
+                  "lowestBalance": {
+                    "type": "number"
+                  },
+                  "shortfallDate": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "safeToSpend": {
+                    "type": "number"
+                  },
+                  "goals": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "complete",
+                            "on_track",
+                            "at_risk",
+                            "stalled"
+                          ]
+                        },
+                        "projectedCompletion": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "monthsRemaining": {
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "status",
+                        "projectedCompletion",
+                        "monthsRemaining"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "projectedBalance",
+                  "lowestBalance",
+                  "shortfallDate",
+                  "safeToSpend",
+                  "goals"
+                ]
+              },
+              "delta": {
+                "type": "object",
+                "properties": {
+                  "projectedBalance": {
+                    "type": "number"
+                  },
+                  "safeToSpend": {
+                    "type": "number"
+                  },
+                  "monthlyCommitment": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "projectedBalance",
+                  "safeToSpend",
+                  "monthlyCommitment"
+                ]
+              },
+              "goalsDelayed": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "monthsLater": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "monthsLater"
+                  ]
+                }
+              },
+              "affordable": {
+                "type": "boolean"
+              },
+              "verdict": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "currency",
+              "window",
+              "scenario",
+              "baseline",
+              "projected",
+              "delta",
+              "goalsDelayed",
+              "affordable",
+              "verdict"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "CreateGoalDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "emergency_fund",
+              "purchase",
+              "travel",
+              "education",
+              "debt_payoff",
+              "savings",
+              "other"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "targetAmount": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "savedAmount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "accountId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "monthlyContribution": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "targetDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z||([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          }
+        },
+        "required": [
+          "name",
+          "targetAmount"
+        ]
+      },
+      "GoalWithProjectionDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "userId": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "emergency_fund",
+                  "purchase",
+                  "travel",
+                  "education",
+                  "debt_payoff",
+                  "savings",
+                  "other"
+                ]
+              },
+              "targetAmount": {
+                "type": "number"
+              },
+              "savedAmount": {
+                "type": "number"
+              },
+              "accountId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "monthlyContribution": {
+                "type": "number"
+              },
+              "targetDate": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "deletedAt": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "syncVersion": {
+                "type": "number"
+              },
+              "createdAt": {
+                "type": "string"
+              },
+              "updatedAt": {
+                "type": "string"
+              },
+              "progress": {
+                "type": "number"
+              },
+              "remaining": {
+                "type": "number"
+              },
+              "percentComplete": {
+                "type": "number"
+              },
+              "projectedCompletion": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "monthsRemaining": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "requiredMonthly": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "monthlyShortfall": {
+                "type": "number"
+              },
+              "onTrack": {
+                "type": "boolean"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "complete",
+                  "on_track",
+                  "at_risk",
+                  "stalled"
+                ]
+              }
+            },
+            "required": [
+              "_id",
+              "userId",
+              "name",
+              "kind",
+              "targetAmount",
+              "savedAmount",
+              "accountId",
+              "monthlyContribution",
+              "targetDate",
+              "deletedAt",
+              "syncVersion",
+              "createdAt",
+              "updatedAt",
+              "progress",
+              "remaining",
+              "percentComplete",
+              "projectedCompletion",
+              "monthsRemaining",
+              "requiredMonthly",
+              "monthlyShortfall",
+              "onTrack",
+              "status"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "GoalListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "userId": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "emergency_fund",
+                        "purchase",
+                        "travel",
+                        "education",
+                        "debt_payoff",
+                        "savings",
+                        "other"
+                      ]
+                    },
+                    "targetAmount": {
+                      "type": "number"
+                    },
+                    "savedAmount": {
+                      "type": "number"
+                    },
+                    "accountId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "monthlyContribution": {
+                      "type": "number"
+                    },
+                    "targetDate": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "deletedAt": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "syncVersion": {
+                      "type": "number"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    },
+                    "progress": {
+                      "type": "number"
+                    },
+                    "remaining": {
+                      "type": "number"
+                    },
+                    "percentComplete": {
+                      "type": "number"
+                    },
+                    "projectedCompletion": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "monthsRemaining": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "requiredMonthly": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "monthlyShortfall": {
+                      "type": "number"
+                    },
+                    "onTrack": {
+                      "type": "boolean"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "complete",
+                        "on_track",
+                        "at_risk",
+                        "stalled"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "_id",
+                    "userId",
+                    "name",
+                    "kind",
+                    "targetAmount",
+                    "savedAmount",
+                    "accountId",
+                    "monthlyContribution",
+                    "targetDate",
+                    "deletedAt",
+                    "syncVersion",
+                    "createdAt",
+                    "updatedAt",
+                    "progress",
+                    "remaining",
+                    "percentComplete",
+                    "projectedCompletion",
+                    "monthsRemaining",
+                    "requiredMonthly",
+                    "monthlyShortfall",
+                    "onTrack",
+                    "status"
+                  ]
+                }
+              },
+              "nextCursor": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "items",
+              "nextCursor"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "UpdateGoalDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "emergency_fund",
+              "purchase",
+              "travel",
+              "education",
+              "debt_payoff",
+              "savings",
+              "other"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "targetAmount": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "savedAmount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "accountId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "monthlyContribution": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "targetDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z||([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          }
+        }
+      },
+      "ContributeGoalDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "amount"
+        ]
+      },
+      "GoalDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "userId": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "emergency_fund",
+                  "purchase",
+                  "travel",
+                  "education",
+                  "debt_payoff",
+                  "savings",
+                  "other"
+                ]
+              },
+              "targetAmount": {
+                "type": "number"
+              },
+              "savedAmount": {
+                "type": "number"
+              },
+              "accountId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "monthlyContribution": {
+                "type": "number"
+              },
+              "targetDate": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "deletedAt": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "syncVersion": {
+                "type": "number"
+              },
+              "createdAt": {
+                "type": "string"
+              },
+              "updatedAt": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "_id",
+              "userId",
+              "name",
+              "kind",
+              "targetAmount",
+              "savedAmount",
+              "accountId",
+              "monthlyContribution",
+              "targetDate",
+              "deletedAt",
+              "syncVersion",
+              "createdAt",
+              "updatedAt"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
             "x-nestjs_zod-self-required": true
           }
         },
@@ -4330,6 +6175,343 @@
             ],
             "x-nestjs_zod-uses-3-point-1-syntax": true,
             "x-nestjs_zod-empty-type": true
+          }
+        }
+      },
+      "CreateMoneyRuleDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "category_over",
+              "balance_under",
+              "large_transaction",
+              "weekly_summary",
+              "goal_progress"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "categoryId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "enabled": {
+            "type": "boolean",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "cadenceDays": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 90,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "MoneyRuleDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "userId": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "category_over",
+                  "balance_under",
+                  "large_transaction",
+                  "weekly_summary",
+                  "goal_progress"
+                ]
+              },
+              "threshold": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "categoryId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "enabled": {
+                "type": "boolean"
+              },
+              "cadenceDays": {
+                "type": "number"
+              },
+              "armed": {
+                "type": "boolean"
+              },
+              "lastFiredAt": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "deletedAt": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "syncVersion": {
+                "type": "number"
+              },
+              "createdAt": {
+                "type": "string"
+              },
+              "updatedAt": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "_id",
+              "userId",
+              "kind",
+              "threshold",
+              "categoryId",
+              "enabled",
+              "cadenceDays",
+              "armed",
+              "lastFiredAt",
+              "deletedAt",
+              "syncVersion",
+              "createdAt",
+              "updatedAt"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "MoneyRuleListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "userId": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "category_over",
+                        "balance_under",
+                        "large_transaction",
+                        "weekly_summary",
+                        "goal_progress"
+                      ]
+                    },
+                    "threshold": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "categoryId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "cadenceDays": {
+                      "type": "number"
+                    },
+                    "armed": {
+                      "type": "boolean"
+                    },
+                    "lastFiredAt": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "deletedAt": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "syncVersion": {
+                      "type": "number"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "_id",
+                    "userId",
+                    "kind",
+                    "threshold",
+                    "categoryId",
+                    "enabled",
+                    "cadenceDays",
+                    "armed",
+                    "lastFiredAt",
+                    "deletedAt",
+                    "syncVersion",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              },
+              "nextCursor": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "items",
+              "nextCursor"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "UpdateMoneyRuleDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "category_over",
+              "balance_under",
+              "large_transaction",
+              "weekly_summary",
+              "goal_progress"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "categoryId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "enabled": {
+            "type": "boolean",
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "cadenceDays": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 90,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
           }
         }
       }

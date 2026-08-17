@@ -7,6 +7,7 @@ import {
   Category,
   CategoryDocument,
 } from '../categories/schemas/category.schema';
+import { Goal, GoalDocument } from '../goals/schemas/goal.schema';
 import {
   Transaction,
   TransactionDocument,
@@ -26,6 +27,8 @@ export class UsersService {
     private readonly transactionModel: Model<TransactionDocument>,
     @InjectModel(Budget.name)
     private readonly budgetModel: Model<BudgetDocument>,
+    @InjectModel(Goal.name)
+    private readonly goalModel: Model<GoalDocument>,
   ) {}
 
   async findByClerkId(clerkUserId: string): Promise<UserDocument | null> {
@@ -135,6 +138,7 @@ export class UsersService {
       this.categoryModel.deleteMany({ userId: user._id }),
       this.transactionModel.deleteMany({ userId: user._id }),
       this.budgetModel.deleteMany({ userId: user._id }),
+      this.goalModel.deleteMany({ userId: user._id }),
     ]);
     await this.userModel.deleteOne({ _id: user._id });
   }

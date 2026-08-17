@@ -5,6 +5,12 @@ import { AnalysisService } from '../analysis/analysis.service';
 import { InsightsService } from '../analysis/insights.service';
 import { BudgetsService } from '../budgets/budgets.service';
 import { CategoriesService } from '../categories/categories.service';
+import { GoalsService } from '../goals/goals.service';
+import { ForecastService } from '../intelligence/forecast.service';
+import { HealthScoreService } from '../intelligence/health-score.service';
+import { SafeToSpendService } from '../intelligence/safe-to-spend.service';
+import { ScenarioService } from '../intelligence/scenario.service';
+import { MoneyRulesService } from '../money-rules/money-rules.service';
 import { RecurrencesService } from '../recurrences/recurrences.service';
 import { TransactionsService } from '../transactions/transactions.service';
 import { UserDocument } from '../users/schemas/user.schema';
@@ -13,6 +19,9 @@ import { registerAccountsTools } from './tools/accounts.tools';
 import { registerAnalysisTools } from './tools/analysis.tools';
 import { registerBudgetsTools } from './tools/budgets.tools';
 import { registerCategoriesTools } from './tools/categories.tools';
+import { registerGoalsTools } from './tools/goals.tools';
+import { registerIntelligenceTools } from './tools/intelligence.tools';
+import { registerMoneyRulesTools } from './tools/money-rules.tools';
 import { registerRecurrencesTools } from './tools/recurrences.tools';
 import { registerTransactionsTools } from './tools/transactions.tools';
 
@@ -34,6 +43,12 @@ export class McpServerFactory {
     private readonly analysis: AnalysisService,
     private readonly recurrences: RecurrencesService,
     private readonly insights: InsightsService,
+    private readonly goals: GoalsService,
+    private readonly moneyRules: MoneyRulesService,
+    private readonly forecast: ForecastService,
+    private readonly safeToSpend: SafeToSpendService,
+    private readonly health: HealthScoreService,
+    private readonly scenarios: ScenarioService,
   ) {}
 
   build(user: UserDocument, token: string, scopes: McpScope[]): McpServer {
@@ -50,6 +65,12 @@ export class McpServerFactory {
         analysis: this.analysis,
         recurrences: this.recurrences,
         insights: this.insights,
+        goals: this.goals,
+        moneyRules: this.moneyRules,
+        forecast: this.forecast,
+        safeToSpend: this.safeToSpend,
+        health: this.health,
+        scenarios: this.scenarios,
       },
     };
 
@@ -59,6 +80,9 @@ export class McpServerFactory {
     registerCategoriesTools(server, ctx);
     registerAnalysisTools(server, ctx);
     registerRecurrencesTools(server, ctx);
+    registerGoalsTools(server, ctx);
+    registerIntelligenceTools(server, ctx);
+    registerMoneyRulesTools(server, ctx);
 
     return server;
   }

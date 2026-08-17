@@ -37,6 +37,11 @@ Every route declares its response schema (`@ApiOkResponse`/`@ApiCreatedResponse`
 | Categories | `GET/POST /categories` (paginated), `GET/PATCH/DELETE /categories/:id` |
 | Transactions | `GET/POST /transactions` (paginated; filters: `type`, `accountId`, `categoryId`, `from`, `to`, `q`), `GET/PATCH/DELETE /transactions/:id`, `PATCH /transactions/:id/restore` |
 | Budgets | `GET/POST /budgets` (paginated), `GET/PATCH/DELETE /budgets/:id` |
-| Analysis | `GET /analysis`, `GET /analysis/categories`, `GET /analysis/cash-flow`, `GET /analysis/accounts` (all accept `period`, and `from`/`to` when `period=custom`) |
+| Analysis | `GET /analysis`, `GET /analysis/categories`, `GET /analysis/cash-flow`, `GET /analysis/accounts`, `GET /analysis/insights` (all accept `period`, and `from`/`to` when `period=custom`) |
+| Goals | `GET/POST /goals` (paginated; each goal carries progress, projected completion and status), `GET/PATCH/DELETE /goals/:id`, `POST /goals/:id/contributions` (signed `amount`; rejected for goals linked to an account) |
+| Intelligence | `GET /intelligence/forecast` (`horizon=month\|30d\|90d`), `GET /intelligence/safe-to-spend`, `GET /intelligence/health`, `POST /intelligence/scenario` |
+| Money rules | `GET/POST /money-rules` (paginated), `GET/PATCH/DELETE /money-rules/:id` |
+
+The intelligence routes project forward rather than reporting the past; see `docs/financial-intelligence-plan.md` for the model behind them. Every figure is arithmetic over the user's own records — the calculations live in `apps/api/src/common/finance/` as pure functions with their own unit tests, and the services in `apps/api/src/intelligence/` only gather the inputs.
 
 See `docs/architecture.md` for how requests flow through auth → validation → service → database, and `docs/security.md` for the ownership/authorization model.

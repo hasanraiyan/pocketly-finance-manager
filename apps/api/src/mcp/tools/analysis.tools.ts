@@ -82,25 +82,29 @@ export function registerAnalysisTools(
     {
       title: 'Get financial overview',
       description:
-        "A snapshot of the user's current standing: total balance across accounts, and this month's income, expense, and net.",
+        'A snapshot of where the user stands right now: total balance across accounts, this month\'s income, expense and net, how much is safe to spend today, and the projected balance at the end of the month. Use this as the one-shot answer to "how am I doing"; use get_outlook for the detail behind the forward-looking figures.',
       inputSchema: {},
     },
     async () => {
       const scope = requireScope(ctx.scopes, 'pocketly:read');
       if (!scope.ok) return errorResult(scope.message);
 
-      const { analysis, accounts } = ctx.services;
+      const { analysis, accounts, safeToSpend, forecast } = ctx.services;
       const query = analysisQuerySchema.parse({});
-      const [overview, accountsPage] = await Promise.all([
-        analysis.getOverview(ctx.user, query),
-        // Personal accounts realistically number in the single/low double
-        // digits; the schema's max (100) comfortably covers real usage
-        // without needing to paginate for a one-shot overview.
-        accounts.findAll(
-          ctx.user._id,
-          paginationQuerySchema.parse({ limit: 100 }),
-        ),
-      ]);
+      const [overview, accountsPage, spendable, projection] = await Promise.all(
+        [
+          analysis.getOverview(ctx.user, query),
+          // Personal accounts realistically number in the single/low double
+          // digits; the schema's max (100) comfortably covers real usage
+          // without needing to paginate for a one-shot overview.
+          accounts.findAll(
+            ctx.user._id,
+            paginationQuerySchema.parse({ limit: 100 }),
+          ),
+          safeToSpend.safeToSpend(ctx.user),
+          forecast.forecast(ctx.user, 'month'),
+        ],
+      );
       const totalBalance = accountsPage.items.reduce(
         (sum, account) => sum + account.balance,
         0,
@@ -114,6 +118,11 @@ export function registerAnalysisTools(
         income: overview.income,
         expense: overview.expense,
         net: overview.net,
+        safeToSpend: spendable.amount,
+        safeToSpendShortfall: spendable.shortfall,
+        projectedMonthEndBalance: projection.projectedBalance,
+        // Null unless the balance is projected to go negative first.
+        projectedShortfallDate: projection.shortfallDate,
       });
     },
   );
