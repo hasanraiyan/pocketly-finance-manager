@@ -29,6 +29,7 @@ import {
   ActiveSessionsListResponseDto,
 } from './dto/auth-response.dto';
 import { Public } from '../common/auth/public.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 const COOKIE_NAME = 'pocketly_session';
 const COOKIE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -42,6 +43,7 @@ export class AuthController {
   ) {}
 
   @Public()
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post(['sign-up', 'sign-up/email'])
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: AuthResponseDto })
@@ -68,6 +70,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @Post(['sign-in', 'sign-in/email'])
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: AuthResponseDto })
@@ -161,6 +164,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post(['send-verification-email', 'resend-verification-email'])
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: AuthMessageResponseDto })
@@ -214,6 +218,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: AuthMessageResponseDto })
@@ -223,6 +228,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: AuthMessageResponseDto })
@@ -234,6 +240,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @Post('change-password')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: AuthMessageResponseDto })
