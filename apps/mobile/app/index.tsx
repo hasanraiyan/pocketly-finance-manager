@@ -1,11 +1,11 @@
-import { useAuth } from "@clerk/expo";
+import { useAuth } from "@/lib/auth-provider";
 import { Redirect } from "expo-router";
 import { View } from "react-native";
 
 export default function Index() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoading, isSignedIn } = useAuth();
 
-  if (!isLoaded) {
+  if (isLoading) {
     return <View className="flex-1 bg-background" />;
   }
 

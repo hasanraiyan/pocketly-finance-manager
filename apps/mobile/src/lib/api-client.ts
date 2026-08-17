@@ -1,15 +1,13 @@
 import { useMemo } from "react";
-import { useAuth } from "@clerk/expo";
 import { createPocketlyClient } from "@pocketly/sdk";
+import { useAuth } from "@/lib/auth-provider";
 
-const baseUrl =
-  process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
+const baseUrl =  "https://api.pocketly.hasanraiyan.me/api/v1";
 
 /**
  * Mirrors apps/web/src/lib/use-pocketly-client.ts -- same SDK, same
- * getToken contract, just sourced from @clerk/expo instead of
- * @clerk/nextjs. getToken is called fresh on every request, so the
- * client itself can be memoized safely.
+ * getToken contract, sourced from our own AuthProvider.
+ * getToken is called fresh on every request, silently refreshing expired tokens.
  */
 export function usePocketlyClient() {
   const { getToken } = useAuth();
