@@ -31,6 +31,14 @@ export const getOverview = cache(async () => {
   return client.GET("/analysis");
 });
 
+/**
+ * Only ever asked "is there at least one?", so the smallest page will do.
+ */
+export const getConnections = cache(async () => {
+  const client = await getServerApiClient();
+  return client.GET("/mcp-connections");
+});
+
 export const getInsights = cache(async () => {
   const client = await getServerApiClient();
   return client.GET("/analysis/insights");

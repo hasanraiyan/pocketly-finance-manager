@@ -1,7 +1,10 @@
 import Link from "next/link";
 import {
   ArrowDownRight,
+  ArrowRight,
   ArrowUpRight,
+  Check,
+  Circle,
   Flame,
   Gauge,
   Receipt,
@@ -29,6 +32,7 @@ import { Progress } from "@/components/ui/progress";
 import {
   getAccounts,
   getBudgets,
+  getConnections,
   getCurrency,
   getInsights,
   getOverview,
@@ -327,6 +331,127 @@ export async function InsightsCard() {
             </div>
           );
         })}
+      </CardContent>
+    </Card>
+  );
+}
+
+/**
+ * The path through the product for someone who just signed up, and the only
+ * place a new user is told the MCP server exists at all -- until now that
+ * lived in a single footer link, which is no discovery at all for the one
+ * feature nothing else on the market has.
+ *
+ * A checklist rather than a one-shot tour: connecting an AI client is only
+ * worth doing once there is data to connect it to, and a tour that fires on
+ * an empty ledger just teaches people to dismiss things. This persists,
+ * shows what's left, and disappears on its own when the work is done.
+ */
+export async function GetStartedCard() {
+  const [accountsRes, transactionsRes, budgetsRes, connectionsRes] =
+    await Promise.all([
+      getAccounts(),
+      getRecentTransactions(),
+      getBudgets(),
+      getConnections(),
+    ]);
+
+  // A failed request is not a completed step, but it is also not a reason to
+  // tell someone to redo work they may already have done -- so if anything
+  // failed to load, say nothing rather than guess.
+  if (
+    accountsRes.error ||
+    transactionsRes.error ||
+    budgetsRes.error ||
+    connectionsRes.error
+  ) {
+    return null;
+  }
+
+  const steps = [
+    {
+      title: "Add an account",
+      detail: "A bank account, wallet, or card to track.",
+      href: "/accounts",
+      done: (accountsRes.data?.data.items.length ?? 0) > 0,
+    },
+    {
+      title: "Log a record",
+      detail: "Your first expense or income.",
+      href: "/records",
+      done: (transactionsRes.data?.data.items.length ?? 0) > 0,
+    },
+    {
+      title: "Set a budget",
+      detail: "A monthly limit for a category you want to watch.",
+      href: "/planning",
+      done: (budgetsRes.data?.data.items.length ?? 0) > 0,
+    },
+    {
+      title: "Connect an AI client",
+      detail: "Ask Claude or ChatGPT about your money, using your own plan.",
+      href: "/mcp-guide",
+      done: (connectionsRes.data?.data.items.length ?? 0) > 0,
+    },
+  ];
+
+  const completed = steps.filter((step) => step.done).length;
+  // Nothing left to say once it's all done.
+  if (completed === steps.length) return null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Get started</CardTitle>
+        <CardDescription>
+          {completed} of {steps.length} done
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-1">
+        <Progress
+          value={(completed / steps.length) * 100}
+          className="mb-3"
+        />
+        {steps.map((step) => (
+          <div
+            key={step.href}
+            className="flex items-center justify-between gap-3 py-1.5"
+          >
+            <div className="flex min-w-0 items-start gap-2.5">
+              {step.done ? (
+                <Check className="mt-0.5 size-4 shrink-0 text-positive" />
+              ) : (
+                <Circle className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+              )}
+              <div className="flex min-w-0 flex-col">
+                <span
+                  className={cn(
+                    "text-sm",
+                    step.done ? "text-muted-foreground" : "text-foreground",
+                  )}
+                >
+                  {step.title}
+                </span>
+                {!step.done && (
+                  <span className="text-xs text-muted-foreground">
+                    {step.detail}
+                  </span>
+                )}
+              </div>
+            </div>
+            {!step.done && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="shrink-0"
+                render={<Link href={step.href} />}
+              >
+                Go
+                <ArrowRight />
+              </Button>
+            )}
+          </div>
+        ))}
       </CardContent>
     </Card>
   );

@@ -5,6 +5,7 @@ import { getServerSession } from "@/lib/get-session";
 import {
   Apple,
   LineChart,
+  Sparkles,
   Play,
   Receipt,
   RefreshCcw,
@@ -297,6 +298,53 @@ export default async function Home() {
               </li>
             ))}
           </ul>
+        </section>
+
+        {/*
+          Bring-your-own-AI gets its own section rather than a fifth
+          capability card: "use it from inside ChatGPT" is a different kind
+          of claim from "track your accounts", and it is the only thing here
+          that nothing else on the market does. It was previously reachable
+          only from a footer link.
+        */}
+        <section className="border-t border-border">
+          <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-20 sm:px-12 lg:grid-cols-2 lg:items-center">
+            <div>
+              <p className="mb-3 font-mono text-xs tracking-widest text-muted-foreground uppercase">
+                Bring your own AI
+              </p>
+              <h2 className="font-heading text-2xl text-foreground sm:text-3xl">
+                Ask Claude or ChatGPT about your money.
+              </h2>
+              <p className="mt-4 max-w-md text-muted-foreground">
+                Pocketly speaks MCP, so you can connect the AI you already pay
+                for and ask it anything — what you spent on food, whether
+                you&apos;ll clear the budget, or to log a record for you. No
+                extra subscription, and nothing leaves your account until you
+                approve the connection.
+              </p>
+              <div className="mt-8">
+                <Button variant="outline" render={<Link href="/mcp-guide" />}>
+                  <Sparkles />
+                  How to connect
+                </Button>
+              </div>
+            </div>
+
+            <div className="border border-border bg-card p-6 sm:p-8">
+              <p className="font-mono text-xs text-muted-foreground">You</p>
+              <p className="mt-1 text-sm text-foreground">
+                How much did I spend on food this month?
+              </p>
+              <p className="mt-6 font-mono text-xs text-muted-foreground">
+                Your AI
+              </p>
+              <p className="mt-1 text-sm text-foreground">
+                ₹8,400 across 23 records — about 34% above your three-month
+                average. Your Food budget has ₹1,600 left with 9 days to go.
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* Closing CTA */}

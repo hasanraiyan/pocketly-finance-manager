@@ -4,6 +4,7 @@ import {
   AccountsCard,
   BalanceCard,
   BudgetsCard,
+  GetStartedCard,
   Greeting,
   InsightsCard,
   RecentRecords,
@@ -12,6 +13,7 @@ import {
   AccountsCardSkeleton,
   BalanceCardSkeleton,
   BudgetsCardSkeleton,
+  GetStartedCardSkeleton,
   GreetingSkeleton,
   InsightsCardSkeleton,
   RecentRecordsSkeleton,
@@ -30,6 +32,10 @@ export default function DashboardPage() {
 
       <Suspense fallback={<GreetingSkeleton />}>
         <Greeting />
+      </Suspense>
+
+      <Suspense fallback={<GetStartedCardSkeleton />}>
+        <GetStartedCard />
       </Suspense>
 
       <Suspense fallback={<BalanceCardSkeleton />}>

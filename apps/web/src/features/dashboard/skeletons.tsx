@@ -150,3 +150,23 @@ export function InsightsCardSkeleton() {
     </Card>
   );
 }
+
+export function GetStartedCardSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Get started</CardTitle>
+        <CardDescription>Checking your progress…</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-1">
+        <div className="mb-3 h-1 w-full bg-muted" />
+        {rows(4).map((i) => (
+          <div key={i} className="flex items-center gap-2.5 py-1.5">
+            <div className="size-4 shrink-0 rounded-full bg-muted" />
+            <TextBlank className={entryWidth(i)} />
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
