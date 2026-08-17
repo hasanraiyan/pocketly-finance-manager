@@ -4,6 +4,7 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Model } from 'mongoose';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import type { UserDocument } from '../users/schemas/user.schema';
+import { OAuthService } from './oauth/oauth.service';
 import { McpConnectionListDto } from './dto/connection-response.dto';
 import { RevokeConnectionResponseDto } from './dto/revoke-connection-response.dto';
 import { McpConnection } from './schemas/mcp-connection.schema';
@@ -13,10 +14,11 @@ import { McpRevocation } from './schemas/mcp-revocation.schema';
  * Backs the Settings "Connections" section: what has connected to this
  * account, and the Disconnect button.
  *
- * Disconnect writes a revocation marker rather than only asking Clerk to drop
- * the grant, because a JWT-format access token already in a client's hands
- * stays valid until it expires. McpAuthGuard checks the marker on every
- * request, so disconnecting takes effect immediately.
+ * Disconnect writes a revocation marker rather than relying on the consent
+ * record alone, because a JWT-format access token already in a client's
+ * hands stays valid until it expires -- `McpAuthGuard` checks the marker on
+ * every request, so disconnecting takes effect immediately rather than up to
+ * an hour later.
  */
 @ApiTags('mcp-connections')
 @ApiBearerAuth('jwt')
@@ -27,13 +29,14 @@ export class McpConnectionsController {
     private readonly revocationModel: Model<McpRevocation>,
     @InjectModel(McpConnection.name)
     private readonly connectionModel: Model<McpConnection>,
+    private readonly oauth: OAuthService,
   ) {}
 
   @Get()
   @ApiOkResponse({ type: McpConnectionListDto })
   async list(@CurrentUser() user: UserDocument) {
     const connections = await this.connectionModel
-      .find({ authUserId: user.authUserId })
+      .find({ userId: user._id })
       .sort({ lastSeenAt: -1 })
       .exec();
 
@@ -56,14 +59,12 @@ export class McpConnectionsController {
     @Param('clientId') clientId: string,
   ) {
     await Promise.all([
-      this.revocationModel.create({
-        authUserId: user.authUserId,
-        clientId,
-      }),
-      this.connectionModel.deleteOne({
-        authUserId: user.authUserId,
-        clientId,
-      }),
+      this.revocationModel.create({ userId: user._id, clientId }),
+      this.connectionModel.deleteOne({ userId: user._id, clientId }),
+      // Also drop the underlying grant -- otherwise the next authorize
+      // round-trip would skip the consent screen entirely (a stale
+      // OAuthConsent row already says yes) even though the user just said no.
+      this.oauth.deleteConsent(user._id, clientId),
     ]);
     return { revoked: true };
   }

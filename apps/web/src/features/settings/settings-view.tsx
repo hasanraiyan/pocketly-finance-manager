@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import { useClerk } from "@clerk/nextjs";
+import { useAuth } from "@/lib/auth-provider";
 import {
   useExportCsv,
   useExportPdf,
@@ -564,13 +564,15 @@ function DangerZoneCard() {
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const deleteAccount = useDeleteMyAccount();
-  const { signOut } = useClerk();
+  const { logout } = useAuth();
+  const router = useRouter();
 
   async function handleDelete() {
     await deleteAccount.mutateAsync();
-    // The account and its Clerk identity are already gone server-side at this
-    // point, so this is just clearing the now-dead session locally.
-    await signOut({ redirectUrl: "/" }).catch(() => {});
+    // The account is already gone server-side at this point, so this is
+    // just clearing the now-dead session locally.
+    await logout().catch(() => {});
+    router.push("/");
   }
 
   return (
@@ -813,6 +815,10 @@ function SecurityPasswordCard() {
     e.preventDefault();
     setValidationError(null);
 
+    if (!currentPassword) {
+      setValidationError("Enter your current password.");
+      return;
+    }
     if (newPassword.length < 8) {
       setValidationError("New password must be at least 8 characters.");
       return;
@@ -824,7 +830,7 @@ function SecurityPasswordCard() {
 
     changePasswordMutation.mutate(
       {
-        currentPassword: currentPassword || undefined,
+        currentPassword,
         newPassword,
       },
       {
@@ -858,6 +864,7 @@ function SecurityPasswordCard() {
                 value={currentPassword}
                 onChange={setCurrentPassword}
                 placeholder="Current password"
+                required
               />
             </Field>
             <Field>

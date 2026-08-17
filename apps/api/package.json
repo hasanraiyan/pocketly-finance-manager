@@ -23,12 +23,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "docs:generate": "ts-node -r tsconfig-paths/register scripts/generate-docs.ts",
     "backup": "ts-node -r tsconfig-paths/register -r dotenv/config scripts/backup-db.ts",
-    "restore": "ts-node -r tsconfig-paths/register -r dotenv/config scripts/restore-db.ts",
-    "migrate:clerk": "ts-node -r tsconfig-paths/register -r dotenv/config scripts/migrate-users-to-clerk.ts"
+    "restore": "ts-node -r tsconfig-paths/register -r dotenv/config scripts/restore-db.ts"
   },
   "dependencies": {
-    "@clerk/express": "^2.1.57",
-    "@clerk/shared": "^4.29.1",
     "@modelcontextprotocol/sdk": "^1.30.0",
     "@nestjs/bullmq": "^11.0.5",
     "@nestjs/common": "^11.0.1",
@@ -39,6 +36,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.4.6",
     "@nestjs/throttler": "^6.5.0",
+    "@node-rs/argon2": "^2.1.0",
     "@react-pdf/renderer": "^4.6.1",
     "@sentry/nestjs": "^10.70.0",
     "@types/react": "^19.2.18",

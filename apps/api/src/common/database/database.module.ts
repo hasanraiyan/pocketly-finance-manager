@@ -2,6 +2,14 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Account, AccountSchema } from '../../accounts/schemas/account.schema';
+import {
+  RefreshToken,
+  RefreshTokenSchema,
+} from '../../auth/schemas/refresh-token.schema';
+import {
+  SigningKey,
+  SigningKeySchema,
+} from '../../auth/schemas/signing-key.schema';
 import { Budget, BudgetSchema } from '../../budgets/schemas/budget.schema';
 import {
   Category,
@@ -57,6 +65,8 @@ import { User, UserSchema } from '../../users/schemas/user.schema';
       { name: Recurrence.name, schema: RecurrenceSchema },
       { name: Goal.name, schema: GoalSchema },
       { name: MoneyRule.name, schema: MoneyRuleSchema },
+      { name: RefreshToken.name, schema: RefreshTokenSchema },
+      { name: SigningKey.name, schema: SigningKeySchema },
     ]),
   ],
   exports: [MongooseModule],

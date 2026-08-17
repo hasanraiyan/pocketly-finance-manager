@@ -5,31 +5,13 @@ import './instrument';
 import { RequestMethod } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
-import { clerkMiddleware } from '@clerk/express';
 import { AppModule } from './app.module';
 import { requestIdMiddleware } from './common/logging/request-id.middleware';
 import { buildOpenApiDocument } from './swagger';
 
 async function bootstrap() {
-  // rawBody: Clerk's webhook signature is computed over the exact original
-  // bytes, not Nest's re-serialized parsed body.
-  const app = await NestFactory.create(AppModule, { rawBody: true });
+  const app = await NestFactory.create(AppModule);
   app.use(requestIdMiddleware);
-
-  // Parses the Clerk session token on every request and attaches the auth
-  // object; ClerkAuthGuard reads it. authorizedParties pins which origins may
-  // present a token, which is what stops a token minted for another app from
-  // being replayed against this API.
-  const authorizedParties = (process.env.CLERK_AUTHORIZED_PARTIES ?? '')
-    .split(',')
-    .map((party) => party.trim())
-    .filter(Boolean);
-
-  app.use(
-    clerkMiddleware(
-      authorizedParties.length > 0 ? { authorizedParties } : undefined,
-    ),
-  );
 
   const defaultOrigins = [
     'http://localhost:3000',
@@ -54,7 +36,6 @@ async function bootstrap() {
     exclude: [
       { path: 'mcp', method: RequestMethod.ALL },
       { path: '.well-known/(.*)', method: RequestMethod.ALL },
-      { path: 'webhooks/(.*)', method: RequestMethod.ALL },
     ],
   });
 

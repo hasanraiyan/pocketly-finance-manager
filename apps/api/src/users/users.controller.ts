@@ -13,7 +13,6 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { clerkClient } from '@clerk/express';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import type { UserDocument } from './schemas/user.schema';
 import { DeleteAccountDto } from './dto/delete-account.dto';
@@ -53,10 +52,9 @@ export class UsersController {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @Body() dto: DeleteAccountDto,
   ) {
+    // Erases the identity (passwordHash) along with everything else --
+    // there's no separate provider to notify, unlike the Clerk-backed
+    // version this replaces.
     await this.usersService.deleteAccount(user);
-    // Erase the identity itself (email/password, sessions, connections).
-    // Clerk fires `user.deleted` back at our webhook, which no-ops -- the
-    // profile it would erase is already gone.
-    await clerkClient.users.deleteUser(user.authUserId);
   }
 }
