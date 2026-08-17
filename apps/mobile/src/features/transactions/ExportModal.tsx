@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { Button } from "@/components/Button";
+import { DatePickerField } from "@/components/DatePickerField";
 import { TextField } from "@/components/TextField";
 import { theme } from "@/lib/theme";
 import { useExportCsv, useExportPdf } from "./hooks";
@@ -217,19 +218,19 @@ export function ExportModal({ visible, onClose }: ExportModalProps) {
               {isCustom && (
                 <View className="flex-row gap-3">
                   <View className="flex-1">
-                    <TextField
-                      label="From (YYYY-MM-DD)"
-                      placeholder="2026-08-01"
+                    <DatePickerField
+                      label="From Date"
+                      placeholder="Start date"
                       value={from}
-                      onChangeText={setFrom}
+                      onChange={setFrom}
                     />
                   </View>
                   <View className="flex-1">
-                    <TextField
-                      label="To (YYYY-MM-DD)"
-                      placeholder="2026-08-31"
+                    <DatePickerField
+                      label="To Date"
+                      placeholder="End date"
                       value={to}
-                      onChangeText={setTo}
+                      onChange={setTo}
                     />
                   </View>
                 </View>

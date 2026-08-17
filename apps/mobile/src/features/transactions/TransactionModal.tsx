@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { Button } from "@/components/Button";
+import { DatePickerField } from "@/components/DatePickerField";
 import { TextField } from "@/components/TextField";
 import { useAccounts } from "@/features/accounts/hooks";
 import {
@@ -429,12 +430,11 @@ export function TransactionModal({
                 </View>
               )}
 
-              {/* Date */}
-              <TextField
-                label="Date (YYYY-MM-DD)"
-                placeholder="2026-08-18"
+              {/* Date Picker */}
+              <DatePickerField
+                label="Date"
                 value={date}
-                onChangeText={setDate}
+                onChange={setDate}
               />
 
               {/* Note */}

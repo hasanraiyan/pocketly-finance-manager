@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { Button } from "@/components/Button";
+import { DatePickerField } from "@/components/DatePickerField";
 import { TextField } from "@/components/TextField";
 import { useAccounts } from "@/features/accounts/hooks";
 import { theme } from "@/lib/theme";
@@ -219,12 +220,12 @@ export function GoalModal({ visible, onClose, goal }: GoalModalProps) {
                 onChangeText={setMonthlyContribution}
               />
 
-              {/* Target Date */}
-              <TextField
-                label="Target Completion Date (YYYY-MM-DD)"
-                placeholder="2026-12-31"
+              {/* Target Date Picker */}
+              <DatePickerField
+                label="Target Completion Date (Optional)"
+                placeholder="Select target completion date"
                 value={targetDate}
-                onChangeText={setTargetDate}
+                onChange={setTargetDate}
               />
 
               {/* Linked Account Selector */}
