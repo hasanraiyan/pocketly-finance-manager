@@ -9,7 +9,7 @@ export function PageHeaderTitle() {
     return <span className="font-heading text-sm text-foreground">Admin Operations</span>;
   }
   if (pathname.startsWith("/feedback")) {
-    return <span className="font-heading text-sm text-foreground">Feedback & Roadmap</span>;
+    return <span className="font-heading text-sm text-foreground">Feedback & Feature Requests</span>;
   }
   const current = NAV_ITEMS.find((item) => pathname.startsWith(item.url));
 

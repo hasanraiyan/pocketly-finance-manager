@@ -2,8 +2,8 @@ import { getServerApiClient } from "@/lib/api-client";
 import { FeedbackView } from "@/features/feedback/feedback-view";
 
 export const metadata = {
-  title: "Feedback & Roadmap | Pocketly",
-  description: "Share your ideas, report bugs, and vote on upcoming features for Pocketly.",
+  title: "Send Feedback | Pocketly",
+  description: "Share your ideas, report bugs, and send feedback directly to the Pocketly team.",
 };
 
 export default async function FeedbackPage() {
@@ -12,7 +12,7 @@ export default async function FeedbackPage() {
     params: {
       query: {
         limit: 50,
-        sortBy: "upvotes",
+        onlyMine: true,
       },
     },
   });

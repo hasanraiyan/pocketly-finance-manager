@@ -7,6 +7,7 @@ import { toast } from "@/components/ui/toast";
 
 export type FeedbackItem =
   components["schemas"]["FeedbackListDto"]["data"]["items"][number];
+export type FeedbackStatus = FeedbackItem["status"];
 export type FeedbackCategory =
   components["schemas"]["CreateFeedbackDto"]["category"];
 export type FeedbackType =
