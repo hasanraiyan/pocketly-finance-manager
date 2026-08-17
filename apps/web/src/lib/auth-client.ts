@@ -12,13 +12,20 @@ import {
   clearStoredAuthToken,
 } from "./auth-token";
 
-export const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+export const apiServerOrigin =
+  process.env.NEXT_PUBLIC_API_AUTH_URL
+    ? process.env.NEXT_PUBLIC_API_AUTH_URL.replace(/\/api\/auth\/?$/, "")
+    : (process.env.NEXT_PUBLIC_API_URL
+        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/v1\/?$/, "")
+        : "http://localhost:4000");
 
-export const authBaseUrl = `${apiBaseUrl}/api/auth`;
+export const authBaseUrl =
+  process.env.NEXT_PUBLIC_API_AUTH_URL ?? `${apiServerOrigin}/api/auth`;
+
+export const apiBaseUrl = apiServerOrigin;
 
 const rawClient = createFetchClient<paths>({
-  baseUrl: apiBaseUrl,
+  baseUrl: apiServerOrigin,
   credentials: "include",
 });
 
