@@ -3,13 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { App } from 'supertest/types';
 import { AppModule } from '../../src/app.module';
-import { ClerkAuthGuard } from '../../src/common/auth/clerk-auth.guard';
-import { TestAuthGuard } from './test-auth.guard';
 
 /**
- * Boots the full app against an in-memory MongoDB, with ClerkAuthGuard
- * swapped for TestAuthGuard so no live Clerk instance is needed. Everything
- * else -- module graph, guards, interceptors, pipes -- is the real thing.
+ * Boots the full app against an in-memory MongoDB. No guard override needed
+ * any more -- `JwtAuthGuard` needs no live external service, so flow specs
+ * exercise the real thing via `signUpTestUser` (`support/auth.ts`).
  */
 export async function createTestApp(): Promise<{
   app: INestApplication<App>;
@@ -20,10 +18,7 @@ export async function createTestApp(): Promise<{
 
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
-  })
-    .overrideProvider(ClerkAuthGuard)
-    .useClass(TestAuthGuard)
-    .compile();
+  }).compile();
 
   const app: INestApplication<App> = moduleFixture.createNestApplication();
 
@@ -32,7 +27,6 @@ export async function createTestApp(): Promise<{
     exclude: [
       { path: 'mcp', method: RequestMethod.ALL },
       { path: '.well-known/(.*)', method: RequestMethod.ALL },
-      { path: 'webhooks/(.*)', method: RequestMethod.ALL },
     ],
   });
 

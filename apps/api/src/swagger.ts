@@ -14,7 +14,7 @@ export function buildOpenApiConfig() {
         scheme: 'bearer',
         bearerFormat: 'JWT',
         description:
-          'Clerk session token. Obtain one from the web or mobile app (Clerk `getToken()`); the API verifies it via clerkMiddleware.',
+          'Pocketly session access token, from POST /auth/login or /auth/register. Short-lived (15 minutes) -- use the returned refreshToken with POST /auth/refresh to get a new one.',
       },
       'jwt',
     )

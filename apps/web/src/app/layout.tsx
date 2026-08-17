@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Fraunces, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { AuthProvider } from "@/lib/auth-provider";
 import { Providers } from "@/components/providers";
 import {
   SITE_DESCRIPTION,
@@ -87,17 +87,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
     >
       <body className="min-h-full flex flex-col">
-        <ClerkProvider
-          appearance={{
-            variables: {
-              colorPrimary: "#2f6f4e",
-              fontFamily: "var(--font-sans)",
-              borderRadius: "0.5rem",
-            },
-          }}
-        >
+        <AuthProvider>
           <Providers>{children}</Providers>
-        </ClerkProvider>
+        </AuthProvider>
       </body>
     </html>
   );

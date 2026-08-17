@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { SignIn } from "@clerk/nextjs";
+import { Suspense } from "react";
+import { SignInForm } from "@/features/auth/sign-in-form";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -9,7 +10,10 @@ export const metadata: Metadata = {
 export default function SignInPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-12">
-      <SignIn fallbackRedirectUrl="/dashboard" />
+      {/* useSearchParams (for ?redirect=) needs a Suspense boundary for static rendering. */}
+      <Suspense fallback={null}>
+        <SignInForm />
+      </Suspense>
     </main>
   );
 }

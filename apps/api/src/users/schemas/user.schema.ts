@@ -5,16 +5,8 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema({ timestamps: true })
 export class User {
-  /** Clerk user id (`user_...`). */
-  @Prop({ required: true, unique: true, index: true })
-  authUserId!: string;
-
-  /**
-   * The id this profile had under the pre-Clerk auth system, kept only for
-   * reconciling the migration. Unset for anyone who signed up after it.
-   */
-  @Prop({ index: true, sparse: true })
-  legacyAuthUserId?: string;
+  @Prop({ required: true })
+  passwordHash!: string;
 
   @Prop({
     required: true,

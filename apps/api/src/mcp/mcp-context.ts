@@ -36,8 +36,8 @@ export interface McpToolContext {
   token: string;
   /**
    * Pocketly scopes this connection holds, decided in McpAuthGuard from
-   * Clerk's verification of the access token. See GRANTED_SCOPES there for
-   * why this is currently all-or-nothing.
+   * Pocketly's own verification of the access token. See GRANTED_SCOPES
+   * there for why this is currently all-or-nothing.
    */
   scopes: McpScope[];
   services: McpToolServices;
@@ -45,8 +45,8 @@ export interface McpToolContext {
 
 /**
  * Checks a specific scope right before a tool acts on it. The scopes come
- * from Clerk's verification of the access token (McpAuthGuard) -- never from
- * an unverified client-side decode of the token itself.
+ * from `McpAuthGuard`'s own signature verification of the access token --
+ * never from an unverified client-side decode of the token itself.
  */
 export function requireScope(
   scopes: McpScope[],

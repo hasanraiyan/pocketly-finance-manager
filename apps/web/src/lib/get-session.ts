@@ -1,40 +1,24 @@
-import { currentUser } from "@clerk/nextjs/server";
-
-export type SessionUser = {
-  id: string;
-  email: string;
-  name: string;
-  image?: string | null;
-};
+import { cookies } from "next/headers";
+import { ACCESS_TOKEN_COOKIE_NAME, decodeAccessToken, isExpired } from "./auth-tokens";
 
 /**
- * Server-side session read for Server Components. Clerk is the source of
- * truth for identity, so this doesn't call the Pocketly API at all -- pages
- * that need the Pocketly *profile* (currency, timezone) fetch it separately
- * via `getServerApiClient`.
+ * Server-side "is someone signed in" read for Server Components. Only ever
+ * used to decide between "Dashboard" and "Sign in" in marketing-page nav --
+ * no caller reads the user's name/email from it (the JWT doesn't carry
+ * either; it's `sub` + `sid` only), so this only returns presence.
+ *
+ * Decode-only, no signature check: a forged cookie could at most make a
+ * logged-out visitor see the "Dashboard" link, which 404s nowhere and leads
+ * to a page that re-checks properly (`(app)/layout.tsx` calls the real API
+ * with the same cookie, which the API verifies for real).
  */
-export async function getServerSession(): Promise<{
-  user: SessionUser;
-} | null> {
-  const user = await currentUser();
-  if (!user) return null;
+export async function getServerSession(): Promise<{ userId: string } | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value;
+  if (!token) return null;
 
-  const email =
-    user.primaryEmailAddress?.emailAddress ??
-    user.emailAddresses[0]?.emailAddress ??
-    "";
+  const decoded = decodeAccessToken(token);
+  if (!decoded || isExpired(decoded.exp)) return null;
 
-  const name =
-    [user.firstName, user.lastName].filter(Boolean).join(" ") ||
-    user.username ||
-    email.split("@")[0];
-
-  return {
-    user: {
-      id: user.id,
-      email,
-      name,
-      image: user.imageUrl,
-    },
-  };
+  return { userId: decoded.sub };
 }

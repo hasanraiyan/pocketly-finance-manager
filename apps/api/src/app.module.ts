@@ -8,11 +8,12 @@ import { ZodValidationPipe } from 'nestjs-zod';
 import { AccountsModule } from './accounts/accounts.module';
 import { AnalysisModule } from './analysis/analysis.module';
 import { AppController } from './app.controller';
+import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { BudgetsModule } from './budgets/budgets.module';
 import { CategoriesModule } from './categories/categories.module';
 import { DatabaseModule } from './common/database/database.module';
 import { TransformInterceptor } from './common/http/transform.interceptor';
-import { ClerkAuthGuard } from './common/auth/clerk-auth.guard';
 import { LoggingInterceptor } from './common/logging/logging.interceptor';
 import { AdminModule } from './admin/admin.module';
 import { ExportsModule } from './exports/exports.module';
@@ -25,7 +26,6 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { RecurrencesModule } from './recurrences/recurrences.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UsersModule } from './users/users.module';
-import { WebhooksModule } from './webhooks/webhooks.module';
 
 @Module({
   imports: [
@@ -47,6 +47,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
       }),
     }),
     DatabaseModule,
+    AuthModule,
     UsersModule,
     AccountsModule,
     CategoriesModule,
@@ -62,19 +63,15 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     RecurrencesModule,
     FeedbackModule,
     AdminModule,
-    WebhooksModule,
   ],
   controllers: [AppController],
   providers: [
     { provide: APP_FILTER, useClass: SentryGlobalFilter },
     { provide: APP_PIPE, useClass: ZodValidationPipe },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
-    // Registered as a provider and aliased into APP_GUARD (rather than
-    // `useClass` inline) so e2e tests can swap it for a stand-in via
-    // `overrideProvider(ClerkAuthGuard)` -- an inline useClass has no token
-    // to override.
-    ClerkAuthGuard,
-    { provide: APP_GUARD, useExisting: ClerkAuthGuard },
+    // Aliased into APP_GUARD (rather than `useClass` inline) so tests can
+    // override the token directly -- an inline useClass has none to target.
+    { provide: APP_GUARD, useExisting: JwtAuthGuard },
     { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
     { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
   ],

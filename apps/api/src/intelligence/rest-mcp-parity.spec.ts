@@ -53,9 +53,9 @@ describe('REST vs MCP financial parity', () => {
     const budgetsService = moduleRef.get(BudgetsService);
     const goalsService = moduleRef.get(GoalsService);
 
-    user = await usersService.findOrCreateByClerkId(
-      'user_parity_test',
+    user = await usersService.register(
       'parity@test.com',
+      'not-a-real-hash',
       'Parity Tester',
     );
     user.timezone = 'UTC';

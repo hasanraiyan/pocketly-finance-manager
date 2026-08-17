@@ -1,7 +1,7 @@
 "use client";
 
 import Link, { useLinkStatus } from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Wallet,
@@ -12,8 +12,9 @@ import {
   Settings,
   MessageSquarePlus,
   Gauge,
+  ChevronsUpDown,
+  LogOut,
 } from "lucide-react";
-import { UserButton } from "@clerk/nextjs";
 import {
   Sidebar,
   SidebarContent,
@@ -25,7 +26,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
+import { useAuth } from "@/lib/auth-provider";
 import { useUserProfile } from "@/features/settings/hooks";
 
 export const NAV_ITEMS = [
@@ -90,29 +100,56 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        {/*
-          Clerk's own menu, rather than a hand-rolled one: it adds "Manage
-          account" (password, devices, connected accounts) next to Sign out,
-          and it owns the identity display, so a long email is truncated by
-          Clerk instead of overflowing the popover as it did before.
-        */}
-        <UserButton
-          showName
-          appearance={{
-            elements: {
-              rootBox: "w-full",
-              userButtonTrigger:
-                "w-full rounded-md px-2 py-1.5 hover:bg-sidebar-accent focus:shadow-none",
-              userButtonBox: "w-full flex-row justify-start gap-2",
-              userButtonOuterIdentifier:
-                "min-w-0 truncate pl-0 text-sm text-sidebar-foreground group-data-[collapsible=icon]:hidden",
-              userButtonPopoverCard: "max-w-[min(20rem,calc(100vw-2rem))]",
-              userPreviewMainIdentifier: "truncate",
-              userPreviewSecondaryIdentifier: "truncate",
-            },
-          }}
-        />
+        <UserMenu name={profile?.name} email={profile?.email} />
       </SidebarFooter>
     </Sidebar>
+  );
+}
+
+/**
+ * Hand-built replacement for Clerk's `<UserButton/>`. "Manage account"
+ * (password, devices, connected apps) lives on the Settings page now
+ * instead of a Clerk-hosted popover -- there's no separate identity
+ * provider surface left to link out to.
+ */
+function UserMenu({ name, email }: { name?: string; email?: string }) {
+  const router = useRouter();
+  const { logout } = useAuth();
+  const initial = (name || email || "?").charAt(0).toUpperCase();
+
+  async function handleSignOut() {
+    await logout();
+    router.push("/");
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent">
+            <Avatar className="size-6">
+              <AvatarFallback className="text-xs">{initial}</AvatarFallback>
+            </Avatar>
+            <span className="min-w-0 truncate">{name || email || "Account"}</span>
+            <ChevronsUpDown className="ml-auto size-4 text-sidebar-foreground/50" />
+          </SidebarMenuButton>
+        }
+      />
+      <DropdownMenuContent align="start" className="w-56">
+        <div className="flex flex-col px-2 py-1.5">
+          <span className="truncate text-sm font-medium">{name}</span>
+          <span className="truncate text-xs text-muted-foreground">{email}</span>
+        </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem render={<Link href="/settings" />}>
+          <Settings />
+          Settings
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => void handleSignOut()}>
+          <LogOut />
+          Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

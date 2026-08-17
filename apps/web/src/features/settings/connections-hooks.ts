@@ -33,10 +33,10 @@ export function useDisconnectOAuthClient() {
 
   return useMutation({
     mutationFn: async ({ clientId }: { id: string; clientId: string }) => {
-      // Clerk owns the OAuth grant, but an access token already issued to
-      // this client stays valid until it expires. This writes Pocketly's own
-      // revocation marker (checked by McpAuthGuard on every request), so
-      // disconnecting takes effect now rather than up to an hour from now.
+      // An access token already issued to this client stays valid until it
+      // expires. This writes Pocketly's own revocation marker (checked by
+      // McpAuthGuard on every request), so disconnecting takes effect now
+      // rather than up to an hour from now.
       const { error } = await client.DELETE("/mcp-connections/{clientId}", {
         params: { path: { clientId } },
       });

@@ -2,6 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Account, AccountDocument } from '../accounts/schemas/account.schema';
+import {
+  RefreshToken,
+  RefreshTokenDocument,
+} from '../auth/schemas/refresh-token.schema';
 import { Budget, BudgetDocument } from '../budgets/schemas/budget.schema';
 import {
   Category,
@@ -29,23 +33,23 @@ export class UsersService {
     private readonly budgetModel: Model<BudgetDocument>,
     @InjectModel(Goal.name)
     private readonly goalModel: Model<GoalDocument>,
+    @InjectModel(RefreshToken.name)
+    private readonly refreshTokenModel: Model<RefreshTokenDocument>,
   ) {}
 
-  async findByClerkId(clerkUserId: string): Promise<UserDocument | null> {
-    return this.userModel.findOne({ authUserId: clerkUserId }).exec();
+  async findByEmail(email: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ email: email.toLowerCase().trim() }).exec();
   }
 
-  /**
-   * `authUserId` holds the Clerk user id (`user_...`). Profiles migrated from
-   * the old auth system keep their previous id in `legacyAuthUserId`; the
-   * email fallback below is what lets a migrated user land on their existing
-   * profile even if the id rewrite missed them.
-   */
-  async findOrCreateByClerkId(
-    authUserId: string,
+  async findById(id: string): Promise<UserDocument | null> {
+    return this.userModel.findById(id).exec();
+  }
+
+  /** Creates the Pocketly profile for a freshly registered account. Password hashing is `AuthService`'s job, not this one's. */
+  async register(
     email: string,
+    passwordHash: string,
     name: string,
-    imageUrl?: string,
   ): Promise<UserDocument> {
     const normalizedEmail = email.toLowerCase().trim();
     const shouldBeAdmin = (process.env.ADMIN_EMAILS || '')
@@ -54,88 +58,12 @@ export class UsersService {
       .filter(Boolean)
       .includes(normalizedEmail);
 
-    const existing = await this.userModel
-      .findOne({
-        $or: [{ authUserId }, { email: normalizedEmail }],
-      })
-      .exec();
-
-    if (existing) {
-      let needsSave = false;
-      if (existing.authUserId !== authUserId) {
-        // Matched on email, not id: a pre-Clerk profile being adopted by its
-        // Clerk identity. Keep the old id so the two can still be reconciled.
-        existing.legacyAuthUserId ??= existing.authUserId;
-        existing.authUserId = authUserId;
-        needsSave = true;
-      }
-      if (name && existing.name !== name) {
-        existing.name = name;
-        needsSave = true;
-      }
-      if (imageUrl && !existing.imageUrl) {
-        existing.imageUrl = imageUrl;
-        needsSave = true;
-      }
-      if (shouldBeAdmin && existing.role !== 'admin') {
-        existing.role = 'admin';
-        needsSave = true;
-      }
-      if (needsSave) {
-        await existing.save();
-      }
-      return existing;
-    }
-
-    try {
-      return await this.userModel.create({
-        authUserId,
-        email: normalizedEmail,
-        name,
-        imageUrl,
-        role: shouldBeAdmin ? 'admin' : 'user',
-      });
-    } catch (err: any) {
-      if (err?.code === 11000) {
-        const user = await this.userModel
-          .findOne({
-            $or: [{ authUserId }, { email: normalizedEmail }],
-          })
-          .exec();
-        if (user) return user;
-      }
-      throw err;
-    }
-  }
-
-  /**
-   * Applies a Clerk `user.updated` event. Only ever touches Clerk-owned
-   * fields -- `currency`, `timezone` and `phone` are Pocketly's and must
-   * survive a profile edit made in Clerk's UI. No-ops for a Clerk user we've
-   * never seen; there is nothing to sync until they call the API.
-   */
-  async syncFromClerk(
-    clerkUserId: string,
-    fields: { email?: string; name?: string; imageUrl?: string },
-  ): Promise<void> {
-    const user = await this.findByClerkId(clerkUserId);
-    if (!user) return;
-
-    if (fields.email) user.email = fields.email.toLowerCase().trim();
-    if (fields.name) user.name = fields.name;
-    if (fields.imageUrl) user.imageUrl = fields.imageUrl;
-
-    await user.save();
-  }
-
-  /**
-   * Applies a Clerk `user.deleted` event: same erasure as `DELETE /users/me`,
-   * minus the call back to Clerk to delete an identity that is already gone.
-   */
-  async eraseByClerkId(clerkUserId: string): Promise<void> {
-    const user = await this.findByClerkId(clerkUserId);
-    if (!user) return;
-    await this.deleteAccount(user);
+    return this.userModel.create({
+      email: normalizedEmail,
+      passwordHash,
+      name,
+      role: shouldBeAdmin ? 'admin' : 'user',
+    });
   }
 
   async updateProfile(
@@ -162,6 +90,7 @@ export class UsersService {
       this.transactionModel.deleteMany({ userId: user._id }),
       this.budgetModel.deleteMany({ userId: user._id }),
       this.goalModel.deleteMany({ userId: user._id }),
+      this.refreshTokenModel.deleteMany({ userId: user._id }),
     ]);
     await this.userModel.deleteOne({ _id: user._id });
   }
@@ -190,7 +119,12 @@ export class UsersService {
     return { items: page, nextCursor };
   }
 
-  async setUserRole(userId: string, role: 'user' | 'admin'): Promise<UserDocument | null> {
-    return this.userModel.findByIdAndUpdate(userId, { role }, { new: true }).exec();
+  async setUserRole(
+    userId: string,
+    role: 'user' | 'admin',
+  ): Promise<UserDocument | null> {
+    return this.userModel
+      .findByIdAndUpdate(userId, { role }, { new: true })
+      .exec();
   }
 }

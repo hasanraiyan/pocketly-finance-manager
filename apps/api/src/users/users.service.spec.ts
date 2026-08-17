@@ -8,6 +8,11 @@ import {
   AccountDocument,
   AccountSchema,
 } from '../accounts/schemas/account.schema';
+import {
+  RefreshToken,
+  RefreshTokenDocument,
+  RefreshTokenSchema,
+} from '../auth/schemas/refresh-token.schema';
 import { Budget, BudgetSchema } from '../budgets/schemas/budget.schema';
 import { Goal, GoalDocument, GoalSchema } from '../goals/schemas/goal.schema';
 import { CategoriesService } from '../categories/categories.service';
@@ -38,6 +43,7 @@ describe('UsersService', () => {
   let categoryModel: Model<CategoryDocument>;
   let transactionModel: Model<TransactionDocument>;
   let goalModel: Model<GoalDocument>;
+  let refreshTokenModel: Model<RefreshTokenDocument>;
 
   beforeAll(async () => {
     mongod = await MongoMemoryServer.create();
@@ -52,6 +58,7 @@ describe('UsersService', () => {
           { name: Transaction.name, schema: TransactionSchema },
           { name: Budget.name, schema: BudgetSchema },
           { name: Goal.name, schema: GoalSchema },
+          { name: RefreshToken.name, schema: RefreshTokenSchema },
         ]),
       ],
       providers: [
@@ -80,6 +87,7 @@ describe('UsersService', () => {
     categoryModel = moduleRef.get(getModelToken(Category.name));
     transactionModel = moduleRef.get(getModelToken(Transaction.name));
     goalModel = moduleRef.get(getModelToken(Goal.name));
+    refreshTokenModel = moduleRef.get(getModelToken(RefreshToken.name));
   }, 60_000);
 
   afterAll(async () => {
@@ -90,7 +98,7 @@ describe('UsersService', () => {
   it('deleteAccount erases all financial data and the profile', async () => {
     const user = await userModel.create({
       email: 'a@b.com',
-      authUserId: 'test-auth-user-id-1',
+      passwordHash: 'hash',
       name: 'Test User',
     });
 
@@ -117,6 +125,11 @@ describe('UsersService', () => {
       name: 'Emergency fund',
       targetAmount: 1_000_000,
     });
+    await refreshTokenModel.create({
+      userId: user._id,
+      tokenHash: 'hash',
+      expiresAt: new Date(Date.now() + 1_000_000),
+    });
 
     await usersService.deleteAccount(user);
 
@@ -125,12 +138,15 @@ describe('UsersService', () => {
     expect(await categoryModel.countDocuments({ userId: user._id })).toBe(0);
     expect(await transactionModel.countDocuments({ userId: user._id })).toBe(0);
     expect(await goalModel.countDocuments({ userId: user._id })).toBe(0);
+    expect(await refreshTokenModel.countDocuments({ userId: user._id })).toBe(
+      0,
+    );
   });
 
   it('updateProfile updates currency/timezone and persists them', async () => {
     const user = await userModel.create({
       email: 'profile@b.com',
-      authUserId: 'test-auth-user-id-2',
+      passwordHash: 'hash',
       name: 'Profile User',
       currency: 'USD',
       timezone: 'UTC',

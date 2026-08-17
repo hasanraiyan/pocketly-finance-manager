@@ -12,6 +12,14 @@ interface ResourceMetadata {
   bearer_methods_supported: string[];
 }
 
+interface AuthorizationServerMetadata {
+  issuer: string;
+  authorization_endpoint: string;
+  token_endpoint: string;
+  registration_endpoint: string;
+  jwks_uri: string;
+}
+
 /**
  * OAuth discovery is read by generic clients, not by our own frontend, so
  * the exact wire shape is the contract. These assertions exist because a
@@ -26,10 +34,7 @@ describe('OAuth discovery (e2e)', () => {
   beforeAll(async () => {
     mongod = await MongoMemoryServer.create();
     process.env.MONGODB_URI = mongod.getUri();
-    // A well-formed dev publishable key: base64 of "<frontend-api>$".
-    process.env.CLERK_PUBLISHABLE_KEY = `pk_test_${Buffer.from(
-      'example-42.clerk.accounts.dev$',
-    ).toString('base64')}`;
+    process.env.API_BASE_URL = 'http://localhost:4000';
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -61,48 +66,42 @@ describe('OAuth discovery (e2e)', () => {
     expect(body.bearer_methods_supported).toEqual(['header']);
   });
 
-  it('points clients at the Clerk instance encoded in the publishable key', async () => {
+  it('points clients at itself as the authorization server', async () => {
     const res = await request(app.getHttpServer())
       .get('/.well-known/oauth-protected-resource/mcp')
       .expect(200);
 
     expect((res.body as ResourceMetadata).authorization_servers).toEqual([
-      'https://example-42.clerk.accounts.dev',
+      'http://localhost:4000',
     ]);
   });
 
-  it('advertises only scopes Clerk can actually issue', async () => {
+  it('advertises both Pocketly scopes -- there is no external issuer to be limited by any more', async () => {
     const res = await request(app.getHttpServer())
       .get('/.well-known/oauth-protected-resource')
       .expect(200);
 
-    // Custom scopes aren't supported by Clerk yet; advertising pocketly:*
-    // would send clients off to request scopes that get refused.
-    expect((res.body as ResourceMetadata).scopes_supported).not.toContain(
+    expect((res.body as ResourceMetadata).scopes_supported).toEqual([
       'pocketly:read',
-    );
+      'pocketly:write',
+    ]);
   });
 
-  it('redirects authorization-server probes to Clerk', async () => {
+  it('serves its own authorization-server metadata, unwrapped', async () => {
     const res = await request(app.getHttpServer())
       .get('/.well-known/oauth-authorization-server')
-      .expect(302);
+      .expect(200);
 
-    expect(res.headers.location).toBe(
-      'https://example-42.clerk.accounts.dev/.well-known/oauth-authorization-server',
+    const body = res.body as AuthorizationServerMetadata;
+    expect(res.body).not.toHaveProperty('data');
+    expect(body.issuer).toBe('http://localhost:4000');
+    expect(body.authorization_endpoint).toBe(
+      'http://localhost:4000/oauth2/authorize',
     );
-  });
-
-  it('503s instead of stranding clients when Clerk is not configured', async () => {
-    const key = process.env.CLERK_PUBLISHABLE_KEY;
-    delete process.env.CLERK_PUBLISHABLE_KEY;
-
-    try {
-      await request(app.getHttpServer())
-        .get('/.well-known/oauth-protected-resource')
-        .expect(503);
-    } finally {
-      process.env.CLERK_PUBLISHABLE_KEY = key;
-    }
+    expect(body.token_endpoint).toBe('http://localhost:4000/oauth2/token');
+    expect(body.registration_endpoint).toBe(
+      'http://localhost:4000/oauth2/register',
+    );
+    expect(body.jwks_uri).toBe('http://localhost:4000/oauth2/jwks');
   });
 });

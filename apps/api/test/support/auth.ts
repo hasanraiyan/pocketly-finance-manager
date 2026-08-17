@@ -1,24 +1,26 @@
+import request from 'supertest';
 import { App } from 'supertest/types';
 
 let counter = 0;
 
 /**
- * Mints a bearer token for a fresh user. Clerk owns real identities, so
- * there is no sign-up endpoint to call any more: TestAuthGuard (wired in by
- * createTestApp) treats the token as a Clerk user id, and the profile is
- * created on first use by `UsersService.findOrCreateByClerkId` -- exactly
- * what happens in production the first time a Clerk user calls the API.
+ * Registers a fresh user through the real `/auth/register` endpoint and
+ * returns an access token for it -- exercises the actual `JwtAuthGuard` +
+ * `AuthService` path end to end, rather than a stand-in guard.
  */
-export function signUpTestUser(
-  _app: App,
-  overrides: { clerkUserId?: string } = {},
+export async function signUpTestUser(
+  app: App,
+  overrides: { email?: string } = {},
 ): Promise<{ token: string; email: string }> {
   counter += 1;
-  const clerkUserId =
-    overrides.clerkUserId ?? `user_flowtest${Date.now()}${counter}`;
+  const email =
+    overrides.email ?? `flowtest${Date.now()}${counter}@example.test`;
 
-  return Promise.resolve({
-    token: clerkUserId,
-    email: `${clerkUserId}@example.test`,
-  });
+  const response = await request(app)
+    .post('/api/v1/auth/register')
+    .send({ email, password: 'flow-test-password-1', name: 'Flow Test User' })
+    .expect(201);
+
+  const body = response.body as { data: { accessToken: string } };
+  return { token: body.data.accessToken, email };
 }
