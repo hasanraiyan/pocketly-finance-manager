@@ -158,7 +158,6 @@ export class ExportProcessor extends WorkerHost {
     // 6. Format period label
     const periodLabel = this.formatPeriodLabel(period, range.start, range.end);
 
-
     // 7. Handle CSV format
     if (job.name === 'generate-csv') {
       const escapeCsv = (val: any) => {
