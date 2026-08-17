@@ -87,13 +87,25 @@ export class UsersService {
       return existing;
     }
 
-    return this.userModel.create({
-      authUserId,
-      email: normalizedEmail,
-      name,
-      imageUrl,
-      role: shouldBeAdmin ? 'admin' : 'user',
-    });
+    try {
+      return await this.userModel.create({
+        authUserId,
+        email: normalizedEmail,
+        name,
+        imageUrl,
+        role: shouldBeAdmin ? 'admin' : 'user',
+      });
+    } catch (err: any) {
+      if (err?.code === 11000) {
+        const user = await this.userModel
+          .findOne({
+            $or: [{ authUserId }, { email: normalizedEmail }],
+          })
+          .exec();
+        if (user) return user;
+      }
+      throw err;
+    }
   }
 
   /**

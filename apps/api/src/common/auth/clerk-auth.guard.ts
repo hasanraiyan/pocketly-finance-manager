@@ -55,28 +55,37 @@ export class ClerkAuthGuard implements CanActivate {
     // from Clerk costs a Backend API call, so it deliberately happens only on
     // this path -- never on the hot path above. `user.updated` webhooks keep
     // the copy fresh afterwards.
-    const clerkUser = await clerkClient.users.getUser(userId);
-    const email =
-      clerkUser.primaryEmailAddress?.emailAddress ??
-      clerkUser.emailAddresses[0]?.emailAddress;
+    try {
+      const clerkUser = await clerkClient.users.getUser(userId);
+      const email =
+        clerkUser.primaryEmailAddress?.emailAddress ??
+        clerkUser.emailAddresses?.[0]?.emailAddress;
 
-    if (!email) {
-      throw new UnauthorizedException('Clerk user has no email address');
+      if (!email) {
+        throw new UnauthorizedException('Clerk user has no email address');
+      }
+
+      const name =
+        [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ') ||
+        clerkUser.username ||
+        email.split('@')[0];
+
+      (request as Request & { user: unknown }).user =
+        await this.usersService.findOrCreateByClerkId(
+          userId,
+          email,
+          name,
+          clerkUser.imageUrl,
+        );
+
+      return true;
+    } catch (err) {
+      const fallback = await this.usersService.findByClerkId(userId);
+      if (fallback) {
+        (request as Request & { user: unknown }).user = fallback;
+        return true;
+      }
+      throw err;
     }
-
-    const name =
-      [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ') ||
-      clerkUser.username ||
-      email.split('@')[0];
-
-    (request as Request & { user: unknown }).user =
-      await this.usersService.findOrCreateByClerkId(
-        userId,
-        email,
-        name,
-        clerkUser.imageUrl,
-      );
-
-    return true;
   }
 }

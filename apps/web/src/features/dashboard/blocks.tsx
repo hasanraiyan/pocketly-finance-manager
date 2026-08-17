@@ -37,6 +37,7 @@ import { ScenarioDialog } from "@/features/intelligence/scenario-dialog";
 import {
   getAccounts,
   getBudgets,
+  getCategories,
   getConnections,
   getCurrency,
   getForecast,
@@ -92,7 +93,7 @@ export async function BalanceCard() {
 
   // Sum every account, not just the handful the list below shows -- the
   // card used to total a truncated page of accounts and under-report.
-  const accounts = accountsRes.data?.data.items ?? [];
+  const accounts = accountsRes.data?.data?.items ?? [];
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
   const overview = overviewRes.data?.data;
   const balanceUnavailable = Boolean(accountsRes.error);
@@ -369,7 +370,7 @@ export async function HealthCard() {
  */
 export async function GoalsCard() {
   const [goalsRes, currency] = await Promise.all([getGoals(), getCurrency()]);
-  const goals = goalsRes.data?.data.items ?? [];
+  const goals = goalsRes.data?.data?.items ?? [];
 
   if (goalsRes.error || goals.length === 0) return null;
 
@@ -413,7 +414,7 @@ export async function AccountsCard() {
     getAccounts(),
     getCurrency(),
   ]);
-  const accounts = accountsRes.data?.data.items ?? [];
+  const accounts = accountsRes.data?.data?.items ?? [];
   const shown = accounts.slice(0, 5);
 
   return (
@@ -464,11 +465,14 @@ export async function AccountsCard() {
 }
 
 export async function BudgetsCard() {
-  const [budgetsRes, currency] = await Promise.all([
+  const [budgetsRes, categoriesRes, currency] = await Promise.all([
     getBudgets(),
+    getCategories(),
     getCurrency(),
   ]);
-  const budgets = budgetsRes.data?.data.items ?? [];
+  const budgets = budgetsRes.data?.data?.items ?? [];
+  const categories = categoriesRes.data?.data?.items ?? [];
+  const categoryMap = new Map(categories.map((c) => [c._id, c.name]));
 
   return (
     <Card>
@@ -484,38 +488,36 @@ export async function BudgetsCard() {
         ) : budgets.length === 0 ? (
           <Empty>
             <EmptyHeader>
-              <EmptyTitle>No budgets yet</EmptyTitle>
+              <EmptyTitle>No budgets set</EmptyTitle>
               <EmptyDescription>
-                Create a budget to start tracking your spending.
+                Set a monthly limit for categories you want to watch.
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
               <Button render={<Link href="/planning" />} size="sm">
-                Create a budget
+                Set a budget
               </Button>
             </EmptyContent>
           </Empty>
         ) : (
-          budgets.map((budget) => (
-            <div key={budget._id} className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between text-sm">
-                <span>
-                  {formatCurrency(budget.spent, currency)} of{" "}
-                  {formatCurrency(budget.amount, currency)}
-                </span>
-                <span
-                  className={
-                    budget.percentageUsed > 100
-                      ? "text-negative"
-                      : "text-muted-foreground"
-                  }
-                >
-                  {budget.percentageUsed}%
-                </span>
+          budgets.map((budget) => {
+            const categoryName = categoryMap.get(budget.categoryId) ?? "Budget";
+            return (
+              <div key={budget._id} className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between text-sm">
+                  <span>{categoryName}</span>
+                  <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                    {formatCurrency(budget.spent, currency)} of{" "}
+                    {formatCurrency(budget.amount, currency)}
+                  </span>
+                </div>
+                <Progress
+                  value={Math.min(budget.percentageUsed, 100)}
+                  className={cn(budget.spent > budget.amount && "bg-negative/20")}
+                />
               </div>
-              <Progress value={Math.min(budget.percentageUsed, 100)} />
-            </div>
-          ))
+            );
+          })
         )}
       </CardContent>
     </Card>
@@ -527,7 +529,7 @@ export async function RecentRecords() {
     getRecentTransactions(),
     getCurrency(),
   ]);
-  const transactions = transactionsRes.data?.data.items ?? [];
+  const transactions = transactionsRes.data?.data?.items ?? [];
 
   return (
     <Card className="py-0">
@@ -690,38 +692,38 @@ export async function GetStartedCard() {
     return null;
   }
 
-  if (profileRes.data?.data.checklistDismissedAt) return null;
+  if (profileRes.data?.data?.checklistDismissedAt) return null;
 
   const steps = [
     {
       title: "Add an account",
       detail: "A bank account, wallet, or card to track.",
       href: "/accounts",
-      done: (accountsRes.data?.data.items.length ?? 0) > 0,
+      done: (accountsRes.data?.data?.items?.length ?? 0) > 0,
     },
     {
       title: "Log a record",
       detail: "Your first expense or income.",
       href: "/records",
-      done: (transactionsRes.data?.data.items.length ?? 0) > 0,
+      done: (transactionsRes.data?.data?.items?.length ?? 0) > 0,
     },
     {
       title: "Set a budget",
       detail: "A monthly limit for a category you want to watch.",
       href: "/planning",
-      done: (budgetsRes.data?.data.items.length ?? 0) > 0,
+      done: (budgetsRes.data?.data?.items?.length ?? 0) > 0,
     },
     {
       title: "Set a goal",
       detail: "What you're saving for — Pocketly holds it back from what's spendable.",
       href: "/goals",
-      done: (goalsRes.data?.data.items.length ?? 0) > 0,
+      done: (goalsRes.data?.data?.items?.length ?? 0) > 0,
     },
     {
       title: "Connect an AI client",
       detail: "Ask Claude or ChatGPT about your money, using your own plan.",
       href: "/mcp-guide",
-      done: (connectionsRes.data?.data.items.length ?? 0) > 0,
+      done: (connectionsRes.data?.data?.items?.length ?? 0) > 0,
     },
   ];
 
@@ -741,7 +743,7 @@ export async function Welcome() {
 
   return (
     <WelcomeDialog
-      onboarded={Boolean(profileRes.data?.data.onboardedAt)}
+      onboarded={Boolean(profileRes.data?.data?.onboardedAt)}
     />
   );
 }

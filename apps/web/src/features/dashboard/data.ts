@@ -49,6 +49,11 @@ export const getBudgets = cache(async () => {
   return client.GET("/budgets", { params: { query: { limit: 4 } } });
 });
 
+export const getCategories = cache(async () => {
+  const client = await getServerApiClient();
+  return client.GET("/categories", { params: { query: { limit: 100 } } });
+});
+
 export const getRecentTransactions = cache(async () => {
   const client = await getServerApiClient();
   return client.GET("/transactions", { params: { query: { limit: 6 } } });
@@ -77,5 +82,5 @@ export const getGoals = cache(async () => {
 /** Display currency, falling back to INR when the profile can't be read. */
 export async function getCurrency() {
   const { data } = await getProfile();
-  return data?.data.currency ?? "INR";
+  return data?.data?.currency ?? "INR";
 }
