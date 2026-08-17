@@ -32,9 +32,23 @@ export class TransactionsService {
     private readonly notificationDispatcher: NotificationDispatcherService,
   ) {}
 
-  async create(userId: Types.ObjectId, dto: CreateTransactionDto) {
+  /**
+   * `origin` is set only by the recurrence worker. It is deliberately not
+   * part of CreateTransactionDto: `recurrenceId`/`occurrenceDate` form the
+   * uniqueness key that stops a rule double-posting, so they are ours to
+   * stamp, not something an API client gets to choose.
+   */
+  async create(
+    userId: Types.ObjectId,
+    dto: CreateTransactionDto,
+    origin?: { recurrenceId: Types.ObjectId; occurrenceDate: Date },
+  ) {
     await this.assertOwnedReferences(userId, dto);
-    const created = await this.transactionModel.create({ ...dto, userId });
+    const created = await this.transactionModel.create({
+      ...dto,
+      ...origin,
+      userId,
+    });
 
     // Asynchronously evaluate budget thresholds in background
     if (dto.type === 'expense' && dto.categoryId) {

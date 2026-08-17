@@ -17,6 +17,7 @@ import { LoggingInterceptor } from './common/logging/logging.interceptor';
 import { ExportsModule } from './exports/exports.module';
 import { McpModule } from './mcp/mcp.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { RecurrencesModule } from './recurrences/recurrences.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UsersModule } from './users/users.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
@@ -50,6 +51,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     ExportsModule,
     McpModule,
     NotificationsModule,
+    RecurrencesModule,
     WebhooksModule,
   ],
   controllers: [AppController],

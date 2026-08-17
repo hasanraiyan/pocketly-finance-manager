@@ -16,6 +16,10 @@ import {
   McpRevocationSchema,
 } from '../../mcp/schemas/mcp-revocation.schema';
 import {
+  Recurrence,
+  RecurrenceSchema,
+} from '../../recurrences/schemas/recurrence.schema';
+import {
   Transaction,
   TransactionSchema,
 } from '../../transactions/schemas/transaction.schema';
@@ -45,6 +49,7 @@ import { User, UserSchema } from '../../users/schemas/user.schema';
       { name: Budget.name, schema: BudgetSchema },
       { name: McpRevocation.name, schema: McpRevocationSchema },
       { name: McpConnection.name, schema: McpConnectionSchema },
+      { name: Recurrence.name, schema: RecurrenceSchema },
     ]),
   ],
   exports: [MongooseModule],

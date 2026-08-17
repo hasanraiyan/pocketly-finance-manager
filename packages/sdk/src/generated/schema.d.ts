@@ -404,6 +404,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recurrences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["RecurrencesController_findAll"];
+        put?: never;
+        post: operations["RecurrencesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recurrences/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["RecurrencesController_findOne"];
+        put?: never;
+        post?: never;
+        delete: operations["RecurrencesController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["RecurrencesController_update"];
+        trace?: never;
+    };
+    "/recurrences/{id}/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RecurrencesController_pause"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/recurrences/{id}/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["RecurrencesController_resume"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -833,6 +897,97 @@ export interface components {
                 /** @constant */
                 revoked: true;
             };
+        };
+        CreateRecurrenceDto: {
+            /** @enum {string} */
+            type: "income" | "expense" | "transfer";
+            amount: number;
+            description?: string;
+            note?: string;
+            categoryId?: string;
+            accountId: string;
+            toAccountId?: string;
+            /** @enum {string} */
+            frequency: "daily" | "weekly" | "monthly" | "yearly";
+            /** @default 1 */
+            interval: number;
+            /** Format: date-time */
+            startDate: string;
+            endDate?: string | null;
+        };
+        RecurrenceDto: {
+            data: {
+                _id: string;
+                userId: string;
+                /** @enum {string} */
+                type: "income" | "expense" | "transfer";
+                amount: number;
+                description?: string;
+                note?: string;
+                categoryId?: string;
+                accountId: string;
+                toAccountId?: string;
+                /** @enum {string} */
+                frequency: "daily" | "weekly" | "monthly" | "yearly";
+                interval: number;
+                startDate: string;
+                endDate: string | null;
+                timezone: string;
+                nextRunAt: string | null;
+                lastRunAt: string | null;
+                paused: boolean;
+                deletedAt: string | null;
+                syncVersion: number;
+                createdAt: string;
+                updatedAt: string;
+            };
+        };
+        RecurrenceListDto: {
+            data: {
+                items: {
+                    _id: string;
+                    userId: string;
+                    /** @enum {string} */
+                    type: "income" | "expense" | "transfer";
+                    amount: number;
+                    description?: string;
+                    note?: string;
+                    categoryId?: string;
+                    accountId: string;
+                    toAccountId?: string;
+                    /** @enum {string} */
+                    frequency: "daily" | "weekly" | "monthly" | "yearly";
+                    interval: number;
+                    startDate: string;
+                    endDate: string | null;
+                    timezone: string;
+                    nextRunAt: string | null;
+                    lastRunAt: string | null;
+                    paused: boolean;
+                    deletedAt: string | null;
+                    syncVersion: number;
+                    createdAt: string;
+                    updatedAt: string;
+                }[];
+                nextCursor: string | null;
+            };
+        };
+        UpdateRecurrenceDto: {
+            /** @enum {string} */
+            type?: "income" | "expense" | "transfer";
+            amount?: number;
+            description?: string;
+            note?: string;
+            categoryId?: string;
+            accountId?: string;
+            toAccountId?: string;
+            /** @enum {string} */
+            frequency?: "daily" | "weekly" | "monthly" | "yearly";
+            /** @default 1 */
+            interval: number;
+            /** Format: date-time */
+            startDate?: string;
+            endDate?: string | null;
         };
     };
     responses: never;
@@ -1722,6 +1877,161 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RevokeConnectionResponseDto"];
+                };
+            };
+        };
+    };
+    RecurrencesController_findAll: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurrenceListDto"];
+                };
+            };
+        };
+    };
+    RecurrencesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateRecurrenceDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurrenceDto"];
+                };
+            };
+        };
+    };
+    RecurrencesController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurrenceDto"];
+                };
+            };
+        };
+    };
+    RecurrencesController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The archived rule. Transactions it already created are untouched. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurrenceDto"];
+                };
+            };
+        };
+    };
+    RecurrencesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateRecurrenceDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurrenceDto"];
+                };
+            };
+        };
+    };
+    RecurrencesController_pause: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurrenceDto"];
+                };
+            };
+        };
+    };
+    RecurrencesController_resume: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurrenceDto"];
                 };
             };
         };
