@@ -14,7 +14,9 @@ import { DatabaseModule } from './common/database/database.module';
 import { TransformInterceptor } from './common/http/transform.interceptor';
 import { ClerkAuthGuard } from './common/auth/clerk-auth.guard';
 import { LoggingInterceptor } from './common/logging/logging.interceptor';
+import { AdminModule } from './admin/admin.module';
 import { ExportsModule } from './exports/exports.module';
+import { FeedbackModule } from './feedback/feedback.module';
 import { GoalsModule } from './goals/goals.module';
 import { IntelligenceModule } from './intelligence/intelligence.module';
 import { McpModule } from './mcp/mcp.module';
@@ -58,6 +60,8 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     MoneyRulesModule,
     NotificationsModule,
     RecurrencesModule,
+    FeedbackModule,
+    AdminModule,
     WebhooksModule,
   ],
   controllers: [AppController],

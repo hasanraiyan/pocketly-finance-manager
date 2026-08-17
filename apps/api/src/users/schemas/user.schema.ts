@@ -63,6 +63,12 @@ export class User {
    */
   @Prop({ type: Date, default: null })
   checklistDismissedAt?: Date | null;
+
+  @Prop({ type: String, enum: ['user', 'admin'], default: 'user', index: true })
+  role!: 'user' | 'admin';
 }
+
+export const USER_ROLES = ['user', 'admin'] as const;
+export type UserRole = (typeof USER_ROLES)[number];
 
 export const UserSchema = SchemaFactory.createForClass(User);

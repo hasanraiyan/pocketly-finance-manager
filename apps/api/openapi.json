@@ -2466,6 +2466,644 @@
           "money-rules"
         ]
       }
+    },
+    "/feedback": {
+      "post": {
+        "operationId": "FeedbackController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFeedbackDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "feedback"
+        ]
+      },
+      "get": {
+        "operationId": "FeedbackController_findAll",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "default": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "feedback",
+                "feature_request"
+              ]
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "general",
+                "bug",
+                "feature_request",
+                "ux_ui",
+                "financial_intelligence",
+                "mcp",
+                "other"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "submitted",
+                "under_review",
+                "planned",
+                "in_progress",
+                "shipped",
+                "rejected"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "recent",
+              "type": "string",
+              "enum": [
+                "recent",
+                "upvotes"
+              ]
+            }
+          },
+          {
+            "name": "onlyMine",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackListDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "feedback"
+        ]
+      }
+    },
+    "/feedback/{id}": {
+      "get": {
+        "operationId": "FeedbackController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "feedback"
+        ]
+      },
+      "delete": {
+        "operationId": "FeedbackController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "feedback"
+        ]
+      }
+    },
+    "/feedback/{id}/upvote": {
+      "post": {
+        "operationId": "FeedbackController_toggleUpvote",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "feedback"
+        ]
+      }
+    },
+    "/admin/analytics": {
+      "get": {
+        "operationId": "AdminController_getAnalytics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminAnalyticsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/feedback": {
+      "get": {
+        "operationId": "AdminController_getFeedback",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "default": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "feedback",
+                "feature_request"
+              ]
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "general",
+                "bug",
+                "feature_request",
+                "ux_ui",
+                "financial_intelligence",
+                "mcp",
+                "other"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "submitted",
+                "under_review",
+                "planned",
+                "in_progress",
+                "shipped",
+                "rejected"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "recent",
+              "type": "string",
+              "enum": [
+                "recent",
+                "upvotes"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminFeedbackListDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/feedback/{id}": {
+      "patch": {
+        "operationId": "AdminController_updateFeedback",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminUpdateFeedbackDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminFeedbackDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminController_deleteFeedback",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminFeedbackDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/audit-logs": {
+      "get": {
+        "operationId": "AdminController_getAuditLogs",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "default": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "action",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminAuditLogListDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "operationId": "AdminController_getUsers",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "default": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserListDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/users/{id}/role": {
+      "patch": {
+        "operationId": "AdminController_updateUserRole",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
     }
   },
   "info": {
@@ -2541,6 +3179,14 @@
                   {
                     "type": "null"
                   }
+                ]
+              },
+              "role": {
+                "default": "user",
+                "type": "string",
+                "enum": [
+                  "user",
+                  "admin"
                 ]
               },
               "createdAt": {
@@ -6518,6 +7164,1125 @@
             "x-nestjs_zod-uses-3-point-1-syntax": true
           }
         }
+      },
+      "CreateFeedbackDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "default": "feedback",
+            "type": "string",
+            "enum": [
+              "feedback",
+              "feature_request"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "general",
+              "bug",
+              "feature_request",
+              "ux_ui",
+              "financial_intelligence",
+              "mcp",
+              "other"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000,
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "rating": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "pageContext": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          }
+        },
+        "required": [
+          "category",
+          "title",
+          "description"
+        ]
+      },
+      "FeedbackDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "feedback",
+                  "feature_request"
+                ]
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "general",
+                  "bug",
+                  "feature_request",
+                  "ux_ui",
+                  "financial_intelligence",
+                  "mcp",
+                  "other"
+                ]
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "rating": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "pageContext": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "submitted",
+                  "under_review",
+                  "planned",
+                  "in_progress",
+                  "shipped",
+                  "rejected"
+                ]
+              },
+              "upvoteCount": {
+                "type": "number"
+              },
+              "hasUpvoted": {
+                "default": false,
+                "type": "boolean"
+              },
+              "adminResponse": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "createdAt": {
+                "type": "string"
+              },
+              "updatedAt": {
+                "type": "string"
+              },
+              "isOwner": {
+                "default": false,
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "_id",
+              "type",
+              "category",
+              "title",
+              "description",
+              "rating",
+              "pageContext",
+              "status",
+              "upvoteCount",
+              "adminResponse",
+              "createdAt",
+              "updatedAt"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "FeedbackListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "feedback",
+                        "feature_request"
+                      ]
+                    },
+                    "category": {
+                      "type": "string",
+                      "enum": [
+                        "general",
+                        "bug",
+                        "feature_request",
+                        "ux_ui",
+                        "financial_intelligence",
+                        "mcp",
+                        "other"
+                      ]
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "rating": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "pageContext": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "submitted",
+                        "under_review",
+                        "planned",
+                        "in_progress",
+                        "shipped",
+                        "rejected"
+                      ]
+                    },
+                    "upvoteCount": {
+                      "type": "number"
+                    },
+                    "hasUpvoted": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "adminResponse": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    },
+                    "isOwner": {
+                      "default": false,
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "_id",
+                    "type",
+                    "category",
+                    "title",
+                    "description",
+                    "rating",
+                    "pageContext",
+                    "status",
+                    "upvoteCount",
+                    "adminResponse",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              },
+              "nextCursor": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "items",
+              "nextCursor"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "AdminAnalyticsDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "overview": {
+                "type": "object",
+                "properties": {
+                  "totalUsers": {
+                    "type": "number"
+                  },
+                  "activeUsers7d": {
+                    "type": "number"
+                  },
+                  "activeUsers30d": {
+                    "type": "number"
+                  },
+                  "newUsers30d": {
+                    "type": "number"
+                  },
+                  "totalAccounts": {
+                    "type": "number"
+                  },
+                  "totalTransactions": {
+                    "type": "number"
+                  },
+                  "totalBudgets": {
+                    "type": "number"
+                  },
+                  "totalGoals": {
+                    "type": "number"
+                  },
+                  "completedGoals": {
+                    "type": "number"
+                  },
+                  "totalMoneyRules": {
+                    "type": "number"
+                  },
+                  "activeMoneyRules": {
+                    "type": "number"
+                  },
+                  "totalRecurrences": {
+                    "type": "number"
+                  },
+                  "activeRecurrences": {
+                    "type": "number"
+                  },
+                  "mcpConnections": {
+                    "type": "number"
+                  },
+                  "feedbackCount": {
+                    "type": "number"
+                  },
+                  "featureRequestCount": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "totalUsers",
+                  "activeUsers7d",
+                  "activeUsers30d",
+                  "newUsers30d",
+                  "totalAccounts",
+                  "totalTransactions",
+                  "totalBudgets",
+                  "totalGoals",
+                  "completedGoals",
+                  "totalMoneyRules",
+                  "activeMoneyRules",
+                  "totalRecurrences",
+                  "activeRecurrences",
+                  "mcpConnections",
+                  "feedbackCount",
+                  "featureRequestCount"
+                ]
+              },
+              "userGrowth": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "string"
+                    },
+                    "newUsers": {
+                      "type": "number"
+                    },
+                    "cumulativeUsers": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "date",
+                    "newUsers",
+                    "cumulativeUsers"
+                  ]
+                }
+              },
+              "transactionVolumeTrends": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "month": {
+                      "type": "string"
+                    },
+                    "incomeTotal": {
+                      "type": "number"
+                    },
+                    "expenseTotal": {
+                      "type": "number"
+                    },
+                    "transactionCount": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "month",
+                    "incomeTotal",
+                    "expenseTotal",
+                    "transactionCount"
+                  ]
+                }
+              },
+              "featureAdoption": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "feature": {
+                      "type": "string"
+                    },
+                    "activeUsers": {
+                      "type": "number"
+                    },
+                    "adoptionRate": {
+                      "type": "number"
+                    },
+                    "totalItems": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "feature",
+                    "activeUsers",
+                    "adoptionRate",
+                    "totalItems"
+                  ]
+                }
+              },
+              "accountTypeBreakdown": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "count": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "count"
+                  ]
+                }
+              },
+              "feedbackBreakdown": {
+                "type": "object",
+                "properties": {
+                  "byCategory": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "category": {
+                          "type": "string"
+                        },
+                        "count": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "category",
+                        "count"
+                      ]
+                    }
+                  },
+                  "byStatus": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string"
+                        },
+                        "count": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "count"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "byCategory",
+                  "byStatus"
+                ]
+              }
+            },
+            "required": [
+              "overview",
+              "userGrowth",
+              "transactionVolumeTrends",
+              "featureAdoption",
+              "accountTypeBreakdown",
+              "feedbackBreakdown"
+            ],
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "AdminFeedbackListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "feedback",
+                        "feature_request"
+                      ]
+                    },
+                    "category": {
+                      "type": "string",
+                      "enum": [
+                        "general",
+                        "bug",
+                        "feature_request",
+                        "ux_ui",
+                        "financial_intelligence",
+                        "mcp",
+                        "other"
+                      ]
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "rating": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "pageContext": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "submitted",
+                        "under_review",
+                        "planned",
+                        "in_progress",
+                        "shipped",
+                        "rejected"
+                      ]
+                    },
+                    "upvoteCount": {
+                      "type": "number"
+                    },
+                    "hasUpvoted": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "adminResponse": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    },
+                    "isOwner": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "userId": {
+                      "type": "string"
+                    },
+                    "userName": {
+                      "type": "string"
+                    },
+                    "userEmail": {
+                      "type": "string"
+                    },
+                    "internalNotes": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "_id",
+                    "type",
+                    "category",
+                    "title",
+                    "description",
+                    "rating",
+                    "pageContext",
+                    "status",
+                    "upvoteCount",
+                    "adminResponse",
+                    "createdAt",
+                    "updatedAt",
+                    "userId",
+                    "userName",
+                    "userEmail",
+                    "internalNotes"
+                  ]
+                }
+              },
+              "nextCursor": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "items",
+              "nextCursor"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "AdminUpdateFeedbackDto": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "general",
+              "bug",
+              "feature_request",
+              "ux_ui",
+              "financial_intelligence",
+              "mcp",
+              "other"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "submitted",
+              "under_review",
+              "planned",
+              "in_progress",
+              "shipped",
+              "rejected"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true
+          },
+          "internalNotes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          },
+          "adminResponse": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-empty-type": true
+          }
+        }
+      },
+      "AdminFeedbackDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "feedback",
+                  "feature_request"
+                ]
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "general",
+                  "bug",
+                  "feature_request",
+                  "ux_ui",
+                  "financial_intelligence",
+                  "mcp",
+                  "other"
+                ]
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "rating": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "pageContext": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "submitted",
+                  "under_review",
+                  "planned",
+                  "in_progress",
+                  "shipped",
+                  "rejected"
+                ]
+              },
+              "upvoteCount": {
+                "type": "number"
+              },
+              "hasUpvoted": {
+                "default": false,
+                "type": "boolean"
+              },
+              "adminResponse": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "createdAt": {
+                "type": "string"
+              },
+              "updatedAt": {
+                "type": "string"
+              },
+              "isOwner": {
+                "default": false,
+                "type": "boolean"
+              },
+              "userId": {
+                "type": "string"
+              },
+              "userName": {
+                "type": "string"
+              },
+              "userEmail": {
+                "type": "string"
+              },
+              "internalNotes": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "_id",
+              "type",
+              "category",
+              "title",
+              "description",
+              "rating",
+              "pageContext",
+              "status",
+              "upvoteCount",
+              "adminResponse",
+              "createdAt",
+              "updatedAt",
+              "userId",
+              "userName",
+              "userEmail",
+              "internalNotes"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "AdminAuditLogListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "adminUserId": {
+                      "type": "string"
+                    },
+                    "adminEmail": {
+                      "type": "string"
+                    },
+                    "action": {
+                      "type": "string"
+                    },
+                    "targetId": {
+                      "type": "string"
+                    },
+                    "targetType": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {}
+                    },
+                    "ip": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "_id",
+                    "adminUserId",
+                    "adminEmail",
+                    "action",
+                    "targetId",
+                    "targetType",
+                    "details",
+                    "ip",
+                    "createdAt"
+                  ]
+                }
+              },
+              "nextCursor": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "items",
+              "nextCursor"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "AdminUserListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "imageUrl": {
+                      "type": "string"
+                    },
+                    "phone": {
+                      "type": "string"
+                    },
+                    "currency": {
+                      "type": "string"
+                    },
+                    "timezone": {
+                      "type": "string"
+                    },
+                    "minimumReserve": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "onboardedAt": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "checklistDismissedAt": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "role": {
+                      "default": "user",
+                      "type": "string",
+                      "enum": [
+                        "user",
+                        "admin"
+                      ]
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "_id",
+                    "email",
+                    "name",
+                    "currency",
+                    "timezone",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              },
+              "nextCursor": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "items",
+              "nextCursor"
+            ],
+            "x-nestjs_zod-uses-3-point-1-syntax": true,
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "UpdateUserRoleDto": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ]
+          }
+        },
+        "required": [
+          "role"
+        ]
       }
     }
   }

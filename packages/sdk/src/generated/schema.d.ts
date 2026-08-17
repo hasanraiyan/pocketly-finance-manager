@@ -628,6 +628,150 @@ export interface paths {
         patch: operations["MoneyRulesController_update"];
         trace?: never;
     };
+    "/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FeedbackController_findAll"];
+        put?: never;
+        post: operations["FeedbackController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/feedback/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["FeedbackController_findOne"];
+        put?: never;
+        post?: never;
+        delete: operations["FeedbackController_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/feedback/{id}/upvote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["FeedbackController_toggleUpvote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/analytics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminController_getAnalytics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminController_getFeedback"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/feedback/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["AdminController_deleteFeedback"];
+        options?: never;
+        head?: never;
+        patch: operations["AdminController_updateFeedback"];
+        trace?: never;
+    };
+    "/admin/audit-logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminController_getAuditLogs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminController_getUsers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{id}/role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["AdminController_updateUserRole"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -644,6 +788,11 @@ export interface components {
                 minimumReserve?: number | null;
                 onboardedAt?: string | null;
                 checklistDismissedAt?: string | null;
+                /**
+                 * @default user
+                 * @enum {string}
+                 */
+                role: "user" | "admin";
                 createdAt: string;
                 updatedAt: string;
             };
@@ -1470,6 +1619,232 @@ export interface components {
             categoryId?: string | null;
             enabled?: boolean;
             cadenceDays?: number;
+        };
+        CreateFeedbackDto: {
+            /**
+             * @default feedback
+             * @enum {string}
+             */
+            type: "feedback" | "feature_request";
+            /** @enum {string} */
+            category: "general" | "bug" | "feature_request" | "ux_ui" | "financial_intelligence" | "mcp" | "other";
+            title: string;
+            description: string;
+            rating?: number | null;
+            pageContext?: string | null;
+        };
+        FeedbackDto: {
+            data: {
+                _id: string;
+                /** @enum {string} */
+                type: "feedback" | "feature_request";
+                /** @enum {string} */
+                category: "general" | "bug" | "feature_request" | "ux_ui" | "financial_intelligence" | "mcp" | "other";
+                title: string;
+                description: string;
+                rating: number | null;
+                pageContext: string | null;
+                /** @enum {string} */
+                status: "submitted" | "under_review" | "planned" | "in_progress" | "shipped" | "rejected";
+                upvoteCount: number;
+                /** @default false */
+                hasUpvoted: boolean;
+                adminResponse: string | null;
+                createdAt: string;
+                updatedAt: string;
+                /** @default false */
+                isOwner: boolean;
+            };
+        };
+        FeedbackListDto: {
+            data: {
+                items: {
+                    _id: string;
+                    /** @enum {string} */
+                    type: "feedback" | "feature_request";
+                    /** @enum {string} */
+                    category: "general" | "bug" | "feature_request" | "ux_ui" | "financial_intelligence" | "mcp" | "other";
+                    title: string;
+                    description: string;
+                    rating: number | null;
+                    pageContext: string | null;
+                    /** @enum {string} */
+                    status: "submitted" | "under_review" | "planned" | "in_progress" | "shipped" | "rejected";
+                    upvoteCount: number;
+                    /** @default false */
+                    hasUpvoted: boolean;
+                    adminResponse: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                    /** @default false */
+                    isOwner: boolean;
+                }[];
+                nextCursor: string | null;
+            };
+        };
+        AdminAnalyticsDto: {
+            data: {
+                overview: {
+                    totalUsers: number;
+                    activeUsers7d: number;
+                    activeUsers30d: number;
+                    newUsers30d: number;
+                    totalAccounts: number;
+                    totalTransactions: number;
+                    totalBudgets: number;
+                    totalGoals: number;
+                    completedGoals: number;
+                    totalMoneyRules: number;
+                    activeMoneyRules: number;
+                    totalRecurrences: number;
+                    activeRecurrences: number;
+                    mcpConnections: number;
+                    feedbackCount: number;
+                    featureRequestCount: number;
+                };
+                userGrowth: {
+                    date: string;
+                    newUsers: number;
+                    cumulativeUsers: number;
+                }[];
+                transactionVolumeTrends: {
+                    month: string;
+                    incomeTotal: number;
+                    expenseTotal: number;
+                    transactionCount: number;
+                }[];
+                featureAdoption: {
+                    feature: string;
+                    activeUsers: number;
+                    adoptionRate: number;
+                    totalItems: number;
+                }[];
+                accountTypeBreakdown: {
+                    type: string;
+                    count: number;
+                }[];
+                feedbackBreakdown: {
+                    byCategory: {
+                        category: string;
+                        count: number;
+                    }[];
+                    byStatus: {
+                        status: string;
+                        count: number;
+                    }[];
+                };
+            };
+        };
+        AdminFeedbackListDto: {
+            data: {
+                items: {
+                    _id: string;
+                    /** @enum {string} */
+                    type: "feedback" | "feature_request";
+                    /** @enum {string} */
+                    category: "general" | "bug" | "feature_request" | "ux_ui" | "financial_intelligence" | "mcp" | "other";
+                    title: string;
+                    description: string;
+                    rating: number | null;
+                    pageContext: string | null;
+                    /** @enum {string} */
+                    status: "submitted" | "under_review" | "planned" | "in_progress" | "shipped" | "rejected";
+                    upvoteCount: number;
+                    /** @default false */
+                    hasUpvoted: boolean;
+                    adminResponse: string | null;
+                    createdAt: string;
+                    updatedAt: string;
+                    /** @default false */
+                    isOwner: boolean;
+                    userId: string;
+                    userName: string;
+                    userEmail: string;
+                    internalNotes: string | null;
+                }[];
+                nextCursor: string | null;
+            };
+        };
+        AdminUpdateFeedbackDto: {
+            /** @enum {string} */
+            category?: "general" | "bug" | "feature_request" | "ux_ui" | "financial_intelligence" | "mcp" | "other";
+            /** @enum {string} */
+            status?: "submitted" | "under_review" | "planned" | "in_progress" | "shipped" | "rejected";
+            internalNotes?: string | null;
+            adminResponse?: string | null;
+        };
+        AdminFeedbackDto: {
+            data: {
+                _id: string;
+                /** @enum {string} */
+                type: "feedback" | "feature_request";
+                /** @enum {string} */
+                category: "general" | "bug" | "feature_request" | "ux_ui" | "financial_intelligence" | "mcp" | "other";
+                title: string;
+                description: string;
+                rating: number | null;
+                pageContext: string | null;
+                /** @enum {string} */
+                status: "submitted" | "under_review" | "planned" | "in_progress" | "shipped" | "rejected";
+                upvoteCount: number;
+                /** @default false */
+                hasUpvoted: boolean;
+                adminResponse: string | null;
+                createdAt: string;
+                updatedAt: string;
+                /** @default false */
+                isOwner: boolean;
+                userId: string;
+                userName: string;
+                userEmail: string;
+                internalNotes: string | null;
+            };
+        };
+        AdminAuditLogListDto: {
+            data: {
+                items: {
+                    _id: string;
+                    adminUserId: string;
+                    adminEmail: string;
+                    action: string;
+                    targetId: string;
+                    targetType: string;
+                    details: {
+                        [key: string]: unknown;
+                    };
+                    ip: string | null;
+                    createdAt: string;
+                }[];
+                nextCursor: string | null;
+            };
+        };
+        AdminUserListDto: {
+            data: {
+                items: {
+                    _id: string;
+                    email: string;
+                    name: string;
+                    imageUrl?: string;
+                    phone?: string;
+                    currency: string;
+                    timezone: string;
+                    minimumReserve?: number | null;
+                    onboardedAt?: string | null;
+                    checklistDismissedAt?: string | null;
+                    /**
+                     * @default user
+                     * @enum {string}
+                     */
+                    role: "user" | "admin";
+                    createdAt: string;
+                    updatedAt: string;
+                }[];
+                nextCursor: string | null;
+            };
+        };
+        UpdateUserRoleDto: {
+            /** @enum {string} */
+            role: "user" | "admin";
         };
     };
     responses: never;
@@ -2870,6 +3245,283 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MoneyRuleDto"];
+                };
+            };
+        };
+    };
+    FeedbackController_findAll: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+                type?: "feedback" | "feature_request";
+                category?: "general" | "bug" | "feature_request" | "ux_ui" | "financial_intelligence" | "mcp" | "other";
+                status?: "submitted" | "under_review" | "planned" | "in_progress" | "shipped" | "rejected";
+                search?: string;
+                sortBy?: "recent" | "upvotes";
+                onlyMine?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackListDto"];
+                };
+            };
+        };
+    };
+    FeedbackController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFeedbackDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackDto"];
+                };
+            };
+        };
+    };
+    FeedbackController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackDto"];
+                };
+            };
+        };
+    };
+    FeedbackController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackDto"];
+                };
+            };
+        };
+    };
+    FeedbackController_toggleUpvote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackDto"];
+                };
+            };
+        };
+    };
+    AdminController_getAnalytics: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAnalyticsDto"];
+                };
+            };
+        };
+    };
+    AdminController_getFeedback: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+                type?: "feedback" | "feature_request";
+                category?: "general" | "bug" | "feature_request" | "ux_ui" | "financial_intelligence" | "mcp" | "other";
+                status?: "submitted" | "under_review" | "planned" | "in_progress" | "shipped" | "rejected";
+                search?: string;
+                sortBy?: "recent" | "upvotes";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminFeedbackListDto"];
+                };
+            };
+        };
+    };
+    AdminController_deleteFeedback: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminFeedbackDto"];
+                };
+            };
+        };
+    };
+    AdminController_updateFeedback: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminUpdateFeedbackDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminFeedbackDto"];
+                };
+            };
+        };
+    };
+    AdminController_getAuditLogs: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+                action?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminAuditLogListDto"];
+                };
+            };
+        };
+    };
+    AdminController_getUsers: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserListDto"];
+                };
+            };
+        };
+    };
+    AdminController_updateUserRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateUserRoleDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDto"];
                 };
             };
         };

@@ -13,6 +13,7 @@ export const userSchema = z.object({
   minimumReserve: z.number().nullish(),
   onboardedAt: z.string().nullish(),
   checklistDismissedAt: z.string().nullish(),
+  role: z.enum(['user', 'admin']).default('user'),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

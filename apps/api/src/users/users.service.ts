@@ -48,6 +48,12 @@ export class UsersService {
     imageUrl?: string,
   ): Promise<UserDocument> {
     const normalizedEmail = email.toLowerCase().trim();
+    const shouldBeAdmin = (process.env.ADMIN_EMAILS || '')
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean)
+      .includes(normalizedEmail);
+
     const existing = await this.userModel
       .findOne({
         $or: [{ authUserId }, { email: normalizedEmail }],
@@ -71,6 +77,10 @@ export class UsersService {
         existing.imageUrl = imageUrl;
         needsSave = true;
       }
+      if (shouldBeAdmin && existing.role !== 'admin') {
+        existing.role = 'admin';
+        needsSave = true;
+      }
       if (needsSave) {
         await existing.save();
       }
@@ -82,6 +92,7 @@ export class UsersService {
       email: normalizedEmail,
       name,
       imageUrl,
+      role: shouldBeAdmin ? 'admin' : 'user',
     });
   }
 
@@ -141,5 +152,33 @@ export class UsersService {
       this.goalModel.deleteMany({ userId: user._id }),
     ]);
     await this.userModel.deleteOne({ _id: user._id });
+  }
+
+  async findAllUsers(query: { limit?: number; search?: string }) {
+    const filter: Record<string, any> = {};
+    if (query.search) {
+      filter.$or = [
+        { name: { $regex: query.search, $options: 'i' } },
+        { email: { $regex: query.search, $options: 'i' } },
+      ];
+    }
+    const limit = query.limit ?? 50;
+    const items = await this.userModel
+      .find(filter)
+      .sort({ _id: -1 })
+      .limit(limit + 1)
+      .exec();
+
+    const hasMore = items.length > limit;
+    const page = hasMore ? items.slice(0, limit) : items;
+    const nextCursor = hasMore
+      ? Buffer.from(page[page.length - 1]._id.toString()).toString('base64url')
+      : null;
+
+    return { items: page, nextCursor };
+  }
+
+  async setUserRole(userId: string, role: 'user' | 'admin'): Promise<UserDocument | null> {
+    return this.userModel.findByIdAndUpdate(userId, { role }, { new: true }).exec();
   }
 }

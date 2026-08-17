@@ -10,6 +10,8 @@ import {
   Target,
   Flag,
   Settings,
+  MessageSquarePlus,
+  Gauge,
 } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import {
@@ -24,6 +26,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
+import { useUserProfile } from "@/features/settings/hooks";
 
 export const NAV_ITEMS = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -32,6 +35,7 @@ export const NAV_ITEMS = [
   { title: "Analysis", url: "/analysis", icon: LineChart },
   { title: "Goals", url: "/goals", icon: Flag },
   { title: "Planning", url: "/planning", icon: Target },
+  { title: "Feedback", url: "/feedback", icon: MessageSquarePlus },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
@@ -49,6 +53,12 @@ function NavIcon({ icon: Icon }: { icon: (typeof NAV_ITEMS)[number]["icon"] }) {
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { data: profile } = useUserProfile();
+  const isAdmin = profile?.role === "admin";
+
+  const allNavItems = isAdmin
+    ? [...NAV_ITEMS, { title: "Admin Panel", url: "/admin", icon: Gauge }]
+    : NAV_ITEMS;
 
   return (
     <Sidebar collapsible="icon">
@@ -63,7 +73,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {NAV_ITEMS.map((item) => (
+              {allNavItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton
                     render={<Link href={item.url} />}

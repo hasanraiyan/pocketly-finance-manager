@@ -1,11 +1,27 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type { components } from "@pocketly/sdk";
 import { usePocketlyClient } from "@/lib/use-pocketly-client";
 import { toast } from "@/components/ui/toast";
 
 export type UpdateProfileInput = components["schemas"]["UpdateProfileDto"];
+export type UserProfile = components["schemas"]["UserDto"]["data"];
+
+export const USER_PROFILE_KEY = ["user-profile"] as const;
+
+export function useUserProfile() {
+  const client = usePocketlyClient();
+  return useQuery({
+    queryKey: USER_PROFILE_KEY,
+    queryFn: async () => {
+      const { data, error } = await client.GET("/users/me");
+      if (error) throw error;
+      return data.data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}
 
 export function useUpdateProfile() {
   const client = usePocketlyClient();
