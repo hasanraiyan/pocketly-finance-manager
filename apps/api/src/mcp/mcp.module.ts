@@ -4,6 +4,7 @@ import { AccountsModule } from '../accounts/accounts.module';
 import { AnalysisModule } from '../analysis/analysis.module';
 import { BudgetsModule } from '../budgets/budgets.module';
 import { CategoriesModule } from '../categories/categories.module';
+import { RecurrencesModule } from '../recurrences/recurrences.module';
 import { TransactionsModule } from '../transactions/transactions.module';
 import { UsersModule } from '../users/users.module';
 import { McpAuthGuard } from './mcp-auth.guard';
@@ -32,6 +33,7 @@ import {
     CategoriesModule,
     AnalysisModule,
     UsersModule,
+    RecurrencesModule,
   ],
   controllers: [McpController, McpConnectionsController, WellKnownController],
   providers: [McpAuthGuard, McpServerFactory],

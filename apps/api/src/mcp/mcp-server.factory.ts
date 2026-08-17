@@ -4,6 +4,7 @@ import { AccountsService } from '../accounts/accounts.service';
 import { AnalysisService } from '../analysis/analysis.service';
 import { BudgetsService } from '../budgets/budgets.service';
 import { CategoriesService } from '../categories/categories.service';
+import { RecurrencesService } from '../recurrences/recurrences.service';
 import { TransactionsService } from '../transactions/transactions.service';
 import { UserDocument } from '../users/schemas/user.schema';
 import { McpScope, McpToolContext } from './mcp-context';
@@ -11,6 +12,7 @@ import { registerAccountsTools } from './tools/accounts.tools';
 import { registerAnalysisTools } from './tools/analysis.tools';
 import { registerBudgetsTools } from './tools/budgets.tools';
 import { registerCategoriesTools } from './tools/categories.tools';
+import { registerRecurrencesTools } from './tools/recurrences.tools';
 import { registerTransactionsTools } from './tools/transactions.tools';
 
 /**
@@ -29,6 +31,7 @@ export class McpServerFactory {
     private readonly budgets: BudgetsService,
     private readonly categories: CategoriesService,
     private readonly analysis: AnalysisService,
+    private readonly recurrences: RecurrencesService,
   ) {}
 
   build(user: UserDocument, token: string, scopes: McpScope[]): McpServer {
@@ -43,6 +46,7 @@ export class McpServerFactory {
         budgets: this.budgets,
         categories: this.categories,
         analysis: this.analysis,
+        recurrences: this.recurrences,
       },
     };
 
@@ -51,6 +55,7 @@ export class McpServerFactory {
     registerBudgetsTools(server, ctx);
     registerCategoriesTools(server, ctx);
     registerAnalysisTools(server, ctx);
+    registerRecurrencesTools(server, ctx);
 
     return server;
   }

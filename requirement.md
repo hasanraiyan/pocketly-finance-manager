@@ -963,10 +963,15 @@ manage_transaction  -- action: list | get | create | update | delete
 manage_account      -- action: list | get | create | update | delete
 manage_category     -- action: list | get | create | update | delete
 manage_budget       -- action: list | get | create | update | delete
+manage_recurrence   -- action: list | get | create | update | pause | resume | delete
 
 get_analysis
 get_financial_overview
 ```
+
+Every feature reachable in the web app SHOULD also be reachable here. A capability that
+exists only in the UI is invisible to the user's AI client, which under §33 is a first-class
+way to use Pocketly rather than an add-on.
 
 MCP requests MUST authenticate the user.
 

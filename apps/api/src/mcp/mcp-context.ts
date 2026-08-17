@@ -2,6 +2,7 @@ import { AccountsService } from '../accounts/accounts.service';
 import { AnalysisService } from '../analysis/analysis.service';
 import { BudgetsService } from '../budgets/budgets.service';
 import { CategoriesService } from '../categories/categories.service';
+import { RecurrencesService } from '../recurrences/recurrences.service';
 import { TransactionsService } from '../transactions/transactions.service';
 import { UserDocument } from '../users/schemas/user.schema';
 
@@ -13,6 +14,7 @@ export interface McpToolServices {
   budgets: BudgetsService;
   categories: CategoriesService;
   analysis: AnalysisService;
+  recurrences: RecurrencesService;
 }
 
 export interface McpToolContext {
