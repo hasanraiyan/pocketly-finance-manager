@@ -1,3 +1,4 @@
+import { ForbiddenException } from '@nestjs/common';
 import { Types } from 'mongoose';
 import type { Request } from 'express';
 import { AdminController } from './admin.controller';
@@ -98,5 +99,19 @@ describe('AdminController', () => {
       }),
     );
     expect(result.role).toBe('admin');
+  });
+
+  it('rejects an admin changing their own role', async () => {
+    await expect(
+      controller.updateUserRole(
+        mockAdmin,
+        mockAdmin._id.toString(),
+        { role: 'user' },
+        mockRequest,
+      ),
+    ).rejects.toThrow(ForbiddenException);
+
+    expect(mockUsersService.setUserRole).not.toHaveBeenCalled();
+    expect(mockAuditLogService.log).not.toHaveBeenCalled();
   });
 });

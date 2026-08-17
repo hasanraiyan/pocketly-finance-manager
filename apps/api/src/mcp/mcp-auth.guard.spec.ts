@@ -2,12 +2,24 @@ import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { JwtKeysService } from '../auth/jwt-keys.service';
 import { McpAuthGuard } from './mcp-auth.guard';
+import { OAuthClient } from './oauth/schemas/oauth-client.schema';
 import { McpConnection } from './schemas/mcp-connection.schema';
 import { McpRevocation } from './schemas/mcp-revocation.schema';
 import { UsersService } from '../users/users.service';
 
 function mockResponse() {
   return { setHeader: jest.fn() };
+}
+
+/** Mocks the `.findOne(...).select(...).exec()` chain the guard calls to look up the registered client's name. */
+function mockClientModel(clientName: string | null = null) {
+  return {
+    findOne: jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue(clientName ? { clientName } : null),
+      }),
+    }),
+  };
 }
 
 function contextWithAuthHeader(header?: string): ExecutionContext {
@@ -26,6 +38,7 @@ describe('McpAuthGuard', () => {
   let keys: { verify: jest.Mock };
   let revocationModel: { exists: jest.Mock };
   let connectionModel: { updateOne: jest.Mock };
+  let clientModel: ReturnType<typeof mockClientModel>;
   let guard: McpAuthGuard;
 
   beforeEach(() => {
@@ -33,11 +46,13 @@ describe('McpAuthGuard', () => {
     keys = { verify: jest.fn() };
     revocationModel = { exists: jest.fn().mockResolvedValue(null) };
     connectionModel = { updateOne: jest.fn().mockResolvedValue(undefined) };
+    clientModel = mockClientModel();
     guard = new McpAuthGuard(
       usersService as unknown as UsersService,
       keys as unknown as JwtKeysService,
       revocationModel as unknown as Model<McpRevocation>,
       connectionModel as unknown as Model<McpConnection>,
+      clientModel as unknown as Model<OAuthClient>,
     );
   });
 
@@ -126,7 +141,36 @@ describe('McpAuthGuard', () => {
     ]);
   });
 
-  it('records the connection so Settings can list and disconnect it', async () => {
+  it('records the connection, including the registered client name, so Settings can list and disconnect it', async () => {
+    clientModel = mockClientModel('Claude Desktop');
+    guard = new McpAuthGuard(
+      usersService as unknown as UsersService,
+      keys as unknown as JwtKeysService,
+      revocationModel as unknown as Model<McpRevocation>,
+      connectionModel as unknown as Model<McpConnection>,
+      clientModel as unknown as Model<OAuthClient>,
+    );
+    keys.verify.mockResolvedValue({ sub: 'user-1', client_id: 'client-1' });
+    usersService.findById.mockResolvedValue({ _id: 'user-1' });
+
+    await expect(
+      guard.canActivate(contextWithAuthHeader('Bearer token')),
+    ).resolves.toBe(true);
+    expect(clientModel.findOne).toHaveBeenCalledWith({ clientId: 'client-1' });
+    expect(connectionModel.updateOne).toHaveBeenCalledWith(
+      { userId: 'user-1', clientId: 'client-1' },
+      {
+        $set: {
+          scopes: ['pocketly:read', 'pocketly:write'],
+          lastSeenAt: expect.any(Date) as Date,
+          clientName: 'Claude Desktop',
+        },
+      },
+      { upsert: true },
+    );
+  });
+
+  it('falls back to no clientName when the client has been deregistered', async () => {
     keys.verify.mockResolvedValue({ sub: 'user-1', client_id: 'client-1' });
     usersService.findById.mockResolvedValue({ _id: 'user-1' });
 

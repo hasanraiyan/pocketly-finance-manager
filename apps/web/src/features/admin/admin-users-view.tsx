@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib/format";
+import { useUserProfile } from "@/features/settings/hooks";
 import {
   useAdminUsers,
   useAdminUpdateUserRole,
@@ -38,6 +39,7 @@ export function AdminUsersView() {
   } | null>(null);
 
   const { data, isLoading } = useAdminUsers({ search: search.trim() || undefined });
+  const { data: currentUser } = useUserProfile();
   const updateRoleMutation = useAdminUpdateUserRole();
   const items = data?.items ?? [];
 
@@ -90,6 +92,7 @@ export function AdminUsersView() {
             <div className="divide-y divide-border">
               {items.map((user) => {
                 const isAdmin = user.role === "admin";
+                const isSelf = user._id === currentUser?._id;
                 return (
                   <div
                     key={user._id}
@@ -122,30 +125,39 @@ export function AdminUsersView() {
                       </div>
                     </div>
 
-                    <Button
-                      variant={isAdmin ? "outline" : "secondary"}
-                      size="sm"
-                      onClick={() =>
-                        setUserToPromote({
-                          id: user._id,
-                          email: user.email,
-                          currentRole: user.role,
-                        })
-                      }
-                      className="h-8 gap-1.5 text-xs self-end sm:self-auto"
-                    >
-                      {isAdmin ? (
-                        <>
-                          <Shield className="size-3 text-muted-foreground" />
-                          <span>Demote to User</span>
-                        </>
-                      ) : (
-                        <>
-                          <ShieldCheck className="size-3 text-primary" />
-                          <span>Promote to Admin</span>
-                        </>
-                      )}
-                    </Button>
+                    {isSelf ? (
+                      <Badge
+                        variant="outline"
+                        className="text-2xs self-end sm:self-auto"
+                      >
+                        This is you
+                      </Badge>
+                    ) : (
+                      <Button
+                        variant={isAdmin ? "outline" : "secondary"}
+                        size="sm"
+                        onClick={() =>
+                          setUserToPromote({
+                            id: user._id,
+                            email: user.email,
+                            currentRole: user.role,
+                          })
+                        }
+                        className="h-8 gap-1.5 text-xs self-end sm:self-auto"
+                      >
+                        {isAdmin ? (
+                          <>
+                            <Shield className="size-3 text-muted-foreground" />
+                            <span>Demote to User</span>
+                          </>
+                        ) : (
+                          <>
+                            <ShieldCheck className="size-3 text-primary" />
+                            <span>Promote to Admin</span>
+                          </>
+                        )}
+                      </Button>
+                    )}
                   </div>
                 );
               })}

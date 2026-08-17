@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Patch,
@@ -126,6 +127,15 @@ export class AdminController {
     @Body() dto: UpdateUserRoleDto,
     @Req() req: Request,
   ) {
+    // An admin changing their own role could lock themselves out of the
+    // admin panel entirely -- especially final if they're the only admin,
+    // since nobody would be left who could promote anyone back.
+    if (id === adminUser._id.toString()) {
+      throw new ForbiddenException(
+        "You can't change your own admin role. Ask another administrator.",
+      );
+    }
+
     const updated = await this.usersService.setUserRole(id, dto.role);
 
     await this.auditLogService.log({

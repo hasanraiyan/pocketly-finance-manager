@@ -49,24 +49,29 @@ export function AdminDashboardView({
         }
         className="w-full space-y-6"
       >
-        <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full sm:w-auto h-auto p-1 gap-1">
-          <TabsTrigger value="analytics" className="gap-2 py-2 text-xs sm:text-sm">
-            <Activity className="size-4 text-primary" />
-            <span>Platform Metrics</span>
-          </TabsTrigger>
-          <TabsTrigger value="feedback" className="gap-2 py-2 text-xs sm:text-sm">
-            <MessageSquare className="size-4 text-amber-500" />
-            <span>Feedback & Roadmap</span>
-          </TabsTrigger>
-          <TabsTrigger value="users" className="gap-2 py-2 text-xs sm:text-sm">
-            <Users className="size-4 text-blue-500" />
-            <span>User Directory</span>
-          </TabsTrigger>
-          <TabsTrigger value="audit" className="gap-2 py-2 text-xs sm:text-sm">
-            <ShieldAlert className="size-4 text-rose-500" />
-            <span>Audit Trail</span>
-          </TabsTrigger>
-        </TabsList>
+        {/* Horizontal scroll rather than a forced grid on narrow screens --
+            a 2x2 grid splits the segmented control into disjointed boxes
+            instead of one continuous strip. */}
+        <div className="overflow-x-auto">
+          <TabsList className="h-9 w-fit min-w-full sm:min-w-0">
+            <TabsTrigger value="analytics" className="gap-1.5 px-3 py-1.5 text-xs sm:text-sm">
+              <Activity className="size-4 text-primary" />
+              <span>Platform Metrics</span>
+            </TabsTrigger>
+            <TabsTrigger value="feedback" className="gap-1.5 px-3 py-1.5 text-xs sm:text-sm">
+              <MessageSquare className="size-4 text-amber-500" />
+              <span>Feedback & Roadmap</span>
+            </TabsTrigger>
+            <TabsTrigger value="users" className="gap-1.5 px-3 py-1.5 text-xs sm:text-sm">
+              <Users className="size-4 text-blue-500" />
+              <span>User Directory</span>
+            </TabsTrigger>
+            <TabsTrigger value="audit" className="gap-1.5 px-3 py-1.5 text-xs sm:text-sm">
+              <ShieldAlert className="size-4 text-rose-500" />
+              <span>Audit Trail</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {activeTab === "analytics" && (
           <AdminAnalyticsView initialData={initialAnalytics} />
