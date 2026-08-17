@@ -15,6 +15,7 @@ import { AuthSession, AuthSessionSchema } from './schemas/auth-session.schema';
 import { AuthToken, AuthTokenSchema } from './schemas/auth-token.schema';
 import { OAuthClient, OAuthClientSchema } from './schemas/oauth-client.schema';
 import { OAuthCode, OAuthCodeSchema } from './schemas/oauth-code.schema';
+import { OAuthConsent, OAuthConsentSchema } from './schemas/oauth-consent.schema';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { OAuthCode, OAuthCodeSchema } from './schemas/oauth-code.schema';
       { name: AuthToken.name, schema: AuthTokenSchema },
       { name: OAuthClient.name, schema: OAuthClientSchema },
       { name: OAuthCode.name, schema: OAuthCodeSchema },
+      { name: OAuthConsent.name, schema: OAuthConsentSchema },
     ]),
     forwardRef(() => UsersModule),
   ],

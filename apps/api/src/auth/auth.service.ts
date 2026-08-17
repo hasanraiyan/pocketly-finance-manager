@@ -364,6 +364,68 @@ export class AuthService {
     return { success: true };
   }
 
+  async changePassword(params: {
+    userId: string;
+    currentPassword?: string;
+    newPassword: string;
+  }) {
+    const authUser = await this.authUserModel.findById(params.userId).exec();
+    if (!authUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (authUser.passwordHash) {
+      if (!params.currentPassword) {
+        throw new BadRequestException('Current password is required');
+      }
+      const isValid = await this.passwordService.verify(
+        params.currentPassword,
+        authUser.passwordHash,
+      );
+      if (!isValid) {
+        throw new UnauthorizedException('Current password is incorrect');
+      }
+    }
+
+    authUser.passwordHash = await this.passwordService.hash(params.newPassword);
+    await authUser.save();
+    return { success: true, message: 'Password updated successfully' };
+  }
+
+  async getActiveSessions(userId: string, currentSessionToken: string) {
+    const currentTokenHash = this.tokenService.hashToken(currentSessionToken);
+    const sessions = await this.authSessionModel
+      .find({
+        userId,
+        expiresAt: { $gt: new Date() },
+      })
+      .sort({ createdAt: -1 })
+      .exec();
+
+    return sessions.map((s) => ({
+      id: s._id.toString(),
+      ipAddress: s.ipAddress,
+      userAgent: s.userAgent,
+      expiresAt: s.expiresAt.toISOString(),
+      createdAt: s.createdAt.toISOString(),
+      isCurrent: s.tokenHash === currentTokenHash,
+    }));
+  }
+
+  async revokeSession(userId: string, sessionId: string) {
+    await this.authSessionModel.deleteOne({ _id: sessionId, userId });
+    return { success: true, message: 'Session revoked' };
+  }
+
+  async revokeOtherSessions(userId: string, currentSessionToken: string) {
+    const currentTokenHash = this.tokenService.hashToken(currentSessionToken);
+    await this.authSessionModel.deleteMany({
+      userId,
+      tokenHash: { $ne: currentTokenHash },
+    });
+    return { success: true, message: 'Signed out of all other devices' };
+  }
+
   async deleteAuthUser(authUserId: string) {
     await this.authSessionModel.deleteMany({ userId: authUserId });
     await this.authUserModel.deleteOne({ _id: authUserId });

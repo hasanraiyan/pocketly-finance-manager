@@ -8,6 +8,7 @@ import {
   Query,
   Req,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiOkResponse, ApiExcludeEndpoint } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
@@ -19,10 +20,13 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { SendVerificationEmailDto } from './dto/send-verification-email.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { RevokeSessionDto } from './dto/revoke-session.dto';
 import {
   AuthResponseDto,
   GetSessionResponseDto,
   AuthMessageResponseDto,
+  ActiveSessionsListResponseDto,
 } from './dto/auth-response.dto';
 import { Public } from '../common/auth/public.decorator';
 
@@ -227,6 +231,89 @@ export class AuthController {
       token: dto.token,
       newPassword: dto.newPassword,
     });
+  }
+
+  @Public()
+  @Post('change-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AuthMessageResponseDto })
+  async changePassword(
+    @Body() dto: ChangePasswordDto,
+    @Req() req: Request,
+  ) {
+    const token = this.extractToken(req);
+    const sessionData = token
+      ? await this.authService.validateSession(token)
+      : null;
+    if (!sessionData) {
+      throw new UnauthorizedException('Authentication required');
+    }
+
+    return this.authService.changePassword({
+      userId: sessionData.authUser._id.toString(),
+      currentPassword: dto.currentPassword,
+      newPassword: dto.newPassword,
+    });
+  }
+
+  @Public()
+  @Get('sessions')
+  @ApiOkResponse({ type: ActiveSessionsListResponseDto })
+  async getSessions(@Req() req: Request) {
+    const token = this.extractToken(req);
+    const sessionData = token
+      ? await this.authService.validateSession(token)
+      : null;
+    if (!sessionData || !token) {
+      return { items: [] };
+    }
+
+    const items = await this.authService.getActiveSessions(
+      sessionData.authUser._id.toString(),
+      token,
+    );
+    return { items };
+  }
+
+  @Public()
+  @Post('sessions/revoke')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AuthMessageResponseDto })
+  async revokeSession(
+    @Body() dto: RevokeSessionDto,
+    @Req() req: Request,
+  ) {
+    const token = this.extractToken(req);
+    const sessionData = token
+      ? await this.authService.validateSession(token)
+      : null;
+    if (!sessionData) {
+      throw new UnauthorizedException('Authentication required');
+    }
+
+    return this.authService.revokeSession(
+      sessionData.authUser._id.toString(),
+      dto.sessionId,
+    );
+  }
+
+  @Public()
+  @Post('sessions/revoke-others')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AuthMessageResponseDto })
+  async revokeOtherSessions(@Req() req: Request) {
+    const token = this.extractToken(req);
+    const sessionData = token
+      ? await this.authService.validateSession(token)
+      : null;
+    if (!sessionData || !token) {
+      throw new UnauthorizedException('Authentication required');
+    }
+
+    return this.authService.revokeOtherSessions(
+      sessionData.authUser._id.toString(),
+      token,
+    );
   }
 
   private setSessionCookie(res: Response, token: string) {

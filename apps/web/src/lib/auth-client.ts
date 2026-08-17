@@ -166,6 +166,46 @@ export const authClient = {
         : null,
     };
   },
+  changePassword: async (params: { currentPassword?: string; newPassword: string }) => {
+    const { data, error } = await rawClient.POST("/api/auth/change-password", {
+      body: params,
+    });
+    return {
+      data,
+      error: error
+        ? { message: (error as any)?.message || "Failed to change password" }
+        : null,
+    };
+  },
+  getSessions: async () => {
+    const { data, error } = await rawClient.GET("/api/auth/sessions");
+    return {
+      data: data?.items ?? [],
+      error: error
+        ? { message: (error as any)?.message || "Failed to fetch active sessions" }
+        : null,
+    };
+  },
+  revokeSession: async (params: { sessionId: string }) => {
+    const { data, error } = await rawClient.POST("/api/auth/sessions/revoke", {
+      body: params,
+    });
+    return {
+      data,
+      error: error
+        ? { message: (error as any)?.message || "Failed to revoke session" }
+        : null,
+    };
+  },
+  revokeOtherSessions: async () => {
+    const { data, error } = await rawClient.POST("/api/auth/sessions/revoke-others", {});
+    return {
+      data,
+      error: error
+        ? { message: (error as any)?.message || "Failed to revoke other sessions" }
+        : null,
+    };
+  },
   useSession: () => {
     const [session, setSession] = useState<{
       data: SessionData | null;

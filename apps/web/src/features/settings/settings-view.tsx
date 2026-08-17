@@ -8,8 +8,11 @@ import {
   Download,
   FileSpreadsheet,
   FileText,
+  KeyRound,
+  Laptop,
   PenLine,
   Plus,
+  Smartphone,
   Tags,
   Trash2,
   Unplug,
@@ -20,6 +23,13 @@ import { clearStoredAuthToken } from "@/lib/auth-token";
 import { useExportCsv, useExportPdf } from "@/features/transactions/hooks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/password-input";
+import {
+  useActiveSessions,
+  useChangePassword,
+  useRevokeOtherSessions,
+  useRevokeSession,
+} from "./security-hooks";
 import {
   NativeSelect,
   NativeSelectOption,
@@ -650,6 +660,209 @@ function ExportDataCard() {
   );
 }
 
+function SecurityPasswordCard() {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [validationError, setValidationError] = useState<string | null>(null);
+
+  const changePasswordMutation = useChangePassword();
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setValidationError(null);
+
+    if (newPassword.length < 8) {
+      setValidationError("New password must be at least 8 characters.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setValidationError("New passwords do not match.");
+      return;
+    }
+
+    changePasswordMutation.mutate(
+      {
+        currentPassword: currentPassword || undefined,
+        newPassword,
+      },
+      {
+        onSuccess: () => {
+          setCurrentPassword("");
+          setNewPassword("");
+          setConfirmPassword("");
+        },
+      },
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <KeyRound className="size-4" />
+          Security & Password
+        </CardTitle>
+        <CardDescription>
+          Update your password to keep your financial ledger secure.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Field>
+              <FieldLabel htmlFor="current-password">Current password</FieldLabel>
+              <PasswordInput
+                id="current-password"
+                value={currentPassword}
+                onChange={setCurrentPassword}
+                placeholder="Current password"
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="new-password">New password</FieldLabel>
+              <PasswordInput
+                id="new-password"
+                value={newPassword}
+                onChange={setNewPassword}
+                placeholder="At least 8 characters"
+                minLength={8}
+                required
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="confirm-password">Confirm new password</FieldLabel>
+              <PasswordInput
+                id="confirm-password"
+                value={confirmPassword}
+                onChange={setConfirmPassword}
+                placeholder="Repeat new password"
+                minLength={8}
+                required
+              />
+            </Field>
+          </div>
+
+          {validationError && (
+            <p className="text-xs text-destructive">{validationError}</p>
+          )}
+
+          <div>
+            <Button
+              type="submit"
+              disabled={changePasswordMutation.isPending || !newPassword}
+            >
+              {changePasswordMutation.isPending && (
+                <Spinner className="mr-1.5 size-3.5" />
+              )}
+              Update password
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ActiveSessionsCard() {
+  const { data: sessions = [], isLoading, isError } = useActiveSessions();
+  const revokeSession = useRevokeSession();
+  const revokeOthers = useRevokeOtherSessions();
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <Laptop className="size-4" />
+              Active Sessions & Devices
+            </CardTitle>
+            <CardDescription>
+              Manage devices and browsers currently signed in to your account.
+            </CardDescription>
+          </div>
+          {sessions.length > 1 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => revokeOthers.mutate()}
+              disabled={revokeOthers.isPending}
+            >
+              {revokeOthers.isPending && (
+                <Spinner className="mr-1.5 size-3.5" />
+              )}
+              Sign out all other devices
+            </Button>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-6">
+            <Spinner className="size-6 text-muted-foreground" />
+          </div>
+        ) : isError ? (
+          <p className="text-xs text-muted-foreground py-2">
+            Failed to load active sessions.
+          </p>
+        ) : sessions.length === 0 ? (
+          <p className="text-xs text-muted-foreground py-2">
+            No active sessions found.
+          </p>
+        ) : (
+          <div className="flex flex-col divide-y divide-border">
+            {sessions.map((session) => (
+              <div
+                key={session.id}
+                className="flex items-center justify-between py-3"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex size-8 items-center justify-center rounded-md border border-border bg-muted/30">
+                    {session.userAgent?.toLowerCase().includes("mobile") ? (
+                      <Smartphone className="size-4 text-muted-foreground" />
+                    ) : (
+                      <Laptop className="size-4 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-medium text-foreground">
+                        {session.userAgent?.split(" ")[0] || "Web Browser"}
+                      </span>
+                      {session.isCurrent && (
+                        <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
+                          Current session
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[11px] text-muted-foreground">
+                      {session.ipAddress ? `IP: ${session.ipAddress} • ` : ""}
+                      Created: {new Date(session.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+
+                {!session.isCurrent && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-muted-foreground hover:text-destructive"
+                    onClick={() => revokeSession.mutate({ sessionId: session.id })}
+                    disabled={revokeSession.isPending}
+                  >
+                    Revoke
+                  </Button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 export function SettingsView({
   currency,
   timezone,
@@ -686,6 +899,8 @@ export function SettingsView({
         initialData={categoriesInitialData}
         initialLoadFailed={categoriesLoadFailed}
       />
+      <SecurityPasswordCard />
+      <ActiveSessionsCard />
       <ExportDataCard />
       <NotificationsCard />
       <ConnectedAppsCard />

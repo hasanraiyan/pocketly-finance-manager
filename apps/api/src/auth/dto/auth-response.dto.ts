@@ -32,6 +32,19 @@ export const getSessionResponseSchema = z.object({
   }),
 });
 
+export const activeSessionResponseSchema = z.object({
+  id: z.string(),
+  ipAddress: z.string().optional(),
+  userAgent: z.string().optional(),
+  expiresAt: z.string(),
+  createdAt: z.string(),
+  isCurrent: z.boolean(),
+});
+
+export const activeSessionsListResponseSchema = z.object({
+  items: z.array(activeSessionResponseSchema),
+});
+
 export const authMessageResponseSchema = z.object({
   success: z.boolean(),
   message: z.string().optional(),
@@ -39,4 +52,6 @@ export const authMessageResponseSchema = z.object({
 
 export class AuthResponseDto extends createZodDto(authResponseSchema) {}
 export class GetSessionResponseDto extends createZodDto(getSessionResponseSchema) {}
+export class ActiveSessionResponseDto extends createZodDto(activeSessionResponseSchema) {}
+export class ActiveSessionsListResponseDto extends createZodDto(activeSessionsListResponseSchema) {}
 export class AuthMessageResponseDto extends createZodDto(authMessageResponseSchema) {}

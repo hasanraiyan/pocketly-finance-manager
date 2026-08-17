@@ -181,15 +181,33 @@ export class OAuthController {
       return [];
     }
 
-    return [];
+    return this.oauthService.getConsents(sessionData.authUser._id.toString());
   }
 
   @Public()
   @Post('oauth2/delete-consent')
   @HttpCode(HttpStatus.OK)
-  deleteConsent() {
-    // Consent records aren't persisted yet, so there is nothing to revoke.
-    return { success: true };
+  async deleteConsent(
+    @Body() body: { id?: string; clientId?: string },
+    @Req() req: Request,
+  ) {
+    const token = extractSessionToken(req);
+    const sessionData = token
+      ? await this.authService.validateSession(token)
+      : null;
+    if (!sessionData) {
+      throw new UnauthorizedException('Authentication required');
+    }
+
+    const target = body.id || body.clientId;
+    if (!target) {
+      throw new BadRequestException('id or clientId is required');
+    }
+
+    return this.oauthService.deleteConsent(
+      sessionData.authUser._id.toString(),
+      target,
+    );
   }
 
   @Public()

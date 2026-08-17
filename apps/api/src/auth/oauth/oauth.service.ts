@@ -11,6 +11,10 @@ import {
   OAuthClientDocument,
 } from '../schemas/oauth-client.schema';
 import { OAuthCode, OAuthCodeDocument } from '../schemas/oauth-code.schema';
+import {
+  OAuthConsent,
+  OAuthConsentDocument,
+} from '../schemas/oauth-consent.schema';
 import { TokenService } from '../token.service';
 import { JwtService } from './jwt.service';
 
@@ -21,6 +25,8 @@ export class OAuthService {
     private readonly clientModel: Model<OAuthClientDocument>,
     @InjectModel(OAuthCode.name)
     private readonly codeModel: Model<OAuthCodeDocument>,
+    @InjectModel(OAuthConsent.name)
+    private readonly consentModel: Model<OAuthConsentDocument>,
     private readonly tokenService: TokenService,
     private readonly jwtService: JwtService,
   ) {}
@@ -82,7 +88,43 @@ export class OAuthService {
       expiresAt,
     });
 
+    // Record consent grant in DB
+    await this.consentModel.findOneAndUpdate(
+      { authUserId: params.authUserId, clientId: params.clientId },
+      {
+        authUserId: params.authUserId,
+        clientId: params.clientId,
+        scopes: params.scope ?? ['pocketly:read', 'pocketly:write'],
+      },
+      { upsert: true, returnDocument: 'after' },
+    );
+
     return rawCode;
+  }
+
+  async getConsents(authUserId: string) {
+    const consents = await this.consentModel
+      .find({ authUserId })
+      .sort({ createdAt: -1 })
+      .exec();
+
+    return consents.map((c) => ({
+      id: c._id.toString(),
+      clientId: c.clientId,
+      scopes: c.scopes,
+      createdAt: c.createdAt.toISOString(),
+    }));
+  }
+
+  async deleteConsent(authUserId: string, consentIdOrClientId: string) {
+    await this.consentModel.deleteMany({
+      authUserId,
+      $or: [
+        { _id: consentIdOrClientId.match(/^[0-9a-fA-F]{24}$/) ? consentIdOrClientId : undefined },
+        { clientId: consentIdOrClientId },
+      ].filter(Boolean),
+    });
+    return { success: true };
   }
 
   async exchangeCodeForToken(params: {
