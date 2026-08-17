@@ -246,16 +246,13 @@ export async function ForecastCard() {
   ]);
   const forecast = forecastRes.data?.data;
 
-  // Nothing to project yet: an opening balance of zero with nothing coming
-  // in, going out, or spent discretionarily isn't a forecast, it's an empty
-  // account restated five times. A new user's first card shouldn't be a
-  // confident-looking "₹0.00" -- see HealthCard's same reasoning below.
+  // Nothing to project yet: if all 3 projected amounts (income, repeats, discretionary)
+  // are zero, there is no meaningful forecast to display.
   const nothingToForecast =
-    forecast &&
-    forecast.openingBalance === 0 &&
-    forecast.projectedIncome === 0 &&
-    forecast.projectedExpense === 0 &&
-    forecast.projectedDiscretionary === 0;
+    !forecast ||
+    (forecast.projectedIncome === 0 &&
+      forecast.projectedExpense === 0 &&
+      forecast.projectedDiscretionary === 0);
 
   if (forecastRes.error || !forecast || nothingToForecast) return null;
 

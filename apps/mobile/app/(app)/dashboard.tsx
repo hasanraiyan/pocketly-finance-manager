@@ -58,6 +58,7 @@ export default function DashboardScreen() {
         transactionsRes,
         goalsRes,
         categoriesRes,
+        forecastRes,
       ] = await Promise.all([
         client.GET("/users/me"),
         client.GET("/analysis", { params: { query: { period: "this_month" } } }),
@@ -66,6 +67,7 @@ export default function DashboardScreen() {
         client.GET("/transactions", { params: { query: { limit: 10 } } }),
         client.GET("/goals", { params: { query: { limit: 100 } } }),
         client.GET("/categories", { params: { query: { limit: 100 } } }),
+        client.GET("/intelligence/forecast").catch(() => ({ data: null })),
       ]);
 
       if (profileRes.error || !profileRes.data) {
@@ -79,6 +81,18 @@ export default function DashboardScreen() {
       const goals = goalsRes.data?.data?.items ?? [];
       const categories = categoriesRes.data?.data?.items ?? [];
       const overview = overviewRes.data?.data;
+      const rawForecast = forecastRes?.data?.data;
+
+      // Do NOT show forecast if all 3 projected numbers are 0
+      const hasMeaningfulForecast =
+        rawForecast &&
+        !(
+          rawForecast.projectedIncome === 0 &&
+          rawForecast.projectedExpense === 0 &&
+          rawForecast.projectedDiscretionary === 0
+        );
+
+      const forecast = hasMeaningfulForecast ? rawForecast : null;
 
       const totalBalance = accounts.reduce((sum, a) => sum + (a.balance || 0), 0);
       const totalBudgeted = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
@@ -94,6 +108,7 @@ export default function DashboardScreen() {
         transactions,
         goals,
         categories,
+        forecast,
         totalBalance,
         totalBudgeted,
         totalSpent,
@@ -373,6 +388,53 @@ export default function DashboardScreen() {
                       </View>
                     </CardContent>
                   </Card>
+
+                  {/* Forecast Card (Rendered ONLY when projected values are non-zero) */}
+                  {Boolean(data.forecast) && (
+                    <Card className="bg-card border border-border/80">
+                      <CardContent className="gap-3.5">
+                        <View className="flex-row items-center justify-between">
+                          <View className="flex-row items-center gap-2">
+                            <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                              <Feather name="trending-up" size={14} color={theme.primary} />
+                            </View>
+                            <Text className="text-sm font-semibold text-foreground">
+                              Where this month ends
+                            </Text>
+                          </View>
+                        </View>
+
+                        <Text className="text-xs text-muted-foreground leading-relaxed">
+                          Your repeats on their own dates, plus your average daily spend held flat for the rest of the month.
+                        </Text>
+
+                        <Text className="font-mono text-2xl font-bold text-foreground">
+                          {formatCurrency(data.forecast!.projectedBalance, data.currency)}
+                        </Text>
+
+                        <View className="gap-1.5 pt-2 border-t border-border/60">
+                          <View className="flex-row justify-between items-center">
+                            <Text className="text-xs text-muted-foreground">Coming in</Text>
+                            <Text className="font-mono text-xs text-positive font-semibold">
+                              +{formatCurrency(data.forecast!.projectedIncome, data.currency)}
+                            </Text>
+                          </View>
+                          <View className="flex-row justify-between items-center">
+                            <Text className="text-xs text-muted-foreground">Repeats going out</Text>
+                            <Text className="font-mono text-xs text-negative font-semibold">
+                              -{formatCurrency(data.forecast!.projectedExpense, data.currency)}
+                            </Text>
+                          </View>
+                          <View className="flex-row justify-between items-center">
+                            <Text className="text-xs text-muted-foreground">Everything else, usual rate</Text>
+                            <Text className="font-mono text-xs text-muted-foreground font-semibold">
+                              {formatCurrency(data.forecast!.projectedDiscretionary, data.currency)}
+                            </Text>
+                          </View>
+                        </View>
+                      </CardContent>
+                    </Card>
+                  )}
 
                   {/* Monthly Budgets Overview */}
                   <Card>
