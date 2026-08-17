@@ -1,7 +1,7 @@
 {
   "item": [
     {
-      "id": "7fffa783-77ce-482c-98be-d1ff7e374b2f",
+      "id": "b0aa5a3a-c2a1-4219-824d-16953b52e6d2",
       "name": "health",
       "description": {
         "content": "",
@@ -9,7 +9,7 @@
       },
       "item": [
         {
-          "id": "2791fcf1-5b32-47e6-9b2a-2a2c5280c622",
+          "id": "2bc06339-e19c-43d2-9255-2011ca0855c2",
           "name": "App Controller health",
           "request": {
             "name": "App Controller health",
@@ -35,7 +35,7 @@
           },
           "response": [
             {
-              "id": "c85d85bf-c2b7-43d2-9809-852e405158e0",
+              "id": "7f541818-8d18-424e-acae-828695295d3b",
               "name": "Liveness + readiness check",
               "originalRequest": {
                 "url": {
@@ -70,7 +70,7 @@
               "_postman_previewlanguage": "json"
             },
             {
-              "id": "b3514665-3e1c-4382-85ec-f0022891c2cd",
+              "id": "80a05a56-862e-4049-813d-32b884dd8968",
               "name": "The database is unreachable",
               "originalRequest": {
                 "url": {
@@ -108,7 +108,7 @@
       "event": []
     },
     {
-      "id": "50003479-9909-4de2-873e-1caf7814843b",
+      "id": "cf468a02-dd96-409c-9513-4c67fbdb5ae2",
       "name": "users",
       "description": {
         "content": "",
@@ -116,7 +116,7 @@
       },
       "item": [
         {
-          "id": "a2525029-03ac-4bde-bc1a-b9252d45c16f",
+          "id": "5bc9fb50-f5bd-4992-a9dd-551c1279b08d",
           "name": "Users Controller get Profile",
           "request": {
             "name": "Users Controller get Profile",
@@ -151,7 +151,7 @@
           },
           "response": [
             {
-              "id": "2ee86096-de53-4fcf-93b0-666000da752b",
+              "id": "cd7fd6e0-0c53-43fd-9764-ef5f32ba7c60",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -189,7 +189,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"email\": \"string\",\n    \"name\": \"string\",\n    \"currency\": \"string\",\n    \"timezone\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"imageUrl\": \"string\",\n    \"phone\": \"string\",\n    \"minimumReserve\": 7519.013916263595,\n    \"onboardedAt\": \"string\",\n    \"checklistDismissedAt\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"email\": \"string\",\n    \"name\": \"string\",\n    \"currency\": \"string\",\n    \"timezone\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"imageUrl\": \"string\",\n    \"phone\": \"string\",\n    \"minimumReserve\": 6790.079257545981,\n    \"onboardedAt\": \"string\",\n    \"checklistDismissedAt\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -200,7 +200,7 @@
           }
         },
         {
-          "id": "f390498f-bf18-4b79-9dc0-1790e90c6c17",
+          "id": "455363f8-7baf-41ce-aa3b-00ef98196686",
           "name": "Users Controller update Profile",
           "request": {
             "name": "Users Controller update Profile",
@@ -248,7 +248,7 @@
           },
           "response": [
             {
-              "id": "dac953a6-2170-41d2-a1a8-0d9203c9379b",
+              "id": "eb4a3295-3d1e-463a-b2fa-928fd5285e44",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -294,7 +294,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"email\": \"string\",\n    \"name\": \"string\",\n    \"currency\": \"string\",\n    \"timezone\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"imageUrl\": \"string\",\n    \"phone\": \"string\",\n    \"minimumReserve\": 7519.013916263595,\n    \"onboardedAt\": \"string\",\n    \"checklistDismissedAt\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"email\": \"string\",\n    \"name\": \"string\",\n    \"currency\": \"string\",\n    \"timezone\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"imageUrl\": \"string\",\n    \"phone\": \"string\",\n    \"minimumReserve\": 6790.079257545981,\n    \"onboardedAt\": \"string\",\n    \"checklistDismissedAt\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -305,7 +305,7 @@
           }
         },
         {
-          "id": "aa47afe2-848b-4890-8543-0bd737566201",
+          "id": "9b41ab7b-985b-4690-8de1-a6a257aaa4b2",
           "name": "Users Controller delete Account",
           "request": {
             "name": "Users Controller delete Account",
@@ -349,7 +349,7 @@
           },
           "response": [
             {
-              "id": "ef6b4e18-8c4a-4cc6-a0c3-29b2c942af89",
+              "id": "9c40c081-46ed-4dd2-a722-019e2b27c79d",
               "name": "Account and all owned financial data deleted",
               "originalRequest": {
                 "url": {
@@ -406,7 +406,7 @@
       "event": []
     },
     {
-      "id": "a8df0e2c-9d0c-4497-8f66-f87f6a4db666",
+      "id": "3725e286-5957-4f50-bcc9-a8137e97ecc2",
       "name": "accounts",
       "description": {
         "content": "",
@@ -414,7 +414,7 @@
       },
       "item": [
         {
-          "id": "633fc7b3-015e-4b8c-9bbf-a6749f3d3b4e",
+          "id": "52579720-23f7-4964-913e-b3ecfc179652",
           "name": "Accounts Controller create",
           "request": {
             "name": "Accounts Controller create",
@@ -461,7 +461,7 @@
           },
           "response": [
             {
-              "id": "9f61e6ca-2e7d-4466-b8d5-22b20288130f",
+              "id": "ce00c63f-a2d9-45e2-aecc-ea69fe6240ea",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -506,7 +506,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"upi\",\n    \"initialBalance\": 192.3141920759608,\n    \"currency\": \"string\",\n    \"ignored\": false,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"balance\": 3656.216975072093,\n    \"icon\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"savings\",\n    \"initialBalance\": 6589.323152706163,\n    \"currency\": \"string\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"balance\": 7454.75943751309,\n    \"icon\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -517,7 +517,7 @@
           }
         },
         {
-          "id": "4af18512-25c2-4b77-bba4-65b31ca6526e",
+          "id": "bc65ba88-bbf4-4e03-a164-1dcd80349939",
           "name": "Accounts Controller find All",
           "request": {
             "name": "Accounts Controller find All",
@@ -562,7 +562,7 @@
           },
           "response": [
             {
-              "id": "2ef8ad0e-359c-49f2-860d-9d5402c92e8b",
+              "id": "0b45a1c6-f3ba-4aec-8e0a-223cfbc25721",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -608,7 +608,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"wallet\",\n        \"initialBalance\": 5361.063901070043,\n        \"currency\": \"string\",\n        \"ignored\": false,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"balance\": 8602.240127116103,\n        \"icon\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"wallet\",\n        \"initialBalance\": 7700.1704247687385,\n        \"currency\": \"string\",\n        \"ignored\": true,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"balance\": 3286.9357540756196,\n        \"icon\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"credit_card\",\n        \"initialBalance\": 9705.384545221228,\n        \"currency\": \"string\",\n        \"ignored\": true,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"balance\": 6977.3274358728295,\n        \"icon\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"bank\",\n        \"initialBalance\": 2647.2787631974747,\n        \"currency\": \"string\",\n        \"ignored\": false,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"balance\": 7746.98177764951,\n        \"icon\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -619,7 +619,7 @@
           }
         },
         {
-          "id": "41dcaef0-7e92-42c4-9662-8f12c7fe6a86",
+          "id": "d0b1fd47-a0f5-4696-8d39-3d256a4e87c1",
           "name": "Accounts Controller find One",
           "request": {
             "name": "Accounts Controller find One",
@@ -662,7 +662,7 @@
           },
           "response": [
             {
-              "id": "cfcefdb2-4bfd-413f-8049-601545b441d6",
+              "id": "f1bbc61c-43eb-4412-b78f-f7ab30f49ebe",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -708,7 +708,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"upi\",\n    \"initialBalance\": 192.3141920759608,\n    \"currency\": \"string\",\n    \"ignored\": false,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"balance\": 3656.216975072093,\n    \"icon\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"savings\",\n    \"initialBalance\": 6589.323152706163,\n    \"currency\": \"string\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"balance\": 7454.75943751309,\n    \"icon\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -719,7 +719,7 @@
           }
         },
         {
-          "id": "b0d4f459-7ccf-4c4b-8eee-650608167874",
+          "id": "19ba5640-5995-48ea-aa15-68ce7ba4af00",
           "name": "Accounts Controller update",
           "request": {
             "name": "Accounts Controller update",
@@ -775,7 +775,7 @@
           },
           "response": [
             {
-              "id": "028f0507-1637-4101-a401-f58fd8fe0f94",
+              "id": "56ffdd6c-c41b-4753-8492-913c82563e6f",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -829,7 +829,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"upi\",\n    \"initialBalance\": 192.3141920759608,\n    \"currency\": \"string\",\n    \"ignored\": false,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"balance\": 3656.216975072093,\n    \"icon\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"savings\",\n    \"initialBalance\": 6589.323152706163,\n    \"currency\": \"string\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"balance\": 7454.75943751309,\n    \"icon\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -840,7 +840,7 @@
           }
         },
         {
-          "id": "ab2c6141-6c36-4f21-9a66-ccb19b00d486",
+          "id": "906ec9c8-c0f0-497e-b993-d3f443e91bce",
           "name": "Accounts Controller remove",
           "request": {
             "name": "Accounts Controller remove",
@@ -883,7 +883,7 @@
           },
           "response": [
             {
-              "id": "1996f241-bd2b-4319-8239-f01d497603f0",
+              "id": "257668e2-9ec8-43b6-9c1d-73cdf2b44ad1",
               "name": "The archived (soft-deleted) account",
               "originalRequest": {
                 "url": {
@@ -930,7 +930,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"bank\",\n    \"initialBalance\": 9539.867066442637,\n    \"currency\": \"string\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"upi\",\n    \"initialBalance\": 988.5252276316825,\n    \"currency\": \"string\",\n    \"ignored\": false,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -944,7 +944,7 @@
       "event": []
     },
     {
-      "id": "c73de26d-3214-473e-8075-f06974057b44",
+      "id": "ebd73859-e4f0-4045-a5e1-24fd614971c7",
       "name": "categories",
       "description": {
         "content": "",
@@ -952,7 +952,7 @@
       },
       "item": [
         {
-          "id": "410c1f0a-4d9c-4926-ab54-e29865678147",
+          "id": "e40158ae-d426-487c-acb1-a0369e4f93a4",
           "name": "Categories Controller create",
           "request": {
             "name": "Categories Controller create",
@@ -999,7 +999,7 @@
           },
           "response": [
             {
-              "id": "fe071b4a-dba0-4e5a-aa89-91ec8b8dfe1b",
+              "id": "a4757ddd-d9bb-4a6c-83bd-e5f8a6e84c45",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1044,7 +1044,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"expense\",\n    \"ignored\": false,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"income\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1055,7 +1055,7 @@
           }
         },
         {
-          "id": "1b6aa1e4-5320-4d9e-99e2-6d5c35bfc6cd",
+          "id": "07cc32b4-b621-470a-a725-bf2ae85466e4",
           "name": "Categories Controller find All",
           "request": {
             "name": "Categories Controller find All",
@@ -1100,7 +1100,7 @@
           },
           "response": [
             {
-              "id": "5dac7f1a-e565-4867-9a51-2e3465078ce5",
+              "id": "3e3a6ad7-c818-4fea-bcd8-3c1820aa3220",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1146,7 +1146,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"expense\",\n        \"ignored\": false,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"icon\": \"string\",\n        \"color\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"expense\",\n        \"ignored\": false,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"icon\": \"string\",\n        \"color\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"expense\",\n        \"ignored\": false,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"icon\": \"string\",\n        \"color\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"type\": \"expense\",\n        \"ignored\": true,\n        \"deletedAt\": \"string\",\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"icon\": \"string\",\n        \"color\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1157,7 +1157,7 @@
           }
         },
         {
-          "id": "b0b75f8c-c8dd-4fb8-bdc3-35b0bde9d1d2",
+          "id": "7b1c552e-779c-4f42-b052-4eba5955c9f2",
           "name": "Categories Controller find One",
           "request": {
             "name": "Categories Controller find One",
@@ -1200,7 +1200,7 @@
           },
           "response": [
             {
-              "id": "acb71a01-c79f-4581-ac5b-5ae941e6b188",
+              "id": "9d937599-c5f8-424b-8060-7cf8e79a6ef6",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1246,7 +1246,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"expense\",\n    \"ignored\": false,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"income\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1257,7 +1257,7 @@
           }
         },
         {
-          "id": "2e2c40d5-e2a1-4216-9856-53f7baffeaf2",
+          "id": "d6e48d8f-32c4-43b6-af27-1bd99ee89ae0",
           "name": "Categories Controller update",
           "request": {
             "name": "Categories Controller update",
@@ -1313,7 +1313,7 @@
           },
           "response": [
             {
-              "id": "b03041ca-aeed-47e3-8226-f57278d5b81c",
+              "id": "0f06d46b-05fd-4bc6-b836-060538ac9f19",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1367,7 +1367,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"expense\",\n    \"ignored\": false,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"income\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1378,7 +1378,7 @@
           }
         },
         {
-          "id": "c5594d6b-5556-43cf-849f-f03b5af15781",
+          "id": "26dede33-a929-4f72-86de-d4b649633a91",
           "name": "Categories Controller remove",
           "request": {
             "name": "Categories Controller remove",
@@ -1421,7 +1421,7 @@
           },
           "response": [
             {
-              "id": "7732e4bd-7cd0-4607-877e-01f1d3ba6483",
+              "id": "84495ba2-8183-4267-9fb0-19f57948c8a4",
               "name": "The archived (soft-deleted) category",
               "originalRequest": {
                 "url": {
@@ -1468,7 +1468,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"expense\",\n    \"ignored\": false,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"type\": \"income\",\n    \"ignored\": true,\n    \"deletedAt\": \"string\",\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"icon\": \"string\",\n    \"color\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1482,7 +1482,7 @@
       "event": []
     },
     {
-      "id": "0dee55c3-643d-42d2-b7a0-97ad2b812c5c",
+      "id": "d5cc094a-74af-448b-aa05-581311ca1f77",
       "name": "transactions",
       "description": {
         "content": "",
@@ -1490,7 +1490,7 @@
       },
       "item": [
         {
-          "id": "ff803152-0c5d-4ab9-9e01-4bedbae9ec32",
+          "id": "a6d4b681-e878-4653-9588-7a1e70b7a1b9",
           "name": "Transactions Controller create",
           "request": {
             "name": "Transactions Controller create",
@@ -1537,7 +1537,7 @@
           },
           "response": [
             {
-              "id": "29ea679d-566f-4616-a7c9-533aa6ab62b1",
+              "id": "0fff88ec-54ea-4348-a19f-b75a86c0b3ac",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1582,7 +1582,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"transfer\",\n    \"amount\": 3732.324359107084,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 1631.8017864787848,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\",\n    \"recurrenceId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"expense\",\n    \"amount\": 8764.851049433099,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 5861.069792490812,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\",\n    \"recurrenceId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1593,7 +1593,7 @@
           }
         },
         {
-          "id": "6e8c8567-1657-424d-a590-9506787c18e5",
+          "id": "b970b637-99f1-4b20-b409-4834191b06f1",
           "name": "Transactions Controller find All",
           "request": {
             "name": "Transactions Controller find All",
@@ -1668,7 +1668,7 @@
           },
           "response": [
             {
-              "id": "3045bd34-f73f-4064-bab9-e8c1791adcc8",
+              "id": "3f052dde-9f48-4bf7-99b7-f68df1934527",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1738,7 +1738,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"type\": \"income\",\n        \"amount\": 5555.080757522333,\n        \"accountId\": \"string\",\n        \"date\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 5831.035136133939,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"description\": \"string\",\n        \"note\": \"string\",\n        \"categoryId\": \"string\",\n        \"toAccountId\": \"string\",\n        \"recurrenceId\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"type\": \"expense\",\n        \"amount\": 4316.100063108251,\n        \"accountId\": \"string\",\n        \"date\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 9264.437947743694,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"description\": \"string\",\n        \"note\": \"string\",\n        \"categoryId\": \"string\",\n        \"toAccountId\": \"string\",\n        \"recurrenceId\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"type\": \"expense\",\n        \"amount\": 1260.0696379319975,\n        \"accountId\": \"string\",\n        \"date\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 3990.744077810291,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"description\": \"string\",\n        \"note\": \"string\",\n        \"categoryId\": \"string\",\n        \"toAccountId\": \"string\",\n        \"recurrenceId\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"type\": \"expense\",\n        \"amount\": 2595.145858865152,\n        \"accountId\": \"string\",\n        \"date\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 8437.881576657814,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"description\": \"string\",\n        \"note\": \"string\",\n        \"categoryId\": \"string\",\n        \"toAccountId\": \"string\",\n        \"recurrenceId\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1749,7 +1749,7 @@
           }
         },
         {
-          "id": "436a9ac0-aba2-4c06-b345-84b3325414c1",
+          "id": "67576423-b4ed-4da8-a3dc-c80647a7ca80",
           "name": "Transactions Controller find One",
           "request": {
             "name": "Transactions Controller find One",
@@ -1792,7 +1792,7 @@
           },
           "response": [
             {
-              "id": "bba63df2-74fc-46eb-86bb-da42c783c73a",
+              "id": "66945989-0963-4f32-bc1f-a7c970455038",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1838,7 +1838,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"transfer\",\n    \"amount\": 3732.324359107084,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 1631.8017864787848,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\",\n    \"recurrenceId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"expense\",\n    \"amount\": 8764.851049433099,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 5861.069792490812,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\",\n    \"recurrenceId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1849,7 +1849,7 @@
           }
         },
         {
-          "id": "5b6f680a-2a02-4461-a7af-5c8758cc7aed",
+          "id": "ff3fce3d-c3fb-40c7-b2c6-1c550c6df5b1",
           "name": "Transactions Controller update",
           "request": {
             "name": "Transactions Controller update",
@@ -1905,7 +1905,7 @@
           },
           "response": [
             {
-              "id": "a28f426f-8093-4c40-b1f4-337013c0bfa4",
+              "id": "5a877bca-1114-4e17-896d-ffb420b478f4",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -1959,7 +1959,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"transfer\",\n    \"amount\": 3732.324359107084,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 1631.8017864787848,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\",\n    \"recurrenceId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"expense\",\n    \"amount\": 8764.851049433099,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 5861.069792490812,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\",\n    \"recurrenceId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -1970,7 +1970,7 @@
           }
         },
         {
-          "id": "3974bcc0-6e83-4d6a-9a5b-fd8ed7ada71d",
+          "id": "4060aad3-4d31-4355-9e7a-a2c537d58913",
           "name": "Transactions Controller remove",
           "request": {
             "name": "Transactions Controller remove",
@@ -2013,7 +2013,7 @@
           },
           "response": [
             {
-              "id": "0453a6a2-d0f0-46d8-af57-dcfbd7fc9a75",
+              "id": "1c28cd21-29c6-4b90-87e7-7e989272fa41",
               "name": "The soft-deleted transaction",
               "originalRequest": {
                 "url": {
@@ -2060,7 +2060,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"transfer\",\n    \"amount\": 3732.324359107084,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 1631.8017864787848,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\",\n    \"recurrenceId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"expense\",\n    \"amount\": 8764.851049433099,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 5861.069792490812,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\",\n    \"recurrenceId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2071,7 +2071,7 @@
           }
         },
         {
-          "id": "6ca00434-52bd-42fd-8e0b-f33bcc146e4f",
+          "id": "4224f1bd-d4f4-4ca8-ad81-0f3b2bab049c",
           "name": "Transactions Controller restore",
           "request": {
             "name": "Transactions Controller restore",
@@ -2115,7 +2115,7 @@
           },
           "response": [
             {
-              "id": "922bf5c6-ae2c-408e-8c30-1e52a84c2e9f",
+              "id": "1161d09f-bca0-409c-b73b-16b6e4255f5e",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2162,7 +2162,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"transfer\",\n    \"amount\": 3732.324359107084,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 1631.8017864787848,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\",\n    \"recurrenceId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"expense\",\n    \"amount\": 8764.851049433099,\n    \"accountId\": \"string\",\n    \"date\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 5861.069792490812,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\",\n    \"recurrenceId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2176,7 +2176,7 @@
       "event": []
     },
     {
-      "id": "d046509d-b93e-4f2c-9c7e-7dea14c98718",
+      "id": "f1c198b1-e956-446d-a648-0e9f6df364f6",
       "name": "notifications",
       "description": {
         "content": "",
@@ -2184,7 +2184,7 @@
       },
       "item": [
         {
-          "id": "8c246b48-ffc1-4e36-a804-0abc4503faa2",
+          "id": "32792235-db71-4a50-826e-1da7a347b12a",
           "name": "Notifications Controller register Device",
           "request": {
             "name": "Notifications Controller register Device",
@@ -2232,7 +2232,7 @@
           },
           "response": [
             {
-              "id": "e0b5da84-7441-4154-845a-01fb4b7f2788",
+              "id": "5247e94e-7825-476c-a965-3d366cb1b665",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2278,7 +2278,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"registered\": false\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"registered\": true\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2289,7 +2289,7 @@
           }
         },
         {
-          "id": "a34e81ed-ec4c-494e-ba5c-b0b26923d4a4",
+          "id": "4642ed99-f152-4cfb-a3e8-c267c72460c1",
           "name": "Notifications Controller unregister Device",
           "request": {
             "name": "Notifications Controller unregister Device",
@@ -2333,7 +2333,7 @@
           },
           "response": [
             {
-              "id": "df318c49-ec6f-4788-968a-c0da3bbcaee5",
+              "id": "57d84711-5210-480a-9470-0b535ce9884c",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2380,7 +2380,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"unregistered\": false\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"unregistered\": true\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2391,7 +2391,7 @@
           }
         },
         {
-          "id": "7d0603d4-b6df-44a4-82ff-26582f3a427d",
+          "id": "1be93012-e6ae-4bb5-bb4a-eed5a4175ba0",
           "name": "Notifications Controller find All",
           "request": {
             "name": "Notifications Controller find All",
@@ -2444,7 +2444,7 @@
           },
           "response": [
             {
-              "id": "833bb430-6dd6-40b3-b405-d45d1bdcb870",
+              "id": "fede8015-78cc-4c0e-b909-c6742589887d",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2494,7 +2494,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"title\": \"string\",\n        \"body\": \"string\",\n        \"type\": \"GOAL_PROGRESS\",\n        \"read\": true,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"actionUrl\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"title\": \"string\",\n        \"body\": \"string\",\n        \"type\": \"MONTHLY_REPORT\",\n        \"read\": true,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"actionUrl\": \"string\"\n      }\n    ],\n    \"unreadCount\": 9287.34193843426,\n    \"total\": 1981.539705037567\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"title\": \"string\",\n        \"body\": \"string\",\n        \"type\": \"SECURITY\",\n        \"read\": true,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"actionUrl\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"title\": \"string\",\n        \"body\": \"string\",\n        \"type\": \"SECURITY\",\n        \"read\": false,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"actionUrl\": \"string\"\n      }\n    ],\n    \"unreadCount\": 1196.3129179339883,\n    \"total\": 7864.405641172444\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2505,7 +2505,7 @@
           }
         },
         {
-          "id": "4e6514ca-e33c-4958-8b67-3c324bd89181",
+          "id": "8218eb78-4bfb-49d8-8d36-126c3a532d7a",
           "name": "Notifications Controller mark As Read",
           "request": {
             "name": "Notifications Controller mark As Read",
@@ -2549,7 +2549,7 @@
           },
           "response": [
             {
-              "id": "34d35811-84b3-4d88-aa53-78467373429c",
+              "id": "a6623889-fa07-42be-984e-359451eab95c",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2596,7 +2596,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"title\": \"string\",\n    \"body\": \"string\",\n    \"type\": \"DAILY_REMINDER\",\n    \"read\": true,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"actionUrl\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"title\": \"string\",\n    \"body\": \"string\",\n    \"type\": \"MONEY_RULE\",\n    \"read\": true,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"actionUrl\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2607,7 +2607,7 @@
           }
         },
         {
-          "id": "870f8502-7428-4227-b35c-26d3a54ebe2d",
+          "id": "a8c31800-f876-4ae3-8ea1-e1f5fee3f8bf",
           "name": "Notifications Controller mark All As Read",
           "request": {
             "name": "Notifications Controller mark All As Read",
@@ -2642,7 +2642,7 @@
           },
           "response": [
             {
-              "id": "8b2b672a-2d1d-4cda-afb2-76c55c588423",
+              "id": "35391449-a277-4146-b539-7377cc0a6282",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2680,7 +2680,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"marked\": 1372.548679086172\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"marked\": 4317.04227274587\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2691,7 +2691,7 @@
           }
         },
         {
-          "id": "a16925ed-0bb5-40d5-8c62-250e041650f1",
+          "id": "c3816032-15ac-496a-b5d1-62e40dfd5107",
           "name": "Notifications Controller send Test Notification",
           "request": {
             "name": "Notifications Controller send Test Notification",
@@ -2726,7 +2726,7 @@
           },
           "response": [
             {
-              "id": "beaf98fc-34ed-4618-892e-279b7265feac",
+              "id": "314fa2bb-ebc0-4bd0-9815-5815245360e6",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2764,7 +2764,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"sent\": false,\n    \"messageId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"sent\": true,\n    \"messageId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2778,7 +2778,7 @@
       "event": []
     },
     {
-      "id": "2b67c9eb-2a8e-4990-b898-a4825cf408a5",
+      "id": "63348959-f1a4-4a4e-993a-d8d9ec61b4d9",
       "name": "budgets",
       "description": {
         "content": "",
@@ -2786,7 +2786,7 @@
       },
       "item": [
         {
-          "id": "b7927a7f-19dc-436b-ac2f-1fd4b8d28ce0",
+          "id": "2029935e-6283-4510-a85f-6b766700fc87",
           "name": "Budgets Controller create",
           "request": {
             "name": "Budgets Controller create",
@@ -2833,7 +2833,7 @@
           },
           "response": [
             {
-              "id": "d084d428-a97b-4c30-af95-c87710870238",
+              "id": "2272301d-8f02-4017-a6f8-8ca359389b09",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2878,7 +2878,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 4247.0191136812355,\n    \"period\": \"monthly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 3746.2393504464308,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"spent\": 797.477191050533,\n    \"remaining\": 1503.8200672389312,\n    \"percentageUsed\": 3251.8894639387295,\n    \"periodStart\": \"string\",\n    \"periodEnd\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 1361.7110045940362,\n    \"period\": \"monthly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 6480.636887917787,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"spent\": 264.88057348954317,\n    \"remaining\": 8318.325786697767,\n    \"percentageUsed\": 3272.9102176215306,\n    \"periodStart\": \"string\",\n    \"periodEnd\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2889,7 +2889,7 @@
           }
         },
         {
-          "id": "a9be20fa-12cc-4d46-801d-5aae5f3fb94e",
+          "id": "6087a34b-c593-4959-81e1-8d624225d791",
           "name": "Budgets Controller find All",
           "request": {
             "name": "Budgets Controller find All",
@@ -2934,7 +2934,7 @@
           },
           "response": [
             {
-              "id": "4ab4c3d4-929b-4245-a08c-1d3b878fa2b9",
+              "id": "99a966b6-bfc0-410e-8b0d-a91de841a982",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -2980,7 +2980,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"categoryId\": \"string\",\n        \"amount\": 4197.902690756085,\n        \"period\": \"yearly\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 8007.437001059117,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"spent\": 1244.4389026533697,\n        \"remaining\": 5188.370107079574,\n        \"percentageUsed\": 4116.439198980406,\n        \"periodStart\": \"string\",\n        \"periodEnd\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"categoryId\": \"string\",\n        \"amount\": 6631.170555282916,\n        \"period\": \"yearly\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 190.09730323740092,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"spent\": 9568.599225661132,\n        \"remaining\": 1548.6879028262258,\n        \"percentageUsed\": 4501.677458412309,\n        \"periodStart\": \"string\",\n        \"periodEnd\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"categoryId\": \"string\",\n        \"amount\": 6429.471029820936,\n        \"period\": \"monthly\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 7844.227250456009,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"spent\": 5130.770038305545,\n        \"remaining\": 2143.105283889967,\n        \"percentageUsed\": 3249.5492077067233,\n        \"periodStart\": \"string\",\n        \"periodEnd\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"categoryId\": \"string\",\n        \"amount\": 6935.477151040071,\n        \"period\": \"weekly\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 8259.078133241615,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"spent\": 3816.101466094448,\n        \"remaining\": 6219.984269330744,\n        \"percentageUsed\": 7422.4174460734985,\n        \"periodStart\": \"string\",\n        \"periodEnd\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -2991,7 +2991,7 @@
           }
         },
         {
-          "id": "93ede587-3b32-404f-9729-058f5218125d",
+          "id": "9ade1493-2b4b-4807-95ff-ea7d388ea353",
           "name": "Budgets Controller find One",
           "request": {
             "name": "Budgets Controller find One",
@@ -3034,7 +3034,7 @@
           },
           "response": [
             {
-              "id": "5c9572b6-9433-4bb2-88c5-a1c24c775c89",
+              "id": "095355b9-2a27-4473-9b24-80d4c536c488",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -3080,7 +3080,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 4247.0191136812355,\n    \"period\": \"monthly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 3746.2393504464308,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"spent\": 797.477191050533,\n    \"remaining\": 1503.8200672389312,\n    \"percentageUsed\": 3251.8894639387295,\n    \"periodStart\": \"string\",\n    \"periodEnd\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 1361.7110045940362,\n    \"period\": \"monthly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 6480.636887917787,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"spent\": 264.88057348954317,\n    \"remaining\": 8318.325786697767,\n    \"percentageUsed\": 3272.9102176215306,\n    \"periodStart\": \"string\",\n    \"periodEnd\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3091,7 +3091,7 @@
           }
         },
         {
-          "id": "21c80bec-c61a-4869-8628-3d1913bc45b1",
+          "id": "0a320bde-99be-41de-9e51-a2cc3fabfdc9",
           "name": "Budgets Controller update",
           "request": {
             "name": "Budgets Controller update",
@@ -3147,7 +3147,7 @@
           },
           "response": [
             {
-              "id": "75197292-9996-4d36-8b34-e636aacf945a",
+              "id": "07ad8ed4-47e4-4097-b03c-6c5042d2b0e6",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -3201,7 +3201,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 4247.0191136812355,\n    \"period\": \"monthly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 3746.2393504464308,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"spent\": 797.477191050533,\n    \"remaining\": 1503.8200672389312,\n    \"percentageUsed\": 3251.8894639387295,\n    \"periodStart\": \"string\",\n    \"periodEnd\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 1361.7110045940362,\n    \"period\": \"monthly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 6480.636887917787,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"spent\": 264.88057348954317,\n    \"remaining\": 8318.325786697767,\n    \"percentageUsed\": 3272.9102176215306,\n    \"periodStart\": \"string\",\n    \"periodEnd\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3212,7 +3212,7 @@
           }
         },
         {
-          "id": "96ea14f7-8017-459b-9029-a7b4a7bfd068",
+          "id": "c4480833-74cf-499e-9678-3fde3efb26d7",
           "name": "Budgets Controller remove",
           "request": {
             "name": "Budgets Controller remove",
@@ -3255,7 +3255,7 @@
           },
           "response": [
             {
-              "id": "e34a3b32-8ab3-4f80-96dc-238dfedcd01f",
+              "id": "40b005ec-2048-46e8-9480-ba6179c0d014",
               "name": "The archived (soft-deleted) budget",
               "originalRequest": {
                 "url": {
@@ -3302,7 +3302,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 4320.701030975946,\n    \"period\": \"monthly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 484.98246802329504,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"categoryId\": \"string\",\n    \"amount\": 1748.055756446296,\n    \"period\": \"monthly\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 2074.878011468113,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3316,7 +3316,7 @@
       "event": []
     },
     {
-      "id": "2a057c9b-a223-4edd-a568-c3f7571de62f",
+      "id": "d659e55d-eda5-40b5-8214-72c786ffaddc",
       "name": "analysis",
       "description": {
         "content": "",
@@ -3324,7 +3324,7 @@
       },
       "item": [
         {
-          "id": "3e5287e1-0867-425a-9c54-56e699d51e63",
+          "id": "78fd211d-876c-4217-94dd-b90cf53fa3fe",
           "name": "Analysis Controller get Insights",
           "request": {
             "name": "Analysis Controller get Insights",
@@ -3375,7 +3375,7 @@
           },
           "response": [
             {
-              "id": "c12625fb-3737-4801-bbea-c62586cde3c5",
+              "id": "3a65d085-dbdf-4e3f-9717-3ba2758fdd0e",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -3426,7 +3426,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"insights\": [\n      {\n        \"kind\": \"recurring_load\",\n        \"weight\": 5279.261388735184,\n        \"title\": \"string\",\n        \"detail\": \"string\",\n        \"action\": \"string\"\n      },\n      {\n        \"kind\": \"budget_pace\",\n        \"weight\": 33.42804186146742,\n        \"title\": \"string\",\n        \"detail\": \"string\",\n        \"action\": \"string\"\n      }\n    ]\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"insights\": [\n      {\n        \"kind\": \"savings_opportunity\",\n        \"weight\": 4223.342211706854,\n        \"title\": \"string\",\n        \"detail\": \"string\",\n        \"action\": \"string\"\n      },\n      {\n        \"kind\": \"forecast_shortfall\",\n        \"weight\": 305.3488031291107,\n        \"title\": \"string\",\n        \"detail\": \"string\",\n        \"action\": \"string\"\n      }\n    ]\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3437,7 +3437,7 @@
           }
         },
         {
-          "id": "767e63fb-d103-438a-8274-cd72de0b0dc0",
+          "id": "4fcd8763-d817-4ebd-a9c0-9e445bc97971",
           "name": "Analysis Controller get Overview",
           "request": {
             "name": "Analysis Controller get Overview",
@@ -3487,7 +3487,7 @@
           },
           "response": [
             {
-              "id": "fa7dc327-4435-41c3-b4ce-92de0e356c2e",
+              "id": "a93990c4-c889-4c59-a2fa-5a784db740ce",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -3537,7 +3537,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"income\": 2999.972880270587,\n    \"expense\": 9259.91108236618,\n    \"net\": 7753.635157269122\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"income\": 1414.8612840569763,\n    \"expense\": 2204.0292818576822,\n    \"net\": 6334.19223871461\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3548,7 +3548,7 @@
           }
         },
         {
-          "id": "3b60cec9-c815-4f6c-9136-c11b8458ec5b",
+          "id": "18ee4467-37c0-42fd-926d-77430e46ff69",
           "name": "Analysis Controller get Category Breakdown",
           "request": {
             "name": "Analysis Controller get Category Breakdown",
@@ -3599,7 +3599,7 @@
           },
           "response": [
             {
-              "id": "fe12379f-b0b4-4bf1-9ffd-19a56051d77f",
+              "id": "c13e8eb4-136f-4312-a0ec-bff261a85ccf",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -3650,7 +3650,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"categories\": [\n      {\n        \"categoryId\": \"string\",\n        \"type\": \"income\",\n        \"total\": 3885.6137688390336\n      },\n      {\n        \"categoryId\": \"string\",\n        \"type\": \"income\",\n        \"total\": 4223.182830511985\n      }\n    ]\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"categories\": [\n      {\n        \"categoryId\": \"string\",\n        \"type\": \"expense\",\n        \"total\": 2251.15767639529\n      },\n      {\n        \"categoryId\": \"string\",\n        \"type\": \"income\",\n        \"total\": 7186.317566799004\n      }\n    ]\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3661,7 +3661,7 @@
           }
         },
         {
-          "id": "0f015ce3-124f-43bb-bfb4-60ae288cd0d7",
+          "id": "f64c9ecd-1483-4b07-9d1d-0dcb08827798",
           "name": "Analysis Controller get Cash Flow",
           "request": {
             "name": "Analysis Controller get Cash Flow",
@@ -3712,7 +3712,7 @@
           },
           "response": [
             {
-              "id": "407d24f0-3d59-4ff7-8730-ad4166c6fa62",
+              "id": "b8296575-7596-4907-b3b1-6f997bdffb24",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -3763,7 +3763,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"days\": [\n      {\n        \"date\": \"string\",\n        \"income\": 2938.4776423251137,\n        \"expense\": 5408.046839247241,\n        \"net\": 9376.109473978755\n      },\n      {\n        \"date\": \"string\",\n        \"income\": 9375.668467402907,\n        \"expense\": 8090.772970104129,\n        \"net\": 4660.952095415452\n      }\n    ]\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"days\": [\n      {\n        \"date\": \"string\",\n        \"income\": 2938.904840506216,\n        \"expense\": 7797.7037982776665,\n        \"net\": 2231.344079460622\n      },\n      {\n        \"date\": \"string\",\n        \"income\": 3805.519999344952,\n        \"expense\": 9282.817149425035,\n        \"net\": 2757.6043459486477\n      }\n    ]\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3774,7 +3774,7 @@
           }
         },
         {
-          "id": "249f3286-8f35-4226-b0e9-4f97754b03d2",
+          "id": "1960daec-ce5b-4aa9-b062-3325853699b0",
           "name": "Analysis Controller get Account Breakdown",
           "request": {
             "name": "Analysis Controller get Account Breakdown",
@@ -3825,7 +3825,7 @@
           },
           "response": [
             {
-              "id": "26463aab-cebf-41a0-b6da-c1d33bc9fab9",
+              "id": "6e52968d-7dc5-4681-af98-9315db5d175a",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -3876,7 +3876,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"accounts\": [\n      {\n        \"accountId\": \"string\",\n        \"name\": \"string\",\n        \"income\": 4928.130733920032,\n        \"expense\": 2376.4939463413248\n      },\n      {\n        \"accountId\": \"string\",\n        \"name\": \"string\",\n        \"income\": 9805.144520334292,\n        \"expense\": 7127.289810468753\n      }\n    ]\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"period\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"accounts\": [\n      {\n        \"accountId\": \"string\",\n        \"name\": \"string\",\n        \"income\": 8955.186149210556,\n        \"expense\": 2758.2122095267314\n      },\n      {\n        \"accountId\": \"string\",\n        \"name\": \"string\",\n        \"income\": 6022.170017363299,\n        \"expense\": 5657.103745199338\n      }\n    ]\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3890,7 +3890,7 @@
       "event": []
     },
     {
-      "id": "222dd18a-ad38-43e4-a5ca-c925e9989414",
+      "id": "6ccb8999-b9e0-400e-8b93-cc2a4129bc5e",
       "name": "intelligence",
       "description": {
         "content": "",
@@ -3898,7 +3898,7 @@
       },
       "item": [
         {
-          "id": "ecd29177-1fe7-43f9-a8ae-4abd58f7aee5",
+          "id": "71eac96d-dd9b-4f41-8720-0a67413d5015",
           "name": "Intelligence Controller get Forecast",
           "request": {
             "name": "Intelligence Controller get Forecast",
@@ -3939,7 +3939,7 @@
           },
           "response": [
             {
-              "id": "3a84801b-60ac-453d-87cf-157990884d07",
+              "id": "1dfcf4fb-26b7-429a-b0be-386c80c44535",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -3982,7 +3982,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"horizon\": \"month\",\n    \"currency\": \"string\",\n    \"window\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"openingBalance\": 840.8784187951102,\n    \"projectedBalance\": 5647.89101697917,\n    \"projectedIncome\": 7134.907431452782,\n    \"projectedExpense\": 8779.635046329946,\n    \"projectedDiscretionary\": 5039.731952437092,\n    \"lowestBalance\": 2429.801741819729,\n    \"shortfallDate\": \"string\",\n    \"days\": [\n      {\n        \"date\": \"string\",\n        \"balance\": 8715.405310214852,\n        \"income\": 2838.246339380499,\n        \"expense\": 4241.704665149788\n      },\n      {\n        \"date\": \"string\",\n        \"balance\": 5949.47902606925,\n        \"income\": 8709.414883737569,\n        \"expense\": 911.9058435278326\n      }\n    ]\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"horizon\": \"month\",\n    \"currency\": \"string\",\n    \"window\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"openingBalance\": 1552.6596886093935,\n    \"projectedBalance\": 724.5240778828665,\n    \"projectedIncome\": 8582.984024755546,\n    \"projectedExpense\": 6256.886597003326,\n    \"projectedDiscretionary\": 7735.924357167415,\n    \"lowestBalance\": 8520.104294924304,\n    \"shortfallDate\": \"string\",\n    \"days\": [\n      {\n        \"date\": \"string\",\n        \"balance\": 9842.938270904706,\n        \"income\": 7984.3820611553565,\n        \"expense\": 8845.665360245608\n      },\n      {\n        \"date\": \"string\",\n        \"balance\": 4650.755256330222,\n        \"income\": 9843.912315945106,\n        \"expense\": 9571.15172325293\n      }\n    ]\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -3993,7 +3993,7 @@
           }
         },
         {
-          "id": "d6ae8904-d63d-4319-9e5f-0880934c7298",
+          "id": "e728f295-a1ab-4d6c-aeb2-82a9c0cf2ce0",
           "name": "Intelligence Controller get Safe To Spend",
           "request": {
             "name": "Intelligence Controller get Safe To Spend",
@@ -4028,7 +4028,7 @@
           },
           "response": [
             {
-              "id": "c0693129-58c5-4fe8-b61a-1fd5ff5e1296",
+              "id": "48936b90-8903-4360-b503-0957585931b8",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -4066,7 +4066,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"currency\": \"string\",\n    \"window\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"amount\": 1910.0320673234316,\n    \"totalBalance\": 6304.322877657165,\n    \"expectedIncome\": 6797.97205584166,\n    \"totalDeductions\": 3497.056164079748,\n    \"shortfall\": 9183.023601847777,\n    \"reserveIsDerived\": false,\n    \"deductions\": [\n      {\n        \"key\": \"minimum_reserve\",\n        \"label\": \"string\",\n        \"amount\": 4746.119679376089\n      },\n      {\n        \"key\": \"minimum_reserve\",\n        \"label\": \"string\",\n        \"amount\": 5968.369237159923\n      }\n    ]\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"currency\": \"string\",\n    \"window\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"amount\": 4229.30066919541,\n    \"totalBalance\": 1232.9267897013528,\n    \"expectedIncome\": 7148.438421518995,\n    \"totalDeductions\": 2159.175312277263,\n    \"shortfall\": 1301.8655038978854,\n    \"reserveIsDerived\": true,\n    \"deductions\": [\n      {\n        \"key\": \"minimum_reserve\",\n        \"label\": \"string\",\n        \"amount\": 9519.875964099178\n      },\n      {\n        \"key\": \"budget_commitments\",\n        \"label\": \"string\",\n        \"amount\": 5586.500813388817\n      }\n    ]\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4077,7 +4077,7 @@
           }
         },
         {
-          "id": "1173042d-20f3-4cee-9cab-4fc3178b6ac5",
+          "id": "a612664d-2c80-4b44-8ff4-e04d779e526c",
           "name": "Intelligence Controller get Health",
           "request": {
             "name": "Intelligence Controller get Health",
@@ -4112,7 +4112,7 @@
           },
           "response": [
             {
-              "id": "296d9973-46d6-404a-be8f-e0d77846703b",
+              "id": "f2ba1490-cf14-4aad-a234-d6ea297cfb3a",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -4150,7 +4150,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"currency\": \"string\",\n    \"score\": 6903.033544442838,\n    \"band\": \"strong\",\n    \"components\": [\n      {\n        \"key\": \"cash_flow_stability\",\n        \"label\": \"string\",\n        \"score\": 3978.8652392485237,\n        \"weight\": 9076.41117558129,\n        \"reason\": \"string\"\n      },\n      {\n        \"key\": \"budget_control\",\n        \"label\": \"string\",\n        \"score\": 95.43885643955363,\n        \"weight\": 8897.090121261892,\n        \"reason\": \"string\"\n      }\n    ],\n    \"unavailable\": [\n      {\n        \"key\": \"savings_rate\",\n        \"reason\": \"string\"\n      },\n      {\n        \"key\": \"savings_rate\",\n        \"reason\": \"string\"\n      }\n    ]\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"currency\": \"string\",\n    \"score\": 4725.867429154259,\n    \"band\": \"strong\",\n    \"components\": [\n      {\n        \"key\": \"cash_flow_stability\",\n        \"label\": \"string\",\n        \"score\": 1023.5710913293128,\n        \"weight\": 5418.568122120632,\n        \"reason\": \"string\"\n      },\n      {\n        \"key\": \"goal_progress\",\n        \"label\": \"string\",\n        \"score\": 7570.748357160724,\n        \"weight\": 8108.748199958644,\n        \"reason\": \"string\"\n      }\n    ],\n    \"unavailable\": [\n      {\n        \"key\": \"reserve_level\",\n        \"reason\": \"string\"\n      },\n      {\n        \"key\": \"savings_rate\",\n        \"reason\": \"string\"\n      }\n    ]\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4161,7 +4161,7 @@
           }
         },
         {
-          "id": "a0254f3a-1b97-4e3b-a751-555f1faceca7",
+          "id": "8d074bc5-61c1-4320-860d-2bcf41f4731d",
           "name": "Intelligence Controller simulate",
           "request": {
             "name": "Intelligence Controller simulate",
@@ -4209,7 +4209,7 @@
           },
           "response": [
             {
-              "id": "8c21c778-8caf-4a55-a9ef-9a3ec30baac5",
+              "id": "3c9145be-7437-4349-9807-9c67ff704dcf",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -4255,7 +4255,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"currency\": \"string\",\n    \"window\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"scenario\": {\n      \"kind\": \"recurring\",\n      \"amount\": 3224.5311646701134,\n      \"type\": \"expense\",\n      \"date\": \"string\",\n      \"frequency\": \"string\",\n      \"interval\": 7250.538032132303,\n      \"percentChange\": 3312.7431952612874,\n      \"label\": \"string\"\n    },\n    \"baseline\": {\n      \"projectedBalance\": 4956.761380897648,\n      \"lowestBalance\": 717.3166548146393,\n      \"shortfallDate\": \"string\",\n      \"safeToSpend\": 850.2459531951866,\n      \"goals\": [\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"status\": \"on_track\",\n          \"projectedCompletion\": \"string\",\n          \"monthsRemaining\": 1617.9883649562898\n        },\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"status\": \"stalled\",\n          \"projectedCompletion\": \"string\",\n          \"monthsRemaining\": 1420.7673032627\n        }\n      ]\n    },\n    \"projected\": {\n      \"projectedBalance\": 8262.940753812081,\n      \"lowestBalance\": 1031.2013305568114,\n      \"shortfallDate\": \"string\",\n      \"safeToSpend\": 6120.303459227411,\n      \"goals\": [\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"status\": \"at_risk\",\n          \"projectedCompletion\": \"string\",\n          \"monthsRemaining\": 5370.020753195641\n        },\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"status\": \"complete\",\n          \"projectedCompletion\": \"string\",\n          \"monthsRemaining\": 7458.377272032686\n        }\n      ]\n    },\n    \"delta\": {\n      \"projectedBalance\": 2307.7503029311497,\n      \"safeToSpend\": 4464.441110320688,\n      \"monthlyCommitment\": 9250.973341563038\n    },\n    \"goalsDelayed\": [\n      {\n        \"id\": \"string\",\n        \"name\": \"string\",\n        \"monthsLater\": 8817.320297870747\n      },\n      {\n        \"id\": \"string\",\n        \"name\": \"string\",\n        \"monthsLater\": 7535.330345950299\n      }\n    ],\n    \"affordable\": true,\n    \"verdict\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"currency\": \"string\",\n    \"window\": {\n      \"start\": \"string\",\n      \"end\": \"string\"\n    },\n    \"scenario\": {\n      \"kind\": \"recurring\",\n      \"amount\": 575.5809607287921,\n      \"type\": \"expense\",\n      \"date\": \"string\",\n      \"frequency\": \"string\",\n      \"interval\": 8408.511572900765,\n      \"percentChange\": 8084.1707381961905,\n      \"label\": \"string\"\n    },\n    \"baseline\": {\n      \"projectedBalance\": 5220.837971068721,\n      \"lowestBalance\": 4822.764726193713,\n      \"shortfallDate\": \"string\",\n      \"safeToSpend\": 5680.131355355163,\n      \"goals\": [\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"status\": \"complete\",\n          \"projectedCompletion\": \"string\",\n          \"monthsRemaining\": 5306.70987627019\n        },\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"status\": \"complete\",\n          \"projectedCompletion\": \"string\",\n          \"monthsRemaining\": 9645.146321551245\n        }\n      ]\n    },\n    \"projected\": {\n      \"projectedBalance\": 9389.358679549847,\n      \"lowestBalance\": 2688.9031956316035,\n      \"shortfallDate\": \"string\",\n      \"safeToSpend\": 4186.9938704554925,\n      \"goals\": [\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"status\": \"stalled\",\n          \"projectedCompletion\": \"string\",\n          \"monthsRemaining\": 4413.378331814558\n        },\n        {\n          \"id\": \"string\",\n          \"name\": \"string\",\n          \"status\": \"at_risk\",\n          \"projectedCompletion\": \"string\",\n          \"monthsRemaining\": 4079.503600073762\n        }\n      ]\n    },\n    \"delta\": {\n      \"projectedBalance\": 291.33540166971227,\n      \"safeToSpend\": 7449.817223512659,\n      \"monthlyCommitment\": 962.9888641200723\n    },\n    \"goalsDelayed\": [\n      {\n        \"id\": \"string\",\n        \"name\": \"string\",\n        \"monthsLater\": 649.2836959824544\n      },\n      {\n        \"id\": \"string\",\n        \"name\": \"string\",\n        \"monthsLater\": 7548.862939940171\n      }\n    ],\n    \"affordable\": false,\n    \"verdict\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4269,7 +4269,7 @@
       "event": []
     },
     {
-      "id": "7534fa04-ddaf-48df-afbf-059883e83497",
+      "id": "327b2d4f-9182-4e13-9d14-dc7670460bdc",
       "name": "goals",
       "description": {
         "content": "",
@@ -4277,7 +4277,7 @@
       },
       "item": [
         {
-          "id": "f5e29cb1-30e8-48a4-afe4-a22174cbee6b",
+          "id": "cd15ecdd-7e4d-475f-a556-5d268a44706d",
           "name": "Goals Controller create",
           "request": {
             "name": "Goals Controller create",
@@ -4324,7 +4324,7 @@
           },
           "response": [
             {
-              "id": "677a2198-d1c4-402b-9298-8f5c9043398c",
+              "id": "630e1234-4389-4dd5-85b9-2e3566e63ab4",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -4369,7 +4369,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"kind\": \"emergency_fund\",\n    \"targetAmount\": 2797.579944819002,\n    \"savedAmount\": 8268.995119314779,\n    \"accountId\": \"string\",\n    \"monthlyContribution\": 6831.842504441891,\n    \"targetDate\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 4717.850022574357,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"progress\": 4302.253022135327,\n    \"remaining\": 2628.879764492842,\n    \"percentComplete\": 8580.098976016916,\n    \"projectedCompletion\": \"string\",\n    \"monthsRemaining\": 9701.691904011357,\n    \"requiredMonthly\": 1386.217884339378,\n    \"monthlyShortfall\": 4893.834006175901,\n    \"onTrack\": true,\n    \"status\": \"stalled\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"kind\": \"debt_payoff\",\n    \"targetAmount\": 4932.25714591907,\n    \"savedAmount\": 9372.293565852,\n    \"accountId\": \"string\",\n    \"monthlyContribution\": 5495.135314882398,\n    \"targetDate\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 7414.996179630786,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"progress\": 5086.874293257636,\n    \"remaining\": 5355.341133043653,\n    \"percentComplete\": 4698.30306292102,\n    \"projectedCompletion\": \"string\",\n    \"monthsRemaining\": 6500.68179004834,\n    \"requiredMonthly\": 9982.545651582954,\n    \"monthlyShortfall\": 4827.297584119406,\n    \"onTrack\": false,\n    \"status\": \"at_risk\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4380,7 +4380,7 @@
           }
         },
         {
-          "id": "c31c323b-7d67-4037-b2ce-71da9d5828f9",
+          "id": "848cd382-028a-4a3f-9485-b395d85d24f2",
           "name": "Goals Controller find All",
           "request": {
             "name": "Goals Controller find All",
@@ -4425,7 +4425,7 @@
           },
           "response": [
             {
-              "id": "a804c874-ce34-47f1-937f-a0780663fdda",
+              "id": "06c1154b-6052-421f-8c6b-ef21446ecd28",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -4471,7 +4471,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"kind\": \"education\",\n        \"targetAmount\": 2763.351208938789,\n        \"savedAmount\": 6465.957489544193,\n        \"accountId\": \"string\",\n        \"monthlyContribution\": 9699.800200981577,\n        \"targetDate\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 5662.170154527996,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"progress\": 1965.6697794327793,\n        \"remaining\": 8523.452191833276,\n        \"percentComplete\": 6612.910040984646,\n        \"projectedCompletion\": \"string\",\n        \"monthsRemaining\": 3745.4833275115884,\n        \"requiredMonthly\": 9348.638524729366,\n        \"monthlyShortfall\": 4129.128029669383,\n        \"onTrack\": false,\n        \"status\": \"at_risk\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"kind\": \"education\",\n        \"targetAmount\": 608.1947692469892,\n        \"savedAmount\": 5690.860214043189,\n        \"accountId\": \"string\",\n        \"monthlyContribution\": 183.29603907067838,\n        \"targetDate\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 3882.794466143221,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"progress\": 5022.655817338775,\n        \"remaining\": 4068.30722224075,\n        \"percentComplete\": 7388.966221001624,\n        \"projectedCompletion\": \"string\",\n        \"monthsRemaining\": 2664.5593134890423,\n        \"requiredMonthly\": 6217.185721444899,\n        \"monthlyShortfall\": 2490.135684907886,\n        \"onTrack\": true,\n        \"status\": \"complete\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"kind\": \"emergency_fund\",\n        \"targetAmount\": 7233.082395413983,\n        \"savedAmount\": 5177.88145793803,\n        \"accountId\": \"string\",\n        \"monthlyContribution\": 5059.847797468186,\n        \"targetDate\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 3529.4009368700786,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"progress\": 837.3581368420546,\n        \"remaining\": 7371.383622435847,\n        \"percentComplete\": 3651.3050245876098,\n        \"projectedCompletion\": \"string\",\n        \"monthsRemaining\": 9044.218380029932,\n        \"requiredMonthly\": 6770.977691414804,\n        \"monthlyShortfall\": 421.8810486112168,\n        \"onTrack\": true,\n        \"status\": \"at_risk\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"name\": \"string\",\n        \"kind\": \"purchase\",\n        \"targetAmount\": 441.4732090814189,\n        \"savedAmount\": 3152.1815266040944,\n        \"accountId\": \"string\",\n        \"monthlyContribution\": 1327.4665706561107,\n        \"targetDate\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 8806.00542870927,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"progress\": 2235.7284784278872,\n        \"remaining\": 3521.6474242721574,\n        \"percentComplete\": 5897.1396596643735,\n        \"projectedCompletion\": \"string\",\n        \"monthsRemaining\": 7063.202759088977,\n        \"requiredMonthly\": 6860.251571345784,\n        \"monthlyShortfall\": 5912.549140078714,\n        \"onTrack\": false,\n        \"status\": \"stalled\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4482,7 +4482,7 @@
           }
         },
         {
-          "id": "8fb1361c-3016-4cd1-91de-ebd8f1d36807",
+          "id": "d2474f45-ce2c-4495-8f54-315c1bf2d1be",
           "name": "Goals Controller find One",
           "request": {
             "name": "Goals Controller find One",
@@ -4525,7 +4525,7 @@
           },
           "response": [
             {
-              "id": "1e58be92-efca-4c74-a516-7905cfa84e4b",
+              "id": "5ffae141-b3cc-4a94-ad95-ac303036d74a",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -4571,7 +4571,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"kind\": \"emergency_fund\",\n    \"targetAmount\": 2797.579944819002,\n    \"savedAmount\": 8268.995119314779,\n    \"accountId\": \"string\",\n    \"monthlyContribution\": 6831.842504441891,\n    \"targetDate\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 4717.850022574357,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"progress\": 4302.253022135327,\n    \"remaining\": 2628.879764492842,\n    \"percentComplete\": 8580.098976016916,\n    \"projectedCompletion\": \"string\",\n    \"monthsRemaining\": 9701.691904011357,\n    \"requiredMonthly\": 1386.217884339378,\n    \"monthlyShortfall\": 4893.834006175901,\n    \"onTrack\": true,\n    \"status\": \"stalled\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"kind\": \"debt_payoff\",\n    \"targetAmount\": 4932.25714591907,\n    \"savedAmount\": 9372.293565852,\n    \"accountId\": \"string\",\n    \"monthlyContribution\": 5495.135314882398,\n    \"targetDate\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 7414.996179630786,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"progress\": 5086.874293257636,\n    \"remaining\": 5355.341133043653,\n    \"percentComplete\": 4698.30306292102,\n    \"projectedCompletion\": \"string\",\n    \"monthsRemaining\": 6500.68179004834,\n    \"requiredMonthly\": 9982.545651582954,\n    \"monthlyShortfall\": 4827.297584119406,\n    \"onTrack\": false,\n    \"status\": \"at_risk\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4582,7 +4582,7 @@
           }
         },
         {
-          "id": "47e7bafe-f172-48f1-8b2a-c42c7a16632f",
+          "id": "fbc5a4e0-2e8e-431a-bf4c-7b5c8886dca1",
           "name": "Goals Controller update",
           "request": {
             "name": "Goals Controller update",
@@ -4638,7 +4638,7 @@
           },
           "response": [
             {
-              "id": "92a401a7-e36c-4713-8cbe-0ea9ae60009c",
+              "id": "03940377-e05c-4872-9660-82558cd7ec48",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -4692,7 +4692,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"kind\": \"emergency_fund\",\n    \"targetAmount\": 2797.579944819002,\n    \"savedAmount\": 8268.995119314779,\n    \"accountId\": \"string\",\n    \"monthlyContribution\": 6831.842504441891,\n    \"targetDate\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 4717.850022574357,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"progress\": 4302.253022135327,\n    \"remaining\": 2628.879764492842,\n    \"percentComplete\": 8580.098976016916,\n    \"projectedCompletion\": \"string\",\n    \"monthsRemaining\": 9701.691904011357,\n    \"requiredMonthly\": 1386.217884339378,\n    \"monthlyShortfall\": 4893.834006175901,\n    \"onTrack\": true,\n    \"status\": \"stalled\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"kind\": \"debt_payoff\",\n    \"targetAmount\": 4932.25714591907,\n    \"savedAmount\": 9372.293565852,\n    \"accountId\": \"string\",\n    \"monthlyContribution\": 5495.135314882398,\n    \"targetDate\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 7414.996179630786,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"progress\": 5086.874293257636,\n    \"remaining\": 5355.341133043653,\n    \"percentComplete\": 4698.30306292102,\n    \"projectedCompletion\": \"string\",\n    \"monthsRemaining\": 6500.68179004834,\n    \"requiredMonthly\": 9982.545651582954,\n    \"monthlyShortfall\": 4827.297584119406,\n    \"onTrack\": false,\n    \"status\": \"at_risk\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4703,7 +4703,7 @@
           }
         },
         {
-          "id": "23358877-7c31-4b69-9eb4-59bd1616d26d",
+          "id": "62c55c14-5509-4a0d-a47f-71d82885dc5b",
           "name": "Goals Controller remove",
           "request": {
             "name": "Goals Controller remove",
@@ -4746,7 +4746,7 @@
           },
           "response": [
             {
-              "id": "7d6e9ed0-0cce-4414-b612-ea234cdfc547",
+              "id": "33fd971e-7df1-426a-9738-81eacd6d09ab",
               "name": "The archived (soft-deleted) goal",
               "originalRequest": {
                 "url": {
@@ -4793,7 +4793,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"kind\": \"education\",\n    \"targetAmount\": 3814.1174803468325,\n    \"savedAmount\": 1954.847493357491,\n    \"accountId\": \"string\",\n    \"monthlyContribution\": 3617.1916318111485,\n    \"targetDate\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 8187.835347153316,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"kind\": \"savings\",\n    \"targetAmount\": 5171.840234349416,\n    \"savedAmount\": 8131.05765531822,\n    \"accountId\": \"string\",\n    \"monthlyContribution\": 7918.998172768365,\n    \"targetDate\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 760.8217290627329,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4804,7 +4804,7 @@
           }
         },
         {
-          "id": "3bcdbca5-3f07-48e3-82b0-40d468f63271",
+          "id": "36d83071-76c2-4c6e-86ff-5f07f1ba7da7",
           "name": "Goals Controller contribute",
           "request": {
             "name": "Goals Controller contribute",
@@ -4861,7 +4861,7 @@
           },
           "response": [
             {
-              "id": "b27716ce-d427-43ea-a7ea-d7800108fe5a",
+              "id": "48fb210c-5d43-4d3e-af76-1643501a9806",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -4916,7 +4916,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"kind\": \"emergency_fund\",\n    \"targetAmount\": 2797.579944819002,\n    \"savedAmount\": 8268.995119314779,\n    \"accountId\": \"string\",\n    \"monthlyContribution\": 6831.842504441891,\n    \"targetDate\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 4717.850022574357,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"progress\": 4302.253022135327,\n    \"remaining\": 2628.879764492842,\n    \"percentComplete\": 8580.098976016916,\n    \"projectedCompletion\": \"string\",\n    \"monthsRemaining\": 9701.691904011357,\n    \"requiredMonthly\": 1386.217884339378,\n    \"monthlyShortfall\": 4893.834006175901,\n    \"onTrack\": true,\n    \"status\": \"stalled\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"name\": \"string\",\n    \"kind\": \"debt_payoff\",\n    \"targetAmount\": 4932.25714591907,\n    \"savedAmount\": 9372.293565852,\n    \"accountId\": \"string\",\n    \"monthlyContribution\": 5495.135314882398,\n    \"targetDate\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 7414.996179630786,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"progress\": 5086.874293257636,\n    \"remaining\": 5355.341133043653,\n    \"percentComplete\": 4698.30306292102,\n    \"projectedCompletion\": \"string\",\n    \"monthsRemaining\": 6500.68179004834,\n    \"requiredMonthly\": 9982.545651582954,\n    \"monthlyShortfall\": 4827.297584119406,\n    \"onTrack\": false,\n    \"status\": \"at_risk\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -4930,7 +4930,7 @@
       "event": []
     },
     {
-      "id": "9ba8baaa-675c-4120-8206-0cc15503ff26",
+      "id": "bc4e6159-413e-4107-98df-3a6d346ce5a2",
       "name": "exports",
       "description": {
         "content": "",
@@ -4938,7 +4938,7 @@
       },
       "item": [
         {
-          "id": "5cee3a3b-fc0e-4d1a-88b0-853a9fd5661f",
+          "id": "d884d0e1-0c8a-4b74-8ac0-a5ae08becbf1",
           "name": "Exports Controller request Pdf Export",
           "request": {
             "name": "Exports Controller request Pdf Export",
@@ -4986,7 +4986,7 @@
           },
           "response": [
             {
-              "id": "e32c79de-c400-4c1a-9c2a-6465d6e7cc47",
+              "id": "68ea9ca6-5378-4190-a34c-87fdf5c26462",
               "name": "Export job queued. The PDF will be generated in the background and emailed to the user.",
               "originalRequest": {
                 "url": {
@@ -5044,7 +5044,7 @@
           }
         },
         {
-          "id": "f6317396-82ea-45d6-9d48-745a3d6e22ba",
+          "id": "722bcba6-72a3-4e23-b914-05c16068edf8",
           "name": "Exports Controller request Csv Export",
           "request": {
             "name": "Exports Controller request Csv Export",
@@ -5092,7 +5092,7 @@
           },
           "response": [
             {
-              "id": "3b80f352-8c6f-4728-ab49-8acf1ae00524",
+              "id": "cd9abb08-4b5b-4ff4-b1f1-b5573a15447b",
               "name": "Export job queued. The CSV file will be generated in the background and emailed to the user.",
               "originalRequest": {
                 "url": {
@@ -5153,7 +5153,7 @@
       "event": []
     },
     {
-      "id": "c0f034f4-f88b-4038-8561-b0458093bb03",
+      "id": "a19d5453-0399-453d-b172-5b5a930503d9",
       "name": "mcp-connections",
       "description": {
         "content": "",
@@ -5161,7 +5161,7 @@
       },
       "item": [
         {
-          "id": "cc4aeabf-a6af-4929-b284-43fdacef66f3",
+          "id": "174a657d-d499-4336-8195-4dc9f02cc525",
           "name": "Mcp Connections Controller list",
           "request": {
             "name": "Mcp Connections Controller list",
@@ -5195,7 +5195,7 @@
           },
           "response": [
             {
-              "id": "271b7923-b6ec-429c-9568-0fae987a3595",
+              "id": "11211cca-42d1-4d3c-8678-954d723cd7ff",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -5243,7 +5243,7 @@
           }
         },
         {
-          "id": "6eec04dd-cc31-4bab-af16-35990283b85e",
+          "id": "fe878221-d8d8-497b-b848-c9681b805fe0",
           "name": "Mcp Connections Controller revoke",
           "request": {
             "name": "Mcp Connections Controller revoke",
@@ -5286,7 +5286,7 @@
           },
           "response": [
             {
-              "id": "a84a1c34-b204-4df1-8ac2-781e2dfc1df5",
+              "id": "a0b96f94-2335-44f1-ae18-61f479122712",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -5346,7 +5346,7 @@
       "event": []
     },
     {
-      "id": "85227fef-01af-4957-b8ea-65647089967f",
+      "id": "a3ac3edf-1113-455e-a765-e44c6fbb18b3",
       "name": "recurrences",
       "description": {
         "content": "",
@@ -5354,7 +5354,7 @@
       },
       "item": [
         {
-          "id": "d091da88-02d2-4c1d-815d-4efbbe63a0e7",
+          "id": "0df04334-263e-47ec-9c52-65b3f2bed17a",
           "name": "Recurrences Controller create",
           "request": {
             "name": "Recurrences Controller create",
@@ -5401,7 +5401,7 @@
           },
           "response": [
             {
-              "id": "239a849d-7daf-4735-98d8-673d1cbf9513",
+              "id": "8a35b255-77d4-4102-8168-204a66d06ec5",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -5446,7 +5446,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 5361.343351869088,\n    \"accountId\": \"string\",\n    \"frequency\": \"weekly\",\n    \"interval\": 1959.9986225680266,\n    \"startDate\": \"string\",\n    \"endDate\": \"string\",\n    \"timezone\": \"string\",\n    \"nextRunAt\": \"string\",\n    \"lastRunAt\": \"string\",\n    \"paused\": true,\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 9149.297435445646,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"expense\",\n    \"amount\": 7023.610867741373,\n    \"accountId\": \"string\",\n    \"frequency\": \"daily\",\n    \"interval\": 9589.897306960665,\n    \"startDate\": \"string\",\n    \"endDate\": \"string\",\n    \"timezone\": \"string\",\n    \"nextRunAt\": \"string\",\n    \"lastRunAt\": \"string\",\n    \"paused\": true,\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 1972.3900822986418,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5457,7 +5457,7 @@
           }
         },
         {
-          "id": "f98b3611-551d-4b50-b3f1-491978952573",
+          "id": "cb4ceacb-01dd-4c3d-b829-434b84aa17bd",
           "name": "Recurrences Controller find All",
           "request": {
             "name": "Recurrences Controller find All",
@@ -5502,7 +5502,7 @@
           },
           "response": [
             {
-              "id": "56e1939a-5485-4810-818a-89a82293bf32",
+              "id": "0e657a66-09ab-4603-864f-5572b0fcd850",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -5548,7 +5548,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"type\": \"transfer\",\n        \"amount\": 1140.4155485436263,\n        \"accountId\": \"string\",\n        \"frequency\": \"yearly\",\n        \"interval\": 4153.663377843907,\n        \"startDate\": \"string\",\n        \"endDate\": \"string\",\n        \"timezone\": \"string\",\n        \"nextRunAt\": \"string\",\n        \"lastRunAt\": \"string\",\n        \"paused\": false,\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 8509.406891399485,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"description\": \"string\",\n        \"note\": \"string\",\n        \"categoryId\": \"string\",\n        \"toAccountId\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"type\": \"transfer\",\n        \"amount\": 8348.603765489348,\n        \"accountId\": \"string\",\n        \"frequency\": \"monthly\",\n        \"interval\": 3074.273569912307,\n        \"startDate\": \"string\",\n        \"endDate\": \"string\",\n        \"timezone\": \"string\",\n        \"nextRunAt\": \"string\",\n        \"lastRunAt\": \"string\",\n        \"paused\": false,\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 7700.093855652237,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"description\": \"string\",\n        \"note\": \"string\",\n        \"categoryId\": \"string\",\n        \"toAccountId\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"type\": \"income\",\n        \"amount\": 9149.259729773044,\n        \"accountId\": \"string\",\n        \"frequency\": \"daily\",\n        \"interval\": 6003.727202030414,\n        \"startDate\": \"string\",\n        \"endDate\": \"string\",\n        \"timezone\": \"string\",\n        \"nextRunAt\": \"string\",\n        \"lastRunAt\": \"string\",\n        \"paused\": false,\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 1479.0814142013442,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"description\": \"string\",\n        \"note\": \"string\",\n        \"categoryId\": \"string\",\n        \"toAccountId\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"type\": \"transfer\",\n        \"amount\": 5423.626667774131,\n        \"accountId\": \"string\",\n        \"frequency\": \"weekly\",\n        \"interval\": 3977.193338876912,\n        \"startDate\": \"string\",\n        \"endDate\": \"string\",\n        \"timezone\": \"string\",\n        \"nextRunAt\": \"string\",\n        \"lastRunAt\": \"string\",\n        \"paused\": true,\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 4474.280376585434,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\",\n        \"description\": \"string\",\n        \"note\": \"string\",\n        \"categoryId\": \"string\",\n        \"toAccountId\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5559,7 +5559,7 @@
           }
         },
         {
-          "id": "3fd39cce-b43f-42d9-a49a-d1f86d430a04",
+          "id": "b46926d7-5900-4892-926e-81e06ebb2b5c",
           "name": "Recurrences Controller find One",
           "request": {
             "name": "Recurrences Controller find One",
@@ -5602,7 +5602,7 @@
           },
           "response": [
             {
-              "id": "845ad006-a535-41ba-be96-63af20855165",
+              "id": "e43ddb9e-bcd6-491d-9541-2387f9c439a3",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -5648,7 +5648,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 5361.343351869088,\n    \"accountId\": \"string\",\n    \"frequency\": \"weekly\",\n    \"interval\": 1959.9986225680266,\n    \"startDate\": \"string\",\n    \"endDate\": \"string\",\n    \"timezone\": \"string\",\n    \"nextRunAt\": \"string\",\n    \"lastRunAt\": \"string\",\n    \"paused\": true,\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 9149.297435445646,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"expense\",\n    \"amount\": 7023.610867741373,\n    \"accountId\": \"string\",\n    \"frequency\": \"daily\",\n    \"interval\": 9589.897306960665,\n    \"startDate\": \"string\",\n    \"endDate\": \"string\",\n    \"timezone\": \"string\",\n    \"nextRunAt\": \"string\",\n    \"lastRunAt\": \"string\",\n    \"paused\": true,\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 1972.3900822986418,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5659,7 +5659,7 @@
           }
         },
         {
-          "id": "9d86e1bc-47a9-4d70-90ae-431b22ac3041",
+          "id": "7105e189-6b32-4366-a960-38a6d4577cc2",
           "name": "Recurrences Controller update",
           "request": {
             "name": "Recurrences Controller update",
@@ -5715,7 +5715,7 @@
           },
           "response": [
             {
-              "id": "965f11f8-6f79-4d26-9904-db872921ea9f",
+              "id": "ae977140-409b-46a7-b756-e112e57a616b",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -5769,7 +5769,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 5361.343351869088,\n    \"accountId\": \"string\",\n    \"frequency\": \"weekly\",\n    \"interval\": 1959.9986225680266,\n    \"startDate\": \"string\",\n    \"endDate\": \"string\",\n    \"timezone\": \"string\",\n    \"nextRunAt\": \"string\",\n    \"lastRunAt\": \"string\",\n    \"paused\": true,\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 9149.297435445646,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"expense\",\n    \"amount\": 7023.610867741373,\n    \"accountId\": \"string\",\n    \"frequency\": \"daily\",\n    \"interval\": 9589.897306960665,\n    \"startDate\": \"string\",\n    \"endDate\": \"string\",\n    \"timezone\": \"string\",\n    \"nextRunAt\": \"string\",\n    \"lastRunAt\": \"string\",\n    \"paused\": true,\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 1972.3900822986418,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5780,7 +5780,7 @@
           }
         },
         {
-          "id": "62c242cf-4853-422f-86f5-d97b2f925e83",
+          "id": "ac97a4f1-b592-47fb-904e-c249140bd278",
           "name": "Recurrences Controller remove",
           "request": {
             "name": "Recurrences Controller remove",
@@ -5823,7 +5823,7 @@
           },
           "response": [
             {
-              "id": "53185bcc-47f9-4516-ada5-a3fdeac5fdc5",
+              "id": "d3569af6-fc1f-4d17-a013-82e7c03e3add",
               "name": "The archived rule. Transactions it already created are untouched.",
               "originalRequest": {
                 "url": {
@@ -5870,7 +5870,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 5361.343351869088,\n    \"accountId\": \"string\",\n    \"frequency\": \"weekly\",\n    \"interval\": 1959.9986225680266,\n    \"startDate\": \"string\",\n    \"endDate\": \"string\",\n    \"timezone\": \"string\",\n    \"nextRunAt\": \"string\",\n    \"lastRunAt\": \"string\",\n    \"paused\": true,\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 9149.297435445646,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"expense\",\n    \"amount\": 7023.610867741373,\n    \"accountId\": \"string\",\n    \"frequency\": \"daily\",\n    \"interval\": 9589.897306960665,\n    \"startDate\": \"string\",\n    \"endDate\": \"string\",\n    \"timezone\": \"string\",\n    \"nextRunAt\": \"string\",\n    \"lastRunAt\": \"string\",\n    \"paused\": true,\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 1972.3900822986418,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5881,7 +5881,7 @@
           }
         },
         {
-          "id": "9e1baa68-3a51-478c-8668-57ef29da1166",
+          "id": "333d96e4-df84-4f4f-949b-98394daa8c84",
           "name": "Recurrences Controller pause",
           "request": {
             "name": "Recurrences Controller pause",
@@ -5925,7 +5925,7 @@
           },
           "response": [
             {
-              "id": "2203dc91-5b1b-468c-93cd-48128ff79047",
+              "id": "a9d63ebb-d44f-47e7-83c6-39bded3ce4d2",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -5972,7 +5972,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 5361.343351869088,\n    \"accountId\": \"string\",\n    \"frequency\": \"weekly\",\n    \"interval\": 1959.9986225680266,\n    \"startDate\": \"string\",\n    \"endDate\": \"string\",\n    \"timezone\": \"string\",\n    \"nextRunAt\": \"string\",\n    \"lastRunAt\": \"string\",\n    \"paused\": true,\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 9149.297435445646,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"expense\",\n    \"amount\": 7023.610867741373,\n    \"accountId\": \"string\",\n    \"frequency\": \"daily\",\n    \"interval\": 9589.897306960665,\n    \"startDate\": \"string\",\n    \"endDate\": \"string\",\n    \"timezone\": \"string\",\n    \"nextRunAt\": \"string\",\n    \"lastRunAt\": \"string\",\n    \"paused\": true,\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 1972.3900822986418,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -5983,7 +5983,7 @@
           }
         },
         {
-          "id": "b3fd9792-068a-4862-b7cf-6f35798397d8",
+          "id": "09c9ce0e-4284-4c1e-8de7-4f6169de5ca2",
           "name": "Recurrences Controller resume",
           "request": {
             "name": "Recurrences Controller resume",
@@ -6027,7 +6027,7 @@
           },
           "response": [
             {
-              "id": "fb36582c-9e9f-4a85-8ae3-e2099e646cf5",
+              "id": "552c7458-2bac-4c6a-a886-56dccc705ccd",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -6074,7 +6074,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"income\",\n    \"amount\": 5361.343351869088,\n    \"accountId\": \"string\",\n    \"frequency\": \"weekly\",\n    \"interval\": 1959.9986225680266,\n    \"startDate\": \"string\",\n    \"endDate\": \"string\",\n    \"timezone\": \"string\",\n    \"nextRunAt\": \"string\",\n    \"lastRunAt\": \"string\",\n    \"paused\": true,\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 9149.297435445646,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"type\": \"expense\",\n    \"amount\": 7023.610867741373,\n    \"accountId\": \"string\",\n    \"frequency\": \"daily\",\n    \"interval\": 9589.897306960665,\n    \"startDate\": \"string\",\n    \"endDate\": \"string\",\n    \"timezone\": \"string\",\n    \"nextRunAt\": \"string\",\n    \"lastRunAt\": \"string\",\n    \"paused\": true,\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 1972.3900822986418,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\",\n    \"description\": \"string\",\n    \"note\": \"string\",\n    \"categoryId\": \"string\",\n    \"toAccountId\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -6088,7 +6088,7 @@
       "event": []
     },
     {
-      "id": "cd736893-e4cd-495d-96ce-71a349dcd6bf",
+      "id": "cea40ae6-f35b-4a3b-af23-c474cdb68dd0",
       "name": "money-rules",
       "description": {
         "content": "",
@@ -6096,7 +6096,7 @@
       },
       "item": [
         {
-          "id": "154810df-b2d3-4daa-952a-aeb01033984a",
+          "id": "7d890116-416f-485f-87a4-c42a6d1b74a9",
           "name": "Money Rules Controller create",
           "request": {
             "name": "Money Rules Controller create",
@@ -6143,7 +6143,7 @@
           },
           "response": [
             {
-              "id": "5dc29367-07d2-4d7f-8101-3a50d8d99a9e",
+              "id": "314b402f-f0ce-400f-91ad-b4f2377ffcc7",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -6188,7 +6188,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"kind\": \"weekly_summary\",\n    \"threshold\": 189.28084182938233,\n    \"categoryId\": \"string\",\n    \"enabled\": false,\n    \"cadenceDays\": 208.96521723695272,\n    \"armed\": true,\n    \"lastFiredAt\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 9928.539241936765,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"kind\": \"balance_under\",\n    \"threshold\": 6671.016508032312,\n    \"categoryId\": \"string\",\n    \"enabled\": false,\n    \"cadenceDays\": 6324.324411986971,\n    \"armed\": false,\n    \"lastFiredAt\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 8382.522883421972,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -6199,7 +6199,7 @@
           }
         },
         {
-          "id": "cf9eb348-a47b-4e58-9de6-93ff8e4585ad",
+          "id": "0a424007-ecf5-42f1-8c2f-72204ee607c4",
           "name": "Money Rules Controller find All",
           "request": {
             "name": "Money Rules Controller find All",
@@ -6244,7 +6244,7 @@
           },
           "response": [
             {
-              "id": "dac8784a-4f16-4a00-8eb0-505cdfabd100",
+              "id": "6418c89c-e3fc-4606-856d-1bdb281a31d9",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -6290,7 +6290,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"kind\": \"goal_progress\",\n        \"threshold\": 2616.140283280235,\n        \"categoryId\": \"string\",\n        \"enabled\": true,\n        \"cadenceDays\": 6880.5617878999155,\n        \"armed\": false,\n        \"lastFiredAt\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 4042.0317035727217,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"kind\": \"category_over\",\n        \"threshold\": 9612.259043691362,\n        \"categoryId\": \"string\",\n        \"enabled\": false,\n        \"cadenceDays\": 6976.613483509482,\n        \"armed\": true,\n        \"lastFiredAt\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 807.2230022136683,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"kind\": \"balance_under\",\n        \"threshold\": 4930.033564017275,\n        \"categoryId\": \"string\",\n        \"enabled\": false,\n        \"cadenceDays\": 3343.107993252181,\n        \"armed\": true,\n        \"lastFiredAt\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 9252.014614764701,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\"\n      },\n      {\n        \"_id\": \"string\",\n        \"userId\": \"string\",\n        \"kind\": \"balance_under\",\n        \"threshold\": 2160.3255231262788,\n        \"categoryId\": \"string\",\n        \"enabled\": false,\n        \"cadenceDays\": 1941.279274299651,\n        \"armed\": false,\n        \"lastFiredAt\": \"string\",\n        \"deletedAt\": \"string\",\n        \"syncVersion\": 3925.4672550577884,\n        \"createdAt\": \"string\",\n        \"updatedAt\": \"string\"\n      }\n    ],\n    \"nextCursor\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -6301,7 +6301,7 @@
           }
         },
         {
-          "id": "944d814c-f36c-4769-8565-e907891ea900",
+          "id": "d7f4da51-c1cd-4c10-af82-29293897280c",
           "name": "Money Rules Controller find One",
           "request": {
             "name": "Money Rules Controller find One",
@@ -6344,7 +6344,7 @@
           },
           "response": [
             {
-              "id": "5ce71bfb-c25a-4012-9be1-8107e4eaaecd",
+              "id": "d034d43e-2ad9-42c7-bf09-5d029cc386bb",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -6390,7 +6390,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"kind\": \"weekly_summary\",\n    \"threshold\": 189.28084182938233,\n    \"categoryId\": \"string\",\n    \"enabled\": false,\n    \"cadenceDays\": 208.96521723695272,\n    \"armed\": true,\n    \"lastFiredAt\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 9928.539241936765,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"kind\": \"balance_under\",\n    \"threshold\": 6671.016508032312,\n    \"categoryId\": \"string\",\n    \"enabled\": false,\n    \"cadenceDays\": 6324.324411986971,\n    \"armed\": false,\n    \"lastFiredAt\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 8382.522883421972,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -6401,7 +6401,7 @@
           }
         },
         {
-          "id": "dfd296e4-7cb7-4040-81d1-7b3f936c073d",
+          "id": "f4e38cd6-2b7f-42e9-a3bc-7acba881473e",
           "name": "Money Rules Controller update",
           "request": {
             "name": "Money Rules Controller update",
@@ -6457,7 +6457,7 @@
           },
           "response": [
             {
-              "id": "93c1a9e0-e268-401a-90d7-34873daa6091",
+              "id": "d0e72e9c-cefb-47a8-922d-5ed1cb4a4d4b",
               "originalRequest": {
                 "url": {
                   "path": [
@@ -6511,7 +6511,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"kind\": \"weekly_summary\",\n    \"threshold\": 189.28084182938233,\n    \"categoryId\": \"string\",\n    \"enabled\": false,\n    \"cadenceDays\": 208.96521723695272,\n    \"armed\": true,\n    \"lastFiredAt\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 9928.539241936765,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"kind\": \"balance_under\",\n    \"threshold\": 6671.016508032312,\n    \"categoryId\": \"string\",\n    \"enabled\": false,\n    \"cadenceDays\": 6324.324411986971,\n    \"armed\": false,\n    \"lastFiredAt\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 8382.522883421972,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -6522,7 +6522,7 @@
           }
         },
         {
-          "id": "202c7c8f-7479-492e-9584-fc9e11f2653e",
+          "id": "25754402-093b-40e1-9261-66efc0cbaa41",
           "name": "Money Rules Controller remove",
           "request": {
             "name": "Money Rules Controller remove",
@@ -6565,7 +6565,7 @@
           },
           "response": [
             {
-              "id": "a6f31644-a806-4eaf-a2e4-e9cd90d178d9",
+              "id": "e3287d13-b052-403b-9879-85109acdc883",
               "name": "The archived (soft-deleted) rule",
               "originalRequest": {
                 "url": {
@@ -6612,7 +6612,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"kind\": \"weekly_summary\",\n    \"threshold\": 189.28084182938233,\n    \"categoryId\": \"string\",\n    \"enabled\": false,\n    \"cadenceDays\": 208.96521723695272,\n    \"armed\": true,\n    \"lastFiredAt\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 9928.539241936765,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\"\n  }\n}",
+              "body": "{\n  \"data\": {\n    \"_id\": \"string\",\n    \"userId\": \"string\",\n    \"kind\": \"balance_under\",\n    \"threshold\": 6671.016508032312,\n    \"categoryId\": \"string\",\n    \"enabled\": false,\n    \"cadenceDays\": 6324.324411986971,\n    \"armed\": false,\n    \"lastFiredAt\": \"string\",\n    \"deletedAt\": \"string\",\n    \"syncVersion\": 8382.522883421972,\n    \"createdAt\": \"string\",\n    \"updatedAt\": \"string\"\n  }\n}",
               "cookie": [],
               "_postman_previewlanguage": "json"
             }
@@ -6635,7 +6635,7 @@
     }
   ],
   "info": {
-    "_postman_id": "056bc984-817e-460a-886e-fc53dcf2374f",
+    "_postman_id": "b6f3127b-5af8-4d21-b232-30b4b6a4467b",
     "name": "Pocketly API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": {

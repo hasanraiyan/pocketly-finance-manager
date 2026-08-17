@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { analysisQuerySchema } from '../../analysis/dto/analysis-query.dto';
-import { paginationQuerySchema } from '../../common/pagination/pagination-query.dto';
 import { McpToolContext, requireScope } from '../mcp-context';
 import { errorResult, textResult } from '../mcp-result';
 
@@ -91,21 +90,16 @@ export function registerAnalysisTools(
 
       const { analysis, accounts, safeToSpend, forecast } = ctx.services;
       const query = analysisQuerySchema.parse({});
-      const [overview, accountsPage, spendable, projection] = await Promise.all(
-        [
-          analysis.getOverview(ctx.user, query),
-          // Personal accounts realistically number in the single/low double
-          // digits; the schema's max (100) comfortably covers real usage
-          // without needing to paginate for a one-shot overview.
-          accounts.findAll(
-            ctx.user._id,
-            paginationQuerySchema.parse({ limit: 100 }),
-          ),
-          safeToSpend.safeToSpend(ctx.user),
-          forecast.forecast(ctx.user, 'month'),
-        ],
-      );
-      const totalBalance = accountsPage.items.reduce(
+      const [overview, allAccounts, spendable, projection] = await Promise.all([
+        analysis.getOverview(ctx.user, query),
+        // findAllForContext, not findAll: the latter is the paginated REST
+        // list (capped at 100), which would under-report the total for
+        // anyone with more accounts than that.
+        accounts.findAllForContext(ctx.user._id),
+        safeToSpend.safeToSpend(ctx.user),
+        forecast.forecast(ctx.user, 'month'),
+      ]);
+      const totalBalance = allAccounts.reduce(
         (sum, account) => sum + account.balance,
         0,
       );
@@ -113,7 +107,7 @@ export function registerAnalysisTools(
       return textResult({
         currency: ctx.user.currency,
         totalBalance,
-        accountCount: accountsPage.items.length,
+        accountCount: allAccounts.length,
         period: overview.period,
         income: overview.income,
         expense: overview.expense,

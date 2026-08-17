@@ -183,6 +183,8 @@ export function calculateHealthScore({
       on_track: 100,
       at_risk: 50,
       stalled: 25,
+      // Worse than merely at_risk -- the deadline itself has already passed.
+      overdue: 0,
     };
     const onTrack = goals.filter(
       (g) => g.status === 'on_track' || g.status === 'complete',

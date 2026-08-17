@@ -276,6 +276,32 @@ describe('forecastShortfallInsight', () => {
 });
 
 describe('goalDelayInsight', () => {
+  it('outranks a merely at-risk goal when the deadline has already passed', () => {
+    const insight = goalDelayInsight(
+      {
+        name: 'College fees',
+        status: 'overdue',
+        monthlyShortfall: 300_000,
+        requiredMonthly: 500_000,
+      },
+      format,
+    );
+
+    expect(insight?.title).toBe("College fees's date has already passed");
+    expect(insight?.detail).toBe('₹5000.00 would close it out today.');
+
+    const atRisk = goalDelayInsight(
+      {
+        name: 'Trip',
+        status: 'at_risk',
+        monthlyShortfall: 300_000,
+        requiredMonthly: 500_000,
+      },
+      format,
+    );
+    expect(insight!.weight).toBeGreaterThan(atRisk!.weight);
+  });
+
   it('says what the deadline actually needs', () => {
     const insight = goalDelayInsight(
       {

@@ -9,7 +9,6 @@ import { AccountsService } from '../accounts/accounts.service';
 import { projectGoal } from '../common/finance/goal-projection';
 import { decodeIdCursor, encodeIdCursor } from '../common/pagination/id-cursor';
 import { PaginationQueryDto } from '../common/pagination/pagination-query.dto';
-import { paginationQuerySchema } from '../common/pagination/pagination-query.dto';
 import { UserDocument } from '../users/schemas/user.schema';
 import {
   ContributeGoalDto,
@@ -152,17 +151,17 @@ export class GoalsService {
   }
 
   /**
-   * One pass over the account list rather than a lookup per goal: several
-   * goals can point at the same account, and balances are aggregations.
+   * One pass over every account rather than a lookup per goal: several goals
+   * can point at the same account, and balances are aggregations.
+   *
+   * `findAllForContext`, not `findAll` -- the latter is the paginated REST
+   * list (capped at 100). A user's 101st account silently missing from this
+   * map would make that account's linked goal report progress as if the
+   * account didn't exist.
    */
   private async balancesByAccount(user: UserDocument) {
-    const page = await this.accounts.findAll(
-      user._id,
-      paginationQuerySchema.parse({ limit: 100 }),
-    );
-    return new Map(
-      page.items.map((account) => [account._id.toString(), account.balance]),
-    );
+    const accounts = await this.accounts.findAllForContext(user._id);
+    return new Map(accounts.map((account) => [account.id, account.balance]));
   }
 
   /**

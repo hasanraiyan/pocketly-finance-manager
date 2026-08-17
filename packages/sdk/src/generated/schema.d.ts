@@ -1157,7 +1157,7 @@ export interface components {
                         id: string;
                         name: string;
                         /** @enum {string} */
-                        status: "complete" | "on_track" | "at_risk" | "stalled";
+                        status: "complete" | "on_track" | "at_risk" | "overdue" | "stalled";
                         projectedCompletion: string | null;
                         monthsRemaining: number | null;
                     }[];
@@ -1171,7 +1171,7 @@ export interface components {
                         id: string;
                         name: string;
                         /** @enum {string} */
-                        status: "complete" | "on_track" | "at_risk" | "stalled";
+                        status: "complete" | "on_track" | "at_risk" | "overdue" | "stalled";
                         projectedCompletion: string | null;
                         monthsRemaining: number | null;
                     }[];
@@ -1225,7 +1225,7 @@ export interface components {
                 monthlyShortfall: number;
                 onTrack: boolean;
                 /** @enum {string} */
-                status: "complete" | "on_track" | "at_risk" | "stalled";
+                status: "complete" | "on_track" | "at_risk" | "overdue" | "stalled";
             };
         };
         GoalListDto: {
@@ -1254,7 +1254,7 @@ export interface components {
                     monthlyShortfall: number;
                     onTrack: boolean;
                     /** @enum {string} */
-                    status: "complete" | "on_track" | "at_risk" | "stalled";
+                    status: "complete" | "on_track" | "at_risk" | "overdue" | "stalled";
                 }[];
                 nextCursor: string | null;
             };

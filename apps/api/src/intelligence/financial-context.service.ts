@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { AccountsService } from '../accounts/accounts.service';
 import { Budget, BudgetDocument } from '../budgets/schemas/budget.schema';
 import {
@@ -12,7 +12,6 @@ import {
   type DateRange,
 } from '../common/finance/get-period-window';
 import type { ProjectableRule } from '../common/finance/project-recurring';
-import { paginationQuerySchema } from '../common/pagination/pagination-query.dto';
 import { GoalsService } from '../goals/goals.service';
 import {
   Recurrence,
@@ -159,15 +158,16 @@ export class FinancialContextService {
    * computed by the one implementation the rest of the product uses -- a
    * second balance calculation that drifts from `calculateBalance` is exactly
    * the failure this module exists to prevent.
+   *
+   * `findAllForContext`, not `findAll`: the latter is the paginated REST list
+   * (capped at 100), and a total that silently dropped a user's 101st account
+   * would be wrong in every figure downstream -- forecast, safe-to-spend,
+   * health score, all of it.
    */
   private async loadAccounts(user: UserDocument): Promise<ContextAccount[]> {
-    const page = await this.accounts.findAll(
-      user._id,
-      paginationQuerySchema.parse({ limit: 100 }),
-    );
-
-    return page.items.map((account) => ({
-      id: account._id.toString(),
+    const accounts = await this.accounts.findAllForContext(user._id);
+    return accounts.map((account) => ({
+      id: account.id,
       name: account.name,
       balance: account.balance,
     }));
@@ -193,6 +193,12 @@ export class FinancialContextService {
     }));
   }
 
+  /**
+   * Budgets sharing a period share a window, so grouping by period turns N
+   * spend aggregations (one per budget) into at most 3 -- one per period in
+   * use, each grouped by category in a single query. Ten budgets on the same
+   * monthly period cost one aggregation here, not ten.
+   */
   private async loadBudgets(
     user: UserDocument,
     now: Date,
@@ -207,34 +213,59 @@ export class FinancialContextService {
       .exec();
     const nameById = new Map(categories.map((c) => [c._id.toString(), c.name]));
 
-    return Promise.all(
-      budgets.map(async (budget) => {
-        const window = getPeriodWindow(budget.period, user.timezone, now);
-        const [row] = await this.transactionModel.aggregate<{ spent: number }>([
+    const byPeriod = new Map<BudgetDocument['period'], BudgetDocument[]>();
+    for (const budget of budgets) {
+      byPeriod.set(budget.period, [
+        ...(byPeriod.get(budget.period) ?? []),
+        budget,
+      ]);
+    }
+
+    const windowByPeriod = new Map<BudgetDocument['period'], DateRange>();
+    const spentByBudgetId = new Map<string, number>();
+
+    await Promise.all(
+      [...byPeriod.entries()].map(async ([period, periodBudgets]) => {
+        const window = getPeriodWindow(period, user.timezone, now);
+        windowByPeriod.set(period, window);
+
+        const rows = await this.transactionModel.aggregate<{
+          _id: Types.ObjectId;
+          spent: number;
+        }>([
           {
             $match: {
               userId: user._id,
-              categoryId: budget.categoryId,
-              type: 'expense',
               deletedAt: null,
+              type: 'expense',
+              categoryId: { $in: periodBudgets.map((b) => b.categoryId) },
               date: { $gte: window.start, $lte: window.end },
             },
           },
-          { $group: { _id: null, spent: { $sum: '$amount' } } },
+          { $group: { _id: '$categoryId', spent: { $sum: '$amount' } } },
         ]);
+        const spentByCategory = new Map(
+          rows.map((row) => [row._id.toString(), row.spent]),
+        );
 
-        return {
-          id: budget._id.toString(),
-          categoryId: budget.categoryId.toString(),
-          categoryName:
-            nameById.get(budget.categoryId.toString()) ?? 'A category',
-          limit: budget.amount,
-          spent: row?.spent ?? 0,
-          period: budget.period,
-          window,
-        };
+        for (const budget of periodBudgets) {
+          spentByBudgetId.set(
+            budget._id.toString(),
+            spentByCategory.get(budget.categoryId.toString()) ?? 0,
+          );
+        }
       }),
     );
+
+    return budgets.map((budget) => ({
+      id: budget._id.toString(),
+      categoryId: budget.categoryId.toString(),
+      categoryName: nameById.get(budget.categoryId.toString()) ?? 'A category',
+      limit: budget.amount,
+      spent: spentByBudgetId.get(budget._id.toString()) ?? 0,
+      period: budget.period,
+      window: windowByPeriod.get(budget.period)!,
+    }));
   }
 
   private async loadPeriodTotals(user: UserDocument, month: DateRange) {

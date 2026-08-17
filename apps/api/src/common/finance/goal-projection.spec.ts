@@ -93,17 +93,31 @@ describe('projectGoal', () => {
     expect(projection.status).toBe('at_risk');
   });
 
-  it('treats a deadline already past as demanding the whole remainder now', () => {
+  it('reports overdue explicitly rather than pretending a month is left', () => {
     const projection = projectGoal({
       targetAmount: 1_000_000,
       savedAmount: 200_000,
       monthlyContribution: 100_000,
-      targetDate: new Date('2026-01-15T00:00:00Z'),
+      targetDate: new Date('2026-01-15T00:00:00Z'), // two months before `now`
       now,
     });
 
+    expect(projection.status).toBe('overdue');
     expect(projection.requiredMonthly).toBe(800_000);
-    expect(projection.status).toBe('at_risk');
+    expect(projection.monthlyShortfall).toBe(700_000);
+    expect(projection.onTrack).toBe(false);
+  });
+
+  it('is not overdue on the deadline itself', () => {
+    const projection = projectGoal({
+      targetAmount: 1_000_000,
+      savedAmount: 0,
+      monthlyContribution: 1_000_000,
+      targetDate: now,
+      now,
+    });
+
+    expect(projection.status).not.toBe('overdue');
   });
 
   it('has no required rate and no shortfall without a deadline', () => {

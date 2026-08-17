@@ -1,3 +1,5 @@
+import type { GoalStatus } from './goal-projection';
+
 export const INSIGHT_KINDS = [
   'budget_pace',
   'category_spike',
@@ -259,12 +261,24 @@ export function forecastShortfallInsight(
 export function goalDelayInsight(
   goal: {
     name: string;
-    status: 'complete' | 'on_track' | 'at_risk' | 'stalled';
+    status: GoalStatus;
     monthlyShortfall: number;
     requiredMonthly: number | null;
   },
   format: MoneyFormatter,
 ): Insight | null {
+  if (goal.status === 'overdue') {
+    return {
+      kind: 'goal_delay',
+      // Above at_risk's band -- the deadline itself has already passed,
+      // which is more urgent than merely being behind pace for one.
+      weight: 320,
+      title: `${goal.name}'s date has already passed`,
+      detail: `${format(goal.requiredMonthly ?? 0)} would close it out today.`,
+      action: "Add what's left, or set a new date.",
+    };
+  }
+
   if (goal.status === 'at_risk' && goal.monthlyShortfall >= MATERIAL_AMOUNT) {
     return {
       kind: 'goal_delay',

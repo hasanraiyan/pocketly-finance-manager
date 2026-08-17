@@ -4,6 +4,7 @@ export const GOAL_STATUSES = [
   'complete',
   'on_track',
   'at_risk',
+  'overdue',
   'stalled',
 ] as const;
 
@@ -75,19 +76,34 @@ export function projectGoal({
   const projectedCompletion =
     monthsRemaining === null ? null : addMonths(now, monthsRemaining);
 
-  // A deadline already past demands the whole remainder now, not a rate.
-  const monthsToDeadline = targetDate
-    ? Math.max(1, differenceInCalendarMonths(targetDate, now))
-    : null;
-  const requiredMonthly =
-    monthsToDeadline === null ? null : Math.ceil(remaining / monthsToDeadline);
+  const isOverdue = targetDate != null && targetDate < now;
+
+  // An overdue goal has no month left to spread the remainder across -- the
+  // honest number is the remainder itself, not a rate computed by clamping
+  // the elapsed time to a pretend one month. `status` says so explicitly
+  // rather than reporting 'at_risk', which reads as "behind schedule" and
+  // undersells a deadline that has already passed.
+  const monthsToDeadline =
+    targetDate && !isOverdue
+      ? Math.max(1, differenceInCalendarMonths(targetDate, now))
+      : null;
+  const requiredMonthly = isOverdue
+    ? remaining
+    : monthsToDeadline === null
+      ? null
+      : Math.ceil(remaining / monthsToDeadline);
 
   const monthlyShortfall =
     requiredMonthly === null ? 0 : Math.max(0, requiredMonthly - rate);
 
-  const onTrack = rate > 0 && monthlyShortfall === 0;
-  const status: GoalStatus =
-    rate === 0 ? 'stalled' : onTrack ? 'on_track' : 'at_risk';
+  const onTrack = !isOverdue && rate > 0 && monthlyShortfall === 0;
+  const status: GoalStatus = isOverdue
+    ? 'overdue'
+    : rate === 0
+      ? 'stalled'
+      : onTrack
+        ? 'on_track'
+        : 'at_risk';
 
   return {
     remaining,

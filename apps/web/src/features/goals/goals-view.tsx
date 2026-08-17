@@ -65,6 +65,7 @@ const STATUS: Record<
   complete: { label: "Done", variant: "default" },
   on_track: { label: "On track", variant: "secondary" },
   at_risk: { label: "Behind", variant: "destructive" },
+  overdue: { label: "Overdue", variant: "destructive" },
   stalled: { label: "Not moving", variant: "outline" },
 };
 

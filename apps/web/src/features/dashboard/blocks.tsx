@@ -131,6 +131,14 @@ export async function BalanceCard() {
   );
 }
 
+/** True for the one deduction reserveIsDerived actually explains. */
+function isDerivedReserve(
+  deduction: { key: string },
+  reserveIsDerived: boolean,
+): boolean {
+  return reserveIsDerived && deduction.key === 'minimum_reserve';
+}
+
 /**
  * The number the product now leads with.
  *
@@ -139,6 +147,11 @@ export async function BalanceCard() {
  * inside the balance card rather than beside it because the two are one
  * thought -- and the deductions are itemised because a figure the user
  * can't reconstruct is a figure they won't trust.
+ *
+ * Deliberately not presented as an absolute: it's a number *after* netting
+ * off commitments the user made elsewhere (budgets, goals), which is a
+ * product decision, not a fact about the account -- so the caption says so,
+ * and each deduction is a link back to where that commitment came from.
  */
 export async function SafeToSpendCard() {
   const [safeRes, currency] = await Promise.all([
@@ -153,9 +166,14 @@ export async function SafeToSpendCard() {
     <Card className="overflow-hidden border-none bg-primary text-primary-foreground py-0">
       <CardContent className="flex flex-col gap-6 p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="text-sm tracking-wide text-primary-foreground/70 uppercase">
-            Safe to spend
-          </span>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm tracking-wide text-primary-foreground/70 uppercase">
+              Safe to spend
+            </span>
+            <span className="text-xs text-primary-foreground/60">
+              Your balance, after bills, budgets and goals still to come.
+            </span>
+          </div>
           <ScenarioDialog currency={currency} />
         </div>
 
@@ -198,6 +216,16 @@ export async function SafeToSpendCard() {
             </div>
           ))}
         </dl>
+
+        {/* Only the reserve line is a Pocketly guess rather than a figure
+            the user committed to elsewhere -- says so, so a lower-than-
+            expected number doesn't read as a mistake. */}
+        {safe.deductions.some((d) => isDerivedReserve(d, safe.reserveIsDerived)) && (
+          <p className="-mt-3 text-xs text-primary-foreground/60">
+            The reserve is estimated from your recent spending, not a number
+            you&apos;ve set.
+          </p>
+        )}
       </CardContent>
     </Card>
   );
@@ -227,7 +255,8 @@ export async function ForecastCard() {
       <CardHeader>
         <CardTitle>Where this month ends</CardTitle>
         <CardDescription>
-          Your repeats on their own dates, plus what you usually spend.
+          Your repeats on their own dates, plus your average daily spend held
+          flat for the rest of the month.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -278,8 +307,12 @@ export async function ForecastCard() {
  * The score, and the six statements behind it.
  *
  * Every component carries its own reason, so the number is never the whole
- * message -- the point of a health score people trust is that they can see
- * what moved it.
+ * message -- the point of a score people trust is that they can see what
+ * moved it. Titled and captioned as Pocketly's own read rather than "your
+ * financial health": the thresholds behind it (a 30% savings rate as the
+ * ceiling, six months of expenses as a full reserve) are product choices,
+ * not a standardised metric like a credit score, and presenting it as one
+ * would claim more authority than six weighted heuristics can back up.
  */
 export async function HealthCard() {
   const healthRes = await getHealth();
@@ -292,7 +325,7 @@ export async function HealthCard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Financial health</CardTitle>
+        <CardTitle>Pocketly health score</CardTitle>
         <CardDescription>{HEALTH_BAND_COPY[health.band]}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -319,6 +352,11 @@ export async function HealthCard() {
             </div>
           ))}
         </div>
+
+        <p className="text-xs text-muted-foreground">
+          Pocketly&apos;s own read on six factors above -- not a credit score
+          or a standardised measure.
+        </p>
       </CardContent>
     </Card>
   );
