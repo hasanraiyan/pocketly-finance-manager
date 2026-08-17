@@ -104,7 +104,7 @@ export function TransactionModal({
       setNewCatName("");
       setError(null);
     }
-  }, [visible, transaction, accounts]);
+  }, [visible, transaction]);
 
   async function handleCreateNewCategory() {
     if (!newCatName.trim()) return;

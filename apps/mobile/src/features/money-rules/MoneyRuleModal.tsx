@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import {
   KeyboardAvoidingView,
@@ -69,7 +69,10 @@ export function MoneyRuleModal({ visible, onClose, rule }: MoneyRuleModalProps) 
   const createRule = useCreateMoneyRule();
   const updateRule = useUpdateMoneyRule();
 
-  const expenseCategories = categories.filter((c) => c.type === "expense");
+  const expenseCategories = useMemo(
+    () => categories.filter((c) => c.type === "expense"),
+    [categories],
+  );
 
   const [kind, setKind] = useState<MoneyRule["kind"]>("balance_under");
   const [threshold, setThreshold] = useState("");
@@ -96,7 +99,7 @@ export function MoneyRuleModal({ visible, onClose, rule }: MoneyRuleModalProps) 
       }
       setError(null);
     }
-  }, [visible, rule, expenseCategories]);
+  }, [visible, rule]);
 
   async function handleSubmit() {
     if (shape.needsThreshold) {

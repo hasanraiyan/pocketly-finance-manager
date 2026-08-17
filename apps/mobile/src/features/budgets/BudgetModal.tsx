@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import {
   KeyboardAvoidingView,
@@ -33,7 +33,10 @@ export function BudgetModal({ visible, onClose, budget }: BudgetModalProps) {
   const createBudget = useCreateBudget();
   const updateBudget = useUpdateBudget();
 
-  const expenseCategories = categories.filter((c) => c.type === "expense");
+  const expenseCategories = useMemo(
+    () => categories.filter((c) => c.type === "expense"),
+    [categories],
+  );
 
   const [categoryId, setCategoryId] = useState("");
   const [amount, setAmount] = useState("");
@@ -53,7 +56,7 @@ export function BudgetModal({ visible, onClose, budget }: BudgetModalProps) {
       }
       setError(null);
     }
-  }, [visible, budget, expenseCategories]);
+  }, [visible, budget]);
 
   async function handleSubmit() {
     const numAmount = parseFloat(amount);
