@@ -41,6 +41,30 @@ export class WebhooksController {
     });
 
     switch (event.type) {
+      case 'user.created': {
+        const email =
+          event.data.email_addresses?.find(
+            (address) => address.id === event.data.primary_email_address_id,
+          )?.email_address ?? event.data.email_addresses?.[0]?.email_address;
+        const name =
+          [event.data.first_name, event.data.last_name]
+            .filter(Boolean)
+            .join(' ') ||
+          event.data.username ||
+          email?.split('@')[0] ||
+          '';
+
+        if (email) {
+          await this.usersService.findOrCreateByClerkId(
+            event.data.id,
+            email,
+            name,
+            event.data.image_url,
+          );
+        }
+        break;
+      }
+
       case 'user.updated': {
         const email =
           event.data.email_addresses?.find(

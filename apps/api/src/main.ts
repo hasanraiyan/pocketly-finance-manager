@@ -1,3 +1,4 @@
+import 'dotenv/config';
 // Must be imported before anything else so Sentry can instrument all modules.
 import './instrument';
 
