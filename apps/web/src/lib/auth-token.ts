@@ -13,10 +13,14 @@ export function getStoredAuthToken(): string | undefined {
 
 export function setStoredAuthToken(token: string) {
   if (typeof document === "undefined") return;
-  document.cookie = `${AUTH_TOKEN_COOKIE_NAME}=${encodeURIComponent(token)}; path=/; max-age=${MAX_AGE_SECONDS}; samesite=lax`;
+  const isSecure =
+    typeof location !== "undefined" && location.protocol === "https:";
+  document.cookie = `${AUTH_TOKEN_COOKIE_NAME}=${encodeURIComponent(token)}; path=/; max-age=${MAX_AGE_SECONDS}; samesite=lax${isSecure ? "; secure" : ""}`;
 }
 
 export function clearStoredAuthToken() {
   if (typeof document === "undefined") return;
-  document.cookie = `${AUTH_TOKEN_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
+  const isSecure =
+    typeof location !== "undefined" && location.protocol === "https:";
+  document.cookie = `${AUTH_TOKEN_COOKIE_NAME}=; path=/; max-age=0; samesite=lax${isSecure ? "; secure" : ""}`;
 }

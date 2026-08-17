@@ -12,10 +12,20 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(requestIdMiddleware);
 
-  const corsOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:3000')
+  const defaultOrigins = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://pocketly.hasanraiyan.me',
+  ];
+  const configuredOrigins = (process.env.CORS_ORIGINS ?? '')
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
+
+  const corsOrigins = Array.from(
+    new Set([...defaultOrigins, ...configuredOrigins]),
+  );
+
   app.enableCors({
     origin: corsOrigins,
     credentials: true,
