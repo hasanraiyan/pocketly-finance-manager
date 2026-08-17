@@ -19,7 +19,12 @@ export class DeviceToken {
   @Prop({ required: true, unique: true, index: true })
   token!: string;
 
-  @Prop({ required: true, type: String, enum: DEVICE_PLATFORMS, default: 'web' })
+  @Prop({
+    required: true,
+    type: String,
+    enum: DEVICE_PLATFORMS,
+    default: 'web',
+  })
   platform!: DevicePlatform;
 
   @Prop({ type: String })

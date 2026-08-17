@@ -5,15 +5,16 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { fromNodeHeaders } from 'better-auth/node';
 import { Request } from 'express';
-import { getAuth } from '../../auth/auth.config';
+import { extractSessionToken } from './session-cookie';
+import { AuthService } from '../../auth/auth.service';
 import { UsersService } from '../../users/users.service';
 import { IS_PUBLIC_KEY } from './public.decorator';
 
 @Injectable()
 export class AppAuthGuard implements CanActivate {
   constructor(
+    private readonly authService: AuthService,
     private readonly usersService: UsersService,
     private readonly reflector: Reflector,
   ) {}
@@ -26,19 +27,23 @@ export class AppAuthGuard implements CanActivate {
     if (isPublic) return true;
 
     const request = context.switchToHttp().getRequest<Request>();
-    const result = await getAuth().api.getSession({
-      headers: fromNodeHeaders(request.headers),
-    });
+    const token = extractSessionToken(request);
 
-    if (!result?.user) {
+    if (!token) {
       throw new UnauthorizedException();
     }
 
+    const sessionData = await this.authService.validateSession(token);
+    if (!sessionData?.authUser) {
+      throw new UnauthorizedException();
+    }
+
+    const authUser = sessionData.authUser;
     (request as Request & { user: unknown }).user =
       await this.usersService.findOrCreateByAuthUserId(
-        result.user.id,
-        result.user.email,
-        result.user.name,
+        authUser._id.toString(),
+        authUser.email,
+        authUser.email.split('@')[0],
       );
 
     return true;

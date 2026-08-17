@@ -2,10 +2,24 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { App, cert, getApps, initializeApp } from 'firebase-admin/app';
+import {
+  App,
+  ServiceAccount,
+  cert,
+  getApps,
+  initializeApp,
+} from 'firebase-admin/app';
 import { getMessaging, MulticastMessage } from 'firebase-admin/messaging';
-import { DeviceToken, DeviceTokenDocument } from './schemas/device-token.schema';
-import { Notification, NotificationDocument, NotificationType } from './schemas/notification.schema';
+import {
+  DeviceToken,
+  DeviceTokenDocument,
+} from './schemas/device-token.schema';
+import {
+  Notification,
+  NotificationDocument,
+  NotificationType,
+} from './schemas/notification.schema';
+import { errorMessage } from '../common/errors/error-message';
 
 export type SendPushOptions = {
   title: string;
@@ -38,13 +52,21 @@ export class FcmService {
         return;
       }
 
-      const serviceAccountJson = this.configService.get<string>('FIREBASE_SERVICE_ACCOUNT_JSON');
+      const serviceAccountJson = this.configService.get<string>(
+        'FIREBASE_SERVICE_ACCOUNT_JSON',
+      );
       const projectId = this.configService.get<string>('FIREBASE_PROJECT_ID');
-      const clientEmail = this.configService.get<string>('FIREBASE_CLIENT_EMAIL');
-      const privateKey = this.configService.get<string>('FIREBASE_PRIVATE_KEY')?.replace(/\\n/g, '\n');
+      const clientEmail = this.configService.get<string>(
+        'FIREBASE_CLIENT_EMAIL',
+      );
+      const privateKey = this.configService
+        .get<string>('FIREBASE_PRIVATE_KEY')
+        ?.replace(/\\n/g, '\n');
 
       if (serviceAccountJson) {
-        const parsed = JSON.parse(serviceAccountJson);
+        // JSON.parse returns `any`; `cert` wants a ServiceAccount, so state
+        // the shape once here rather than letting `any` spread outwards.
+        const parsed = JSON.parse(serviceAccountJson) as ServiceAccount;
         this.firebaseApp = initializeApp({
           credential: cert(parsed),
         });
@@ -63,13 +85,19 @@ export class FcmService {
           'Firebase credentials not configured (FIREBASE_PROJECT_ID/FIREBASE_CLIENT_EMAIL/FIREBASE_PRIVATE_KEY). Push notifications will operate in mock mode.',
         );
       }
-    } catch (err: any) {
-      this.logger.error(`Failed to initialize Firebase Admin SDK: ${err?.message}`);
+    } catch (err) {
+      this.logger.error(
+        `Failed to initialize Firebase Admin SDK: ${errorMessage(err)}`,
+      );
     }
   }
 
-  async sendToUser(userId: Types.ObjectId | string, options: SendPushOptions): Promise<NotificationDocument> {
-    const userObjId = typeof userId === 'string' ? new Types.ObjectId(userId) : userId;
+  async sendToUser(
+    userId: Types.ObjectId | string,
+    options: SendPushOptions,
+  ): Promise<NotificationDocument> {
+    const userObjId =
+      typeof userId === 'string' ? new Types.ObjectId(userId) : userId;
 
     // 1. Create In-App Notification Record in MongoDB
     const notification = await this.notificationModel.create({
@@ -83,9 +111,13 @@ export class FcmService {
     });
 
     // 2. Fetch User's Registered Device Tokens
-    const devices = await this.deviceTokenModel.find({ userId: userObjId }).exec();
+    const devices = await this.deviceTokenModel
+      .find({ userId: userObjId })
+      .exec();
     if (!devices.length) {
-      this.logger.debug(`No registered devices found for user ${userObjId.toString()}`);
+      this.logger.debug(
+        `No registered devices found for user ${userObjId.toString()}`,
+      );
       return notification;
     }
 
@@ -130,7 +162,9 @@ export class FcmService {
     };
 
     try {
-      const response = await getMessaging(this.firebaseApp).sendEachForMulticast(message);
+      const response = await getMessaging(
+        this.firebaseApp,
+      ).sendEachForMulticast(message);
       this.logger.log(
         `Push sent for user ${userObjId.toString()}: ${response.successCount} succeeded, ${response.failureCount} failed`,
       );
@@ -151,12 +185,18 @@ export class FcmService {
         });
 
         if (tokensToRemove.length > 0) {
-          await this.deviceTokenModel.deleteMany({ token: { $in: tokensToRemove } }).exec();
-          this.logger.log(`Pruned ${tokensToRemove.length} stale FCM device tokens`);
+          await this.deviceTokenModel
+            .deleteMany({ token: { $in: tokensToRemove } })
+            .exec();
+          this.logger.log(
+            `Pruned ${tokensToRemove.length} stale FCM device tokens`,
+          );
         }
       }
-    } catch (err: any) {
-      this.logger.error(`Error sending multicast push message: ${err?.message}`);
+    } catch (err) {
+      this.logger.error(
+        `Error sending multicast push message: ${errorMessage(err)}`,
+      );
     }
 
     return notification;

@@ -606,6 +606,16 @@ export interface components {
             platform: "web" | "android" | "ios";
             userAgent?: string;
         };
+        RegisterDeviceResponseDto: {
+            data: {
+                registered: boolean;
+            };
+        };
+        UnregisterDeviceResponseDto: {
+            data: {
+                unregistered: boolean;
+            };
+        };
         NotificationListDto: {
             data: {
                 items: {
@@ -636,6 +646,17 @@ export interface components {
                 actionUrl?: string;
                 createdAt: string;
                 updatedAt: string;
+            };
+        };
+        MarkAllReadResponseDto: {
+            data: {
+                marked: number;
+            };
+        };
+        SendTestNotificationResponseDto: {
+            data: {
+                sent: boolean;
+                messageId?: string;
             };
         };
         CreateBudgetDto: {
@@ -1267,12 +1288,13 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Register or refresh an FCM device token */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["RegisterDeviceResponseDto"];
+                };
             };
         };
     };
@@ -1287,12 +1309,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Unregister an FCM device token */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["UnregisterDeviceResponseDto"];
+                };
             };
         };
     };
@@ -1349,12 +1372,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Mark all notifications as read */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MarkAllReadResponseDto"];
+                };
             };
         };
     };
@@ -1367,12 +1391,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Send a test push notification to current user */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["SendTestNotificationResponseDto"];
+                };
             };
         };
     };

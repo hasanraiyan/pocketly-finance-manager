@@ -21,8 +21,33 @@ export const notificationListResponseSchema = z.object({
   total: z.number(),
 });
 
-export class NotificationDto extends createZodDto(envelopeSchema(notificationItemSchema)) {}
-export class NotificationListDto extends createZodDto(envelopeSchema(notificationListResponseSchema)) {}
+export class NotificationDto extends createZodDto(
+  envelopeSchema(notificationItemSchema),
+) {}
+export class NotificationListDto extends createZodDto(
+  envelopeSchema(notificationListResponseSchema),
+) {}
 export class UnreadCountDto extends createZodDto(
   envelopeSchema(z.object({ unreadCount: z.number() })),
+) {}
+
+export class RegisterDeviceResponseDto extends createZodDto(
+  envelopeSchema(z.object({ registered: z.boolean() })),
+) {}
+
+export class UnregisterDeviceResponseDto extends createZodDto(
+  envelopeSchema(z.object({ unregistered: z.boolean() })),
+) {}
+
+export class MarkAllReadResponseDto extends createZodDto(
+  envelopeSchema(z.object({ marked: z.number() })),
+) {}
+
+export class SendTestNotificationResponseDto extends createZodDto(
+  envelopeSchema(
+    z.object({
+      sent: z.boolean(),
+      messageId: z.string().optional(),
+    }),
+  ),
 ) {}

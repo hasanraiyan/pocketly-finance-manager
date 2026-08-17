@@ -4,13 +4,20 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Queue } from 'bullmq';
 import { Model, Types } from 'mongoose';
 import { Budget, BudgetDocument } from '../budgets/schemas/budget.schema';
-import { Category, CategoryDocument } from '../categories/schemas/category.schema';
-import { Transaction, TransactionDocument } from '../transactions/schemas/transaction.schema';
+import {
+  Category,
+  CategoryDocument,
+} from '../categories/schemas/category.schema';
+import {
+  Transaction,
+  TransactionDocument,
+} from '../transactions/schemas/transaction.schema';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { formatMoney } from '../common/finance/format-money';
 import { getPeriodWindow } from '../common/finance/get-period-window';
 import { NOTIFICATIONS_QUEUE } from './notifications.processor';
 import { SendPushOptions } from './fcm.service';
+import { errorMessage } from '../common/errors/error-message';
 
 @Injectable()
 export class NotificationDispatcherService implements OnModuleInit {
@@ -36,9 +43,13 @@ export class NotificationDispatcherService implements OnModuleInit {
         'daily-inactivity-reminder',
         { pattern: '0 20 * * *' },
       );
-      this.logger.log('Scheduled repeatable daily inactivity reminder at 20:00');
-    } catch (err: any) {
-      this.logger.warn(`Could not schedule daily reminder cron: ${err?.message}`);
+      this.logger.log(
+        'Scheduled repeatable daily inactivity reminder at 20:00',
+      );
+    } catch (err) {
+      this.logger.warn(
+        `Could not schedule daily reminder cron: ${errorMessage(err)}`,
+      );
     }
   }
 
@@ -99,7 +110,9 @@ export class NotificationDispatcherService implements OnModuleInit {
       const window = getPeriodWindow(budget.period, timezone);
 
       // Sum all expenses for this category in the current period window
-      const result = await this.transactionModel.aggregate([
+      const result = await this.transactionModel.aggregate<{
+        totalSpent: number;
+      }>([
         {
           $match: {
             userId,
@@ -147,9 +160,9 @@ export class NotificationDispatcherService implements OnModuleInit {
           },
         });
       }
-    } catch (err: any) {
+    } catch (err) {
       this.logger.error(
-        `Error evaluating budget threshold for user ${userId.toString()}: ${err?.message}`,
+        `Error evaluating budget threshold for user ${userId.toString()}: ${errorMessage(err)}`,
       );
     }
   }

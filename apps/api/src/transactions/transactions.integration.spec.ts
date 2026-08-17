@@ -11,6 +11,7 @@ import {
   Category,
   CategorySchema,
 } from '../categories/schemas/category.schema';
+import { NotificationDispatcherService } from '../notifications/notification-dispatcher.service';
 import { TransactionsService } from './transactions.service';
 import { Transaction, TransactionSchema } from './schemas/transaction.schema';
 
@@ -40,6 +41,15 @@ describe('Finance domain integration (transactions -> balances/budgets, ownershi
         CategoriesService,
         TransactionsService,
         BudgetsService,
+        {
+          provide: NotificationDispatcherService,
+          useValue: {
+            dispatch: jest.fn(),
+            checkBudgetThresholdAfterTransaction: jest
+              .fn()
+              .mockResolvedValue(undefined),
+          },
+        },
       ],
     }).compile();
 

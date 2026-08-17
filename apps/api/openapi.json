@@ -808,7 +808,14 @@
         },
         "responses": {
           "201": {
-            "description": "Register or refresh an FCM device token"
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterDeviceResponseDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -836,7 +843,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Unregister an FCM device token"
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnregisterDeviceResponseDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -941,7 +955,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Mark all notifications as read"
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarkAllReadResponseDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -960,7 +981,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Send a test push notification to current user"
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendTestNotificationResponseDto"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -2479,6 +2507,46 @@
           "token"
         ]
       },
+      "RegisterDeviceResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "registered": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "registered"
+            ],
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "UnregisterDeviceResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "unregistered": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "unregistered"
+            ],
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
       "NotificationListDto": {
         "type": "object",
         "properties": {
@@ -2606,6 +2674,49 @@
               "read",
               "createdAt",
               "updatedAt"
+            ],
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "MarkAllReadResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "marked": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "marked"
+            ],
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "SendTestNotificationResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "sent": {
+                "type": "boolean"
+              },
+              "messageId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "sent"
             ],
             "x-nestjs_zod-self-required": true
           }

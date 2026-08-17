@@ -3,17 +3,7 @@ import { Model } from 'mongoose';
 import { McpAuthGuard } from './mcp-auth.guard';
 import { McpRevocation } from './schemas/mcp-revocation.schema';
 import { UsersService } from '../users/users.service';
-import { getMcpResourceClientActions } from '../auth/auth.config';
-
-// Returns the same verifyAccessToken mock on every call, mirroring the real
-// getMcpResourceClientActions()'s memoized-singleton behaviour.
-jest.mock('../auth/auth.config', () => {
-  const verifyAccessToken = jest.fn();
-  return {
-    getMcpResourceClientActions: () => ({ verifyAccessToken }),
-    mcpResourceUri: 'http://localhost:4000/mcp',
-  };
-});
+import { JwtService } from '../auth/oauth/jwt.service';
 
 function mockResponse() {
   return { setHeader: jest.fn() };
@@ -32,17 +22,17 @@ function contextWithAuthHeader(header?: string): ExecutionContext {
 
 describe('McpAuthGuard', () => {
   let usersService: { findByAuthUserId: jest.Mock };
+  let jwtService: { verifyAccessToken: jest.Mock };
   let revocationModel: { exists: jest.Mock };
   let guard: McpAuthGuard;
-  const verifyAccessToken = getMcpResourceClientActions()
-    .verifyAccessToken as jest.Mock;
 
   beforeEach(() => {
-    verifyAccessToken.mockReset();
     usersService = { findByAuthUserId: jest.fn() };
+    jwtService = { verifyAccessToken: jest.fn() };
     revocationModel = { exists: jest.fn().mockResolvedValue(null) };
     guard = new McpAuthGuard(
       usersService as unknown as UsersService,
+      jwtService as unknown as JwtService,
       revocationModel as unknown as Model<McpRevocation>,
     );
   });
@@ -51,18 +41,18 @@ describe('McpAuthGuard', () => {
     await expect(
       guard.canActivate(contextWithAuthHeader(undefined)),
     ).rejects.toThrow(UnauthorizedException);
-    expect(verifyAccessToken).not.toHaveBeenCalled();
+    expect(jwtService.verifyAccessToken).not.toHaveBeenCalled();
   });
 
   it('rejects requests when the access token fails verification', async () => {
-    verifyAccessToken.mockRejectedValue(new Error('invalid token'));
+    jwtService.verifyAccessToken.mockRejectedValue(new Error('invalid token'));
     await expect(
       guard.canActivate(contextWithAuthHeader('Bearer bad-token')),
     ).rejects.toThrow(UnauthorizedException);
   });
 
   it('rejects a token issued before the connection was revoked', async () => {
-    verifyAccessToken.mockResolvedValue({
+    jwtService.verifyAccessToken.mockResolvedValue({
       sub: 'auth-user-1',
       client_id: 'client-1',
       iat: 1_000,
@@ -77,13 +67,11 @@ describe('McpAuthGuard', () => {
       clientId: 'client-1',
       createdAt: { $gt: new Date(1_000 * 1000) },
     });
-    // A revoked connection is a hard stop -- never reaches the profile
-    // lookup, since there's nothing left to authenticate against.
     expect(usersService.findByAuthUserId).not.toHaveBeenCalled();
   });
 
   it('allows a token issued after the last revocation for that client', async () => {
-    verifyAccessToken.mockResolvedValue({
+    jwtService.verifyAccessToken.mockResolvedValue({
       sub: 'auth-user-1',
       client_id: 'client-1',
       iat: 1_000,
@@ -98,7 +86,7 @@ describe('McpAuthGuard', () => {
   });
 
   it('rejects a valid token for a user with no Pocketly profile yet', async () => {
-    verifyAccessToken.mockResolvedValue({ sub: 'auth-user-1' });
+    jwtService.verifyAccessToken.mockResolvedValue({ sub: 'auth-user-1' });
     usersService.findByAuthUserId.mockResolvedValue(null);
 
     await expect(
@@ -107,7 +95,7 @@ describe('McpAuthGuard', () => {
   });
 
   it('attaches the resolved user and token on success', async () => {
-    verifyAccessToken.mockResolvedValue({ sub: 'auth-user-1' });
+    jwtService.verifyAccessToken.mockResolvedValue({ sub: 'auth-user-1' });
     const user = { _id: 'user-doc-1', authUserId: 'auth-user-1' };
     usersService.findByAuthUserId.mockResolvedValue(user);
 

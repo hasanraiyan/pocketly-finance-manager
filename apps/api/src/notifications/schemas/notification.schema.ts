@@ -29,7 +29,12 @@ export class Notification {
   @Prop({ required: true })
   body!: string;
 
-  @Prop({ required: true, type: String, enum: NOTIFICATION_TYPES, default: 'SYSTEM' })
+  @Prop({
+    required: true,
+    type: String,
+    enum: NOTIFICATION_TYPES,
+    default: 'SYSTEM',
+  })
   type!: NotificationType;
 
   @Prop({ default: false, index: true })
@@ -40,6 +45,11 @@ export class Notification {
 
   @Prop({ type: Object })
   metadata?: Record<string, any>;
+
+  // Added by `timestamps: true` above. Declared here so reads are typed
+  // rather than cast through `any` at each call site.
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification);

@@ -21,6 +21,7 @@ import {
   TransactionDocument,
   TransactionSchema,
 } from '../transactions/schemas/transaction.schema';
+import { NotificationDispatcherService } from '../notifications/notification-dispatcher.service';
 import { User, UserDocument, UserSchema } from './schemas/user.schema';
 import { UsersService } from './users.service';
 
@@ -55,6 +56,15 @@ describe('UsersService', () => {
         AccountsService,
         CategoriesService,
         TransactionsService,
+        {
+          provide: NotificationDispatcherService,
+          useValue: {
+            dispatch: jest.fn(),
+            checkBudgetThresholdAfterTransaction: jest
+              .fn()
+              .mockResolvedValue(undefined),
+          },
+        },
       ],
     }).compile();
 

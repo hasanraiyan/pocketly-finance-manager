@@ -4,7 +4,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Job } from 'bullmq';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from '../users/schemas/user.schema';
-import { Transaction, TransactionDocument } from '../transactions/schemas/transaction.schema';
+import {
+  Transaction,
+  TransactionDocument,
+} from '../transactions/schemas/transaction.schema';
 import { FcmService, SendPushOptions } from './fcm.service';
 
 export const NOTIFICATIONS_QUEUE = 'notifications';
@@ -56,17 +59,27 @@ export class NotificationsProcessor extends WorkerHost {
     }
   }
 
-  private async handleSingleNotification(data: SingleNotificationJob): Promise<void> {
-    await this.fcmService.sendToUser(new Types.ObjectId(data.userId), data.payload);
+  private async handleSingleNotification(
+    data: SingleNotificationJob,
+  ): Promise<void> {
+    await this.fcmService.sendToUser(
+      new Types.ObjectId(data.userId),
+      data.payload,
+    );
   }
 
-  private async handleBulkNotifications(data: BulkNotificationJob): Promise<void> {
+  private async handleBulkNotifications(
+    data: BulkNotificationJob,
+  ): Promise<void> {
     const CHUNK_SIZE = 50;
     for (let i = 0; i < data.items.length; i += CHUNK_SIZE) {
       const chunk = data.items.slice(i, i + CHUNK_SIZE);
       await Promise.all(
         chunk.map((item) =>
-          this.fcmService.sendToUser(new Types.ObjectId(item.userId), item.payload),
+          this.fcmService.sendToUser(
+            new Types.ObjectId(item.userId),
+            item.payload,
+          ),
         ),
       );
     }

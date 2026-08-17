@@ -8,6 +8,7 @@ import { ZodValidationPipe } from 'nestjs-zod';
 import { AccountsModule } from './accounts/accounts.module';
 import { AnalysisModule } from './analysis/analysis.module';
 import { AppController } from './app.controller';
+import { AuthModule } from './auth/auth.module';
 import { BudgetsModule } from './budgets/budgets.module';
 import { CategoriesModule } from './categories/categories.module';
 import { DatabaseModule } from './common/database/database.module';
@@ -40,6 +41,7 @@ import { UsersModule } from './users/users.module';
       }),
     }),
     DatabaseModule,
+    AuthModule,
     UsersModule,
     AccountsModule,
     CategoriesModule,

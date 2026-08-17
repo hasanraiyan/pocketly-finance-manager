@@ -2,10 +2,19 @@ import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DeviceToken, DeviceTokenSchema } from './schemas/device-token.schema';
-import { Notification, NotificationSchema } from './schemas/notification.schema';
+import {
+  Notification,
+  NotificationSchema,
+} from './schemas/notification.schema';
 import { Budget, BudgetSchema } from '../budgets/schemas/budget.schema';
-import { Category, CategorySchema } from '../categories/schemas/category.schema';
-import { Transaction, TransactionSchema } from '../transactions/schemas/transaction.schema';
+import {
+  Category,
+  CategorySchema,
+} from '../categories/schemas/category.schema';
+import {
+  Transaction,
+  TransactionSchema,
+} from '../transactions/schemas/transaction.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { FcmService } from './fcm.service';
 import { NotificationsService } from './notifications.service';

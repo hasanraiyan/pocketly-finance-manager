@@ -50,27 +50,27 @@ export function registerAccountsTools(
 
       switch (rawArgs.action) {
         case 'list': {
-          const scope = await requireScope(ctx.token, 'pocketly:read');
+          const scope = requireScope(ctx.token, 'pocketly:read');
           if (!scope.ok) return errorResult(scope.message);
           const query = paginationQuerySchema.parse(rawArgs);
           return textResult(await accounts.findAll(ctx.user._id, query));
         }
         case 'get': {
-          const scope = await requireScope(ctx.token, 'pocketly:read');
+          const scope = requireScope(ctx.token, 'pocketly:read');
           if (!scope.ok) return errorResult(scope.message);
           if (!rawArgs.id)
             return errorResult('"id" is required for action "get"');
           return textResult(await accounts.findOne(ctx.user._id, rawArgs.id));
         }
         case 'create': {
-          const scope = await requireScope(ctx.token, 'pocketly:write');
+          const scope = requireScope(ctx.token, 'pocketly:write');
           if (!scope.ok) return errorResult(scope.message);
           const parsed = createAccountSchema.safeParse(rawArgs);
           if (!parsed.success) return zodErrorResult(parsed.error);
           return textResult(await accounts.create(ctx.user._id, parsed.data));
         }
         case 'update': {
-          const scope = await requireScope(ctx.token, 'pocketly:write');
+          const scope = requireScope(ctx.token, 'pocketly:write');
           if (!scope.ok) return errorResult(scope.message);
           if (!rawArgs.id)
             return errorResult('"id" is required for action "update"');
@@ -82,7 +82,7 @@ export function registerAccountsTools(
           );
         }
         case 'delete': {
-          const scope = await requireScope(ctx.token, 'pocketly:write');
+          const scope = requireScope(ctx.token, 'pocketly:write');
           if (!scope.ok) return errorResult(scope.message);
           if (!rawArgs.id)
             return errorResult('"id" is required for action "delete"');

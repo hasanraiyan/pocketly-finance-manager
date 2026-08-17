@@ -3,8 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import type { UserDocument } from '../users/schemas/user.schema';
 import { RegisterDeviceDto } from './dto/register-device.dto';
-import { DeviceToken, DeviceTokenDocument } from './schemas/device-token.schema';
-import { Notification, NotificationDocument } from './schemas/notification.schema';
+import {
+  DeviceToken,
+  DeviceTokenDocument,
+} from './schemas/device-token.schema';
+import {
+  Notification,
+  NotificationDocument,
+} from './schemas/notification.schema';
 import { FcmService } from './fcm.service';
 
 @Injectable()
@@ -18,7 +24,7 @@ export class NotificationsService {
   ) {}
 
   async registerDevice(user: UserDocument, dto: RegisterDeviceDto) {
-    const userId = user._id as Types.ObjectId;
+    const userId = user._id;
 
     const device = await this.deviceTokenModel.findOneAndUpdate(
       { token: dto.token },
@@ -43,13 +49,16 @@ export class NotificationsService {
   }
 
   async unregisterDevice(user: UserDocument, token: string) {
-    const userId = user._id as Types.ObjectId;
+    const userId = user._id;
     await this.deviceTokenModel.deleteOne({ userId, token }).exec();
     return { success: true };
   }
 
-  async findAll(user: UserDocument, query: { limit?: number; page?: number; unreadOnly?: boolean }) {
-    const userId = user._id as Types.ObjectId;
+  async findAll(
+    user: UserDocument,
+    query: { limit?: number; page?: number; unreadOnly?: boolean },
+  ) {
+    const userId = user._id;
     const limit = Math.min(Math.max(query.limit ?? 20, 1), 50);
     const page = Math.max(query.page ?? 1, 1);
     const skip = (page - 1) * limit;
@@ -81,8 +90,8 @@ export class NotificationsService {
           type: item.type,
           read: item.read,
           actionUrl: item.actionUrl,
-          createdAt: (item as any).createdAt?.toISOString() ?? new Date().toISOString(),
-          updatedAt: (item as any).updatedAt?.toISOString() ?? new Date().toISOString(),
+          createdAt: item.createdAt?.toISOString() ?? new Date().toISOString(),
+          updatedAt: item.updatedAt?.toISOString() ?? new Date().toISOString(),
         })),
         total,
         unreadCount,
@@ -91,7 +100,7 @@ export class NotificationsService {
   }
 
   async markAsRead(user: UserDocument, notificationId: string) {
-    const userId = user._id as Types.ObjectId;
+    const userId = user._id;
     const notification = await this.notificationModel
       .findOneAndUpdate(
         { _id: new Types.ObjectId(notificationId), userId },
@@ -114,20 +123,24 @@ export class NotificationsService {
         type: notification.type,
         read: notification.read,
         actionUrl: notification.actionUrl,
-        createdAt: (notification as any).createdAt?.toISOString() ?? new Date().toISOString(),
-        updatedAt: (notification as any).updatedAt?.toISOString() ?? new Date().toISOString(),
+        createdAt:
+          notification.createdAt?.toISOString() ?? new Date().toISOString(),
+        updatedAt:
+          notification.updatedAt?.toISOString() ?? new Date().toISOString(),
       },
     };
   }
 
   async markAllAsRead(user: UserDocument) {
-    const userId = user._id as Types.ObjectId;
-    await this.notificationModel.updateMany({ userId, read: false }, { read: true }).exec();
+    const userId = user._id;
+    await this.notificationModel
+      .updateMany({ userId, read: false }, { read: true })
+      .exec();
     return { data: { success: true } };
   }
 
   async sendTestNotification(user: UserDocument) {
-    const userId = user._id as Types.ObjectId;
+    const userId = user._id;
     const notification = await this.fcmService.sendToUser(userId, {
       title: 'Pocketly Push Notifications Active! 🔔',
       body: 'Your device is successfully connected. You will receive budget warnings and daily reminders even when the app is closed.',

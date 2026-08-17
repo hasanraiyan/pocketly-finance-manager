@@ -19,8 +19,12 @@ import type { UserDocument } from '../users/schemas/user.schema';
 import { NotificationsService } from './notifications.service';
 import { RegisterDeviceDto } from './dto/register-device.dto';
 import {
+  MarkAllReadResponseDto,
   NotificationDto,
   NotificationListDto,
+  RegisterDeviceResponseDto,
+  SendTestNotificationResponseDto,
+  UnregisterDeviceResponseDto,
 } from './dto/notification-response.dto';
 
 @ApiTags('notifications')
@@ -30,7 +34,7 @@ export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
   @Post('devices')
-  @ApiCreatedResponse({ description: 'Register or refresh an FCM device token' })
+  @ApiCreatedResponse({ type: RegisterDeviceResponseDto })
   registerDevice(
     @CurrentUser() user: UserDocument,
     @Body() dto: RegisterDeviceDto,
@@ -39,7 +43,7 @@ export class NotificationsController {
   }
 
   @Delete('devices/:token')
-  @ApiOkResponse({ description: 'Unregister an FCM device token' })
+  @ApiOkResponse({ type: UnregisterDeviceResponseDto })
   unregisterDevice(
     @CurrentUser() user: UserDocument,
     @Param('token') token: string,
@@ -64,21 +68,18 @@ export class NotificationsController {
 
   @Patch(':id/read')
   @ApiOkResponse({ type: NotificationDto })
-  markAsRead(
-    @CurrentUser() user: UserDocument,
-    @Param('id') id: string,
-  ) {
+  markAsRead(@CurrentUser() user: UserDocument, @Param('id') id: string) {
     return this.notificationsService.markAsRead(user, id);
   }
 
   @Post('read-all')
-  @ApiOkResponse({ description: 'Mark all notifications as read' })
+  @ApiOkResponse({ type: MarkAllReadResponseDto })
   markAllAsRead(@CurrentUser() user: UserDocument) {
     return this.notificationsService.markAllAsRead(user);
   }
 
   @Post('test')
-  @ApiOkResponse({ description: 'Send a test push notification to current user' })
+  @ApiOkResponse({ type: SendTestNotificationResponseDto })
   sendTestNotification(@CurrentUser() user: UserDocument) {
     return this.notificationsService.sendTestNotification(user);
   }
