@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Bell,
   Cable,
+  Camera,
   Download,
   FileSpreadsheet,
   FileText,
@@ -16,7 +17,10 @@ import {
   Tags,
   Trash2,
   Unplug,
+  Upload,
+  X,
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { clearStoredAuthToken } from "@/lib/auth-token";
@@ -85,47 +89,178 @@ const TIMEZONES =
     ? Intl.supportedValuesOf("timeZone")
     : ["UTC"];
 
+function initials(name?: string) {
+  if (!name) return "P";
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
 function ProfileCard({
+  profile,
   currency,
   timezone,
 }: {
+  profile?: any;
   currency: string;
   timezone: string;
 }) {
+  const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [nameValue, setNameValue] = useState(profile?.name ?? "");
+  const [imageUrlValue, setImageUrlValue] = useState(profile?.imageUrl ?? "");
+  const [phoneValue, setPhoneValue] = useState(profile?.phone ?? "");
   const [currencyValue, setCurrencyValue] = useState(currency);
   const [timezoneValue, setTimezoneValue] = useState(timezone);
+
   const updateProfile = useUpdateProfile();
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Please choose an image under 2MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (typeof event.target?.result === "string") {
+        setImageUrlValue(event.target.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profile</CardTitle>
+        <CardTitle>Profile Details & Ledger Settings</CardTitle>
         <CardDescription>
-          Your currency and timezone shape every amount and date you see.
+          Manage your personal avatar, identity, and regional ledger preferences.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-6"
           onSubmit={(e) => {
             e.preventDefault();
-            updateProfile.mutate({
-              currency: currencyValue.toUpperCase(),
-              timezone: timezoneValue,
-            });
+            updateProfile.mutate(
+              {
+                name: nameValue || undefined,
+                imageUrl: imageUrlValue || undefined,
+                phone: phoneValue || undefined,
+                currency: currencyValue.toUpperCase(),
+                timezone: timezoneValue,
+              },
+              {
+                onSuccess: () => {
+                  router.refresh();
+                },
+              },
+            );
           }}
         >
+          {/* Avatar Section */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 pb-4 border-b border-border">
+            <div className="relative group">
+              <Avatar className="size-16 border-2 border-border shadow-sm">
+                {imageUrlValue && (
+                  <AvatarImage src={imageUrlValue} alt={nameValue} />
+                )}
+                <AvatarFallback className="text-base font-semibold">
+                  {initials(nameValue)}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <span className="text-xs font-medium text-foreground">
+                Profile Avatar
+              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Camera className="mr-1.5 size-3.5" />
+                  Change photo
+                </Button>
+                {imageUrlValue && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-muted-foreground hover:text-destructive"
+                    onClick={() => setImageUrlValue("")}
+                  >
+                    <X className="mr-1 size-3" />
+                    Remove
+                  </Button>
+                )}
+              </div>
+              <span className="text-[11px] text-muted-foreground">
+                JPG, PNG, GIF or WebP up to 2MB.
+              </span>
+            </div>
+          </div>
+
           <div className="grid gap-4 sm:grid-cols-2">
+            <Field>
+              <FieldLabel>Display Name</FieldLabel>
+              <Input
+                value={nameValue}
+                onChange={(e) => setNameValue(e.target.value)}
+                placeholder="Your full name"
+                required
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel>Email Address</FieldLabel>
+              <Input
+                value={profile?.email ?? ""}
+                disabled
+                className="bg-muted/50 cursor-not-allowed opacity-80"
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel>Phone Number</FieldLabel>
+              <Input
+                value={phoneValue}
+                onChange={(e) => setPhoneValue(e.target.value)}
+                placeholder="+91 98765 43210 (optional)"
+              />
+            </Field>
+
             <Field>
               <FieldLabel>Currency</FieldLabel>
               <Input
                 maxLength={3}
-                className="uppercase"
+                className="uppercase font-mono"
                 value={currencyValue}
                 onChange={(e) => setCurrencyValue(e.target.value.toUpperCase())}
+                placeholder="INR"
+                required
               />
             </Field>
-            <Field>
+
+            <Field className="sm:col-span-2">
               <FieldLabel>Timezone</FieldLabel>
               <NativeSelect
                 className="w-full"
@@ -140,9 +275,12 @@ function ProfileCard({
               </NativeSelect>
             </Field>
           </div>
+
           <div>
             <Button type="submit" disabled={updateProfile.isPending}>
-              {updateProfile.isPending && <Spinner className="size-3.5" />}
+              {updateProfile.isPending && (
+                <Spinner className="mr-1.5 size-3.5" />
+              )}
               Save changes
             </Button>
           </div>
@@ -864,12 +1002,14 @@ function ActiveSessionsCard() {
 }
 
 export function SettingsView({
+  profile,
   currency,
   timezone,
   profileLoadFailed = false,
   categoriesInitialData,
   categoriesLoadFailed = false,
 }: {
+  profile?: any;
   currency: string;
   timezone: string;
   profileLoadFailed?: boolean;
@@ -893,7 +1033,7 @@ export function SettingsView({
           onRetry={() => router.refresh()}
         />
       ) : (
-        <ProfileCard currency={currency} timezone={timezone} />
+        <ProfileCard profile={profile} currency={currency} timezone={timezone} />
       )}
       <CategoriesCard
         initialData={categoriesInitialData}

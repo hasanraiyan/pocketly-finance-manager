@@ -169,10 +169,12 @@ export class GoogleAuthService {
     }
 
     // Find or create domain profile in UsersService
+    const imageUrl = profile.picture || undefined;
     const userProfile = await this.usersService.findOrCreateByAuthUserId(
       authUser._id.toString(),
       authUser.email,
       name,
+      imageUrl,
     );
 
     // Create active session

@@ -24,7 +24,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
 import {
   DropdownMenu,
@@ -118,6 +118,7 @@ export function AppSidebar({ user }: { user: SessionUser }) {
             }
           >
             <Avatar size="sm">
+              {user.image && <AvatarImage src={user.image} alt={user.name} />}
               <AvatarFallback>{initials(user.name)}</AvatarFallback>
             </Avatar>
             <span className="truncate text-sm text-sidebar-foreground group-data-[collapsible=icon]:hidden">

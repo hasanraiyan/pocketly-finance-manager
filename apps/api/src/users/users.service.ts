@@ -36,6 +36,7 @@ export class UsersService {
     authUserId: string,
     email: string,
     name: string,
+    imageUrl?: string,
   ): Promise<UserDocument> {
     const normalizedEmail = email.toLowerCase().trim();
     const existing = await this.userModel
@@ -54,6 +55,10 @@ export class UsersService {
         existing.name = name;
         needsSave = true;
       }
+      if (imageUrl && !existing.imageUrl) {
+        existing.imageUrl = imageUrl;
+        needsSave = true;
+      }
       if (needsSave) {
         await existing.save();
       }
@@ -64,6 +69,7 @@ export class UsersService {
       authUserId,
       email: normalizedEmail,
       name,
+      imageUrl,
     });
   }
 

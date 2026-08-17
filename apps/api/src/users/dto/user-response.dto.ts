@@ -7,6 +7,7 @@ export const userSchema = z.object({
   email: z.string(),
   name: z.string(),
   imageUrl: z.string().optional(),
+  phone: z.string().optional(),
   currency: z.string(),
   timezone: z.string(),
   createdAt: z.string(),

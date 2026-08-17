@@ -1,17 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
-/**
- * `Intl.supportedValuesOf('timeZone')` only enumerates *canonical* zone
- * names -- it omits common aliases (e.g. "Asia/Kolkata", a link to the
- * canonical "Asia/Calcutta") that real browsers report via
- * `Intl.DateTimeFormat().resolvedOptions().timeZone` and that ICU itself
- * happily accepts. Validating against that enumerated set silently
- * rejected valid, commonly-reported timezones for a huge population
- * (confirmed: "Asia/Kolkata" fails the Set check but is a valid zone).
- * Asking the constructor directly accepts canonical names and aliases
- * alike, and still throws on genuinely invalid input.
- */
 function isValidTimeZone(tz: string): boolean {
   try {
     new Intl.DateTimeFormat('en-US', { timeZone: tz });
@@ -23,6 +12,9 @@ function isValidTimeZone(tz: string): boolean {
 
 export const updateProfileSchema = z
   .object({
+    name: z.string().min(1, 'Name is required').max(100).optional(),
+    imageUrl: z.string().optional(),
+    phone: z.string().max(20).optional(),
     currency: z.string().length(3).optional(),
     timezone: z
       .string()
@@ -32,7 +24,7 @@ export const updateProfileSchema = z
       .optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
-    message: 'At least one of currency or timezone must be provided',
+    message: 'At least one field must be provided to update profile',
   });
 
 export class UpdateProfileDto extends createZodDto(updateProfileSchema) {}

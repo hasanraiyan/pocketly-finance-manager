@@ -727,6 +727,7 @@ export interface components {
                 email: string;
                 name: string;
                 imageUrl?: string;
+                phone?: string;
                 currency: string;
                 timezone: string;
                 createdAt: string;
@@ -734,6 +735,9 @@ export interface components {
             };
         };
         UpdateProfileDto: {
+            name?: string;
+            imageUrl?: string;
+            phone?: string;
             currency?: string;
             timezone?: string;
         };

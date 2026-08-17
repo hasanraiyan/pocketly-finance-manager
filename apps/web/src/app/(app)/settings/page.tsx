@@ -12,6 +12,7 @@ export default async function SettingsPage() {
 
   return (
     <SettingsView
+      profile={profile}
       currency={profile?.currency ?? "INR"}
       timezone={profile?.timezone ?? "UTC"}
       profileLoadFailed={Boolean(profileRes.error)}

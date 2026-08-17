@@ -5,11 +5,6 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema({ timestamps: true })
 export class User {
-  /**
-   * Better Auth's own user id (its `user` collection, a separate set of
-   * MongoDB documents Better Auth manages itself -- this is the foreign key
-   * linking this Pocketly profile to that identity).
-   */
   @Prop({ required: true, unique: true, index: true })
   authUserId!: string;
 
@@ -27,6 +22,9 @@ export class User {
 
   @Prop()
   imageUrl?: string;
+
+  @Prop()
+  phone?: string;
 
   @Prop({ default: 'INR' })
   currency!: string;
