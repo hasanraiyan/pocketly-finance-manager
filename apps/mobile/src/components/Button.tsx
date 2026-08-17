@@ -1,3 +1,4 @@
+import React from "react";
 import { ActivityIndicator, Pressable, Text, type PressableProps } from "react-native";
 import { theme } from "@/lib/theme";
 
@@ -11,7 +12,7 @@ export function Button({
   className,
   ...props
 }: PressableProps & {
-  children: string;
+  children: React.ReactNode;
   variant?: Variant;
   loading?: boolean;
   className?: string;
@@ -40,9 +41,13 @@ export function Button({
           color={variant === "default" ? theme.primaryForeground : theme.foreground}
         />
       )}
-      <Text className={`text-sm font-medium ${textVariants[variant]}`}>
-        {children}
-      </Text>
+      {typeof children === "string" || typeof children === "number" ? (
+        <Text className={`text-sm font-medium ${textVariants[variant]}`}>
+          {children}
+        </Text>
+      ) : (
+        children
+      )}
     </Pressable>
   );
 }

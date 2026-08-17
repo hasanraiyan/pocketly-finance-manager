@@ -47,3 +47,71 @@ export function useCreateCategory() {
     },
   });
 }
+
+export function useUpdateCategory() {
+  const client = usePocketlyClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      input,
+    }: {
+      id: string;
+      input: UpdateCategoryInput;
+    }) => {
+      const { data, error } = await client.PATCH("/categories/{id}", {
+        params: { path: { id } },
+        body: input,
+      });
+      if (error || !data) {
+        throw new Error("Failed to update category");
+      }
+      return data.data;
+    },
+    onSuccess: (category) => {
+      queryClient.setQueryData<Category[]>(
+        CATEGORIES_KEY,
+        (old) => old?.map((c) => (c._id === category._id ? category : c)) ?? [],
+      );
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["records"] });
+    },
+  });
+}
+
+export function useDeleteCategory() {
+  const client = usePocketlyClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await client.DELETE("/categories/{id}", {
+        params: { path: { id } },
+      });
+      if (error) {
+        throw new Error("Failed to delete category");
+      }
+      return id;
+    },
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: CATEGORIES_KEY });
+      const previous = queryClient.getQueryData<Category[]>(CATEGORIES_KEY);
+      queryClient.setQueryData<Category[]>(
+        CATEGORIES_KEY,
+        (old) => old?.filter((c) => c._id !== id) ?? [],
+      );
+      return { previous };
+    },
+    onError: (_err, _id, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(CATEGORIES_KEY, context.previous);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: CATEGORIES_KEY });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["records"] });
+    },
+  });
+}
