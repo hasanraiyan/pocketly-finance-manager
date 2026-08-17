@@ -191,7 +191,7 @@ describe('MCP OAuth flow (e2e)', () => {
       .expect(401);
   });
 
-  it('sends an unauthenticated browser to sign in, preserving the request', async () => {
+  it('sends an unauthenticated browser to sign in, with a same-origin path back to /mcp-connect', async () => {
     const clientId = await registerClient();
     const { challenge } = pkcePair();
 
@@ -206,5 +206,15 @@ describe('MCP OAuth flow (e2e)', () => {
       .expect(302);
 
     expect(res.headers.location).toContain('/sign-in?redirect=');
+    // Regression guard: this used to point back at /oauth2/authorize itself
+    // (a different origin from the web app's sign-in page), which the web
+    // app's same-origin client-side redirect couldn't reach -> 404. It must
+    // point at /mcp-connect, which lives on the web app's own origin.
+    const redirectParam = new URL(
+      res.headers.location,
+      'http://localhost',
+    ).searchParams.get('redirect');
+    expect(redirectParam).toMatch(/^\/mcp-connect\?/);
+    expect(redirectParam).not.toContain('/oauth2/authorize');
   });
 });

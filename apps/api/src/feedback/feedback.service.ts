@@ -78,7 +78,7 @@ export class FeedbackService {
       .find(filter)
       .sort(sort)
       .limit(limit + 1)
-      .lean()
+      .lean<FeedbackDocument[]>()
       .exec();
 
     const hasMore = items.length > limit;
@@ -88,12 +88,7 @@ export class FeedbackService {
       : null;
 
     return {
-      items: page.map((item) =>
-        this.serializeUserFeedback(
-          item as unknown as FeedbackDocument,
-          user._id,
-        ),
-      ),
+      items: page.map((item) => this.serializeUserFeedback(item, user._id)),
       nextCursor,
     };
   }
@@ -225,7 +220,7 @@ export class FeedbackService {
       .find(filter)
       .sort(sort)
       .limit(limit + 1)
-      .lean()
+      .lean<FeedbackDocument[]>()
       .exec();
 
     const hasMore = items.length > limit;
@@ -235,9 +230,7 @@ export class FeedbackService {
       : null;
 
     return {
-      items: page.map((item) =>
-        this.serializeAdminFeedback(item as unknown as FeedbackDocument),
-      ),
+      items: page.map((item) => this.serializeAdminFeedback(item)),
       nextCursor,
     };
   }

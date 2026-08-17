@@ -91,14 +91,6 @@ export class OAuthController {
     const client = await this.oauth.getClient(query.client_id);
     if (!client) throw new BadRequestException('Unknown client_id');
 
-    const authenticated = await this.resolveCookieUser(req);
-    if (!authenticated) {
-      const returnTo = req.originalUrl || req.url;
-      return res.redirect(
-        `${webBaseUrl()}/sign-in?redirect=${encodeURIComponent(returnTo)}`,
-      );
-    }
-
     const consentUrl = new URL(`${webBaseUrl()}/mcp-connect`);
     consentUrl.searchParams.set('client_id', query.client_id);
     consentUrl.searchParams.set('client_name', client.clientName);
@@ -110,6 +102,20 @@ export class OAuthController {
     );
     if (query.state) consentUrl.searchParams.set('state', query.state);
     if (query.scope) consentUrl.searchParams.set('scope', query.scope);
+
+    const authenticated = await this.resolveCookieUser(req);
+    if (!authenticated) {
+      // The access-token cookie lives on the *web app's* origin (set by
+      // AuthProvider client-side), not this API's -- so a cookie check here
+      // (a different origin) can never see it. Bounce to sign-in with a
+      // same-origin path back to /mcp-connect (not back to this endpoint):
+      // the web app's redirect handling only ever does a same-origin
+      // client-side navigation, and this API's own origin isn't one.
+      const returnTo = `${consentUrl.pathname}${consentUrl.search}`;
+      return res.redirect(
+        `${webBaseUrl()}/sign-in?redirect=${encodeURIComponent(returnTo)}`,
+      );
+    }
 
     return res.redirect(consentUrl.toString());
   }

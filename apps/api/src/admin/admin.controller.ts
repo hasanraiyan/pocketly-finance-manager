@@ -8,6 +8,7 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AdminOnly } from '../common/auth/admin-only.decorator';
 import { CurrentUser } from '../common/auth/current-user.decorator';
@@ -66,7 +67,7 @@ export class AdminController {
     @CurrentUser() adminUser: UserDocument,
     @Param('id') id: string,
     @Body() dto: AdminUpdateFeedbackDto,
-    @Req() req: any,
+    @Req() req: Request,
   ) {
     const updated = await this.feedbackService.adminUpdate(id, dto);
 
@@ -88,7 +89,7 @@ export class AdminController {
   async deleteFeedback(
     @CurrentUser() adminUser: UserDocument,
     @Param('id') id: string,
-    @Req() req: any,
+    @Req() req: Request,
   ) {
     const deleted = await this.feedbackService.adminRemove(id);
 
@@ -123,7 +124,7 @@ export class AdminController {
     @CurrentUser() adminUser: UserDocument,
     @Param('id') id: string,
     @Body() dto: UpdateUserRoleDto,
-    @Req() req: any,
+    @Req() req: Request,
   ) {
     const updated = await this.usersService.setUserRole(id, dto.role);
 

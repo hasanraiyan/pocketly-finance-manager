@@ -1,4 +1,4 @@
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { FeedbackService } from './feedback.service';
 

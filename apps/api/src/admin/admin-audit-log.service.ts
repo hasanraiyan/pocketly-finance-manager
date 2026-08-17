@@ -48,7 +48,7 @@ export class AdminAuditLogService {
       .find(filter)
       .sort({ _id: -1 })
       .limit(limit + 1)
-      .lean()
+      .lean<AdminAuditLogDocument[]>()
       .exec();
 
     const hasMore = items.length > limit;
@@ -58,7 +58,7 @@ export class AdminAuditLogService {
       : null;
 
     return {
-      items: page.map((item: any) => ({
+      items: page.map((item) => ({
         _id: item._id.toString(),
         adminUserId: item.adminUserId.toString(),
         adminEmail: item.adminEmail,
