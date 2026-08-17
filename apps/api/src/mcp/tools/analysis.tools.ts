@@ -6,7 +6,13 @@ import { McpToolContext, requireScope } from '../mcp-context';
 import { errorResult, textResult } from '../mcp-result';
 
 const metricSchema = z
-  .enum(['overview', 'cash_flow', 'category_breakdown', 'account_breakdown'])
+  .enum([
+    'overview',
+    'cash_flow',
+    'category_breakdown',
+    'account_breakdown',
+    'insights',
+  ])
   .default('overview')
   .describe('Which analysis metric to return');
 
@@ -19,7 +25,7 @@ export function registerAnalysisTools(
     {
       title: 'Get analysis',
       description:
-        'Cash flow and spending analysis for a period: overall totals, day-by-day cash flow, spend by category, or income/expense by account.',
+        'Cash flow and spending analysis for a period: overall totals, day-by-day cash flow, spend by category, income/expense by account, or "insights" -- notable facts Pocketly derived from the numbers (a category well above its own average, a budget on pace to be exceeded, a negative period). Insights are computed arithmetic, not opinions, and the list is empty when nothing is notable.',
       inputSchema: {
         ...analysisQuerySchema.shape,
         metric: metricSchema,
@@ -59,6 +65,10 @@ export function registerAnalysisTools(
         case 'account_breakdown':
           return textResult(
             await analysis.getAccountBreakdown(ctx.user, query),
+          );
+        case 'insights':
+          return textResult(
+            await ctx.services.insights.getInsights(ctx.user, query),
           );
         case 'overview':
         default:

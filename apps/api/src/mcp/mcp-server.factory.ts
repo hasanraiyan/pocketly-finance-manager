@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { AccountsService } from '../accounts/accounts.service';
 import { AnalysisService } from '../analysis/analysis.service';
+import { InsightsService } from '../analysis/insights.service';
 import { BudgetsService } from '../budgets/budgets.service';
 import { CategoriesService } from '../categories/categories.service';
 import { RecurrencesService } from '../recurrences/recurrences.service';
@@ -32,6 +33,7 @@ export class McpServerFactory {
     private readonly categories: CategoriesService,
     private readonly analysis: AnalysisService,
     private readonly recurrences: RecurrencesService,
+    private readonly insights: InsightsService,
   ) {}
 
   build(user: UserDocument, token: string, scopes: McpScope[]): McpServer {
@@ -47,6 +49,7 @@ export class McpServerFactory {
         categories: this.categories,
         analysis: this.analysis,
         recurrences: this.recurrences,
+        insights: this.insights,
       },
     };
 

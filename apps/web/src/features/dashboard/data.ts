@@ -31,6 +31,11 @@ export const getOverview = cache(async () => {
   return client.GET("/analysis");
 });
 
+export const getInsights = cache(async () => {
+  const client = await getServerApiClient();
+  return client.GET("/analysis/insights");
+});
+
 export const getBudgets = cache(async () => {
   const client = await getServerApiClient();
   return client.GET("/budgets", { params: { query: { limit: 4 } } });

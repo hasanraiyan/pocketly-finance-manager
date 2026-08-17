@@ -5,6 +5,7 @@ import {
   BalanceCard,
   BudgetsCard,
   Greeting,
+  InsightsCard,
   RecentRecords,
 } from "@/features/dashboard/blocks";
 import {
@@ -12,6 +13,7 @@ import {
   BalanceCardSkeleton,
   BudgetsCardSkeleton,
   GreetingSkeleton,
+  InsightsCardSkeleton,
   RecentRecordsSkeleton,
 } from "@/features/dashboard/skeletons";
 
@@ -32,6 +34,10 @@ export default function DashboardPage() {
 
       <Suspense fallback={<BalanceCardSkeleton />}>
         <BalanceCard />
+      </Suspense>
+
+      <Suspense fallback={<InsightsCardSkeleton />}>
+        <InsightsCard />
       </Suspense>
 
       <div className="grid gap-6 lg:grid-cols-2">

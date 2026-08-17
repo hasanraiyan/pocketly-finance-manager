@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  Flame,
+  Gauge,
+  Receipt,
+  Repeat,
+  TrendingDown,
+} from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -22,6 +30,7 @@ import {
   getAccounts,
   getBudgets,
   getCurrency,
+  getInsights,
   getOverview,
   getProfile,
   getRecentTransactions,
@@ -269,6 +278,55 @@ export async function RecentRecords() {
             ))}
           </ul>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+const INSIGHT_ICONS = {
+  budget_pace: Gauge,
+  category_spike: Flame,
+  net_negative: TrendingDown,
+  recurring_load: Repeat,
+  largest_expense: Receipt,
+} as const;
+
+/**
+ * Arithmetic over the user's own data -- no model, no inference cost, and
+ * no chance of inventing a figure.
+ *
+ * Renders nothing at all when no rule fired. An insights card that says
+ * "no insights" is worse than no card: it takes up the same space and
+ * teaches the user to skip past it. A new account with two transactions
+ * should simply not see this yet.
+ */
+export async function InsightsCard() {
+  const insightsRes = await getInsights();
+  const insights = insightsRes.data?.data.insights ?? [];
+
+  if (insightsRes.error || insights.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Worth knowing</CardTitle>
+        <CardDescription>From your records this period</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        {insights.map((insight) => {
+          const Icon = INSIGHT_ICONS[insight.kind];
+          return (
+            <div key={insight.kind + insight.title} className="flex gap-3">
+              <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+              <div className="flex min-w-0 flex-col">
+                <span className="text-sm text-foreground">{insight.title}</span>
+                <span className="text-xs text-muted-foreground">
+                  {insight.detail}
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </CardContent>
     </Card>
   );

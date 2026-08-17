@@ -276,6 +276,22 @@ export interface paths {
         patch: operations["BudgetsController_update"];
         trace?: never;
     };
+    "/analysis/insights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AnalysisController_getInsights"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/analysis": {
         parameters: {
             query?: never;
@@ -810,6 +826,21 @@ export interface components {
                 syncVersion: number;
                 createdAt: string;
                 updatedAt: string;
+            };
+        };
+        InsightsDto: {
+            data: {
+                period: {
+                    start: string;
+                    end: string;
+                };
+                insights: {
+                    /** @enum {string} */
+                    kind: "budget_pace" | "category_spike" | "net_negative" | "recurring_load" | "largest_expense";
+                    weight: number;
+                    title: string;
+                    detail: string;
+                }[];
             };
         };
         OverviewDto: {
@@ -1699,6 +1730,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BudgetWithStatusDto"];
+                };
+            };
+        };
+    };
+    AnalysisController_getInsights: {
+        parameters: {
+            query?: {
+                period?: "7d" | "this_month" | "last_month" | "3m" | "6m" | "this_year" | "custom";
+                from?: string;
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InsightsDto"];
                 };
             };
         };

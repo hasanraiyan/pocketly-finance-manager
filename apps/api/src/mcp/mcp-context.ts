@@ -1,5 +1,6 @@
 import { AccountsService } from '../accounts/accounts.service';
 import { AnalysisService } from '../analysis/analysis.service';
+import { InsightsService } from '../analysis/insights.service';
 import { BudgetsService } from '../budgets/budgets.service';
 import { CategoriesService } from '../categories/categories.service';
 import { RecurrencesService } from '../recurrences/recurrences.service';
@@ -14,6 +15,7 @@ export interface McpToolServices {
   budgets: BudgetsService;
   categories: CategoriesService;
   analysis: AnalysisService;
+  insights: InsightsService;
   recurrences: RecurrencesService;
 }
 

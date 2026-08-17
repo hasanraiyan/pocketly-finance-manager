@@ -1,6 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 import { envelopeSchema } from '../../common/http/envelope.schema';
+import { INSIGHT_KINDS } from '../../common/finance/insight-rules';
 
 const periodSchema = z.object({
   start: z.string(),
@@ -57,3 +58,17 @@ export class CashFlowDto extends createZodDto(envelopeSchema(cashFlowSchema)) {}
 export class AccountBreakdownDto extends createZodDto(
   envelopeSchema(accountBreakdownSchema),
 ) {}
+
+export const insightsSchema = z.object({
+  period: periodSchema,
+  insights: z.array(
+    z.object({
+      kind: z.enum(INSIGHT_KINDS),
+      weight: z.number(),
+      title: z.string(),
+      detail: z.string(),
+    }),
+  ),
+});
+
+export class InsightsDto extends createZodDto(envelopeSchema(insightsSchema)) {}

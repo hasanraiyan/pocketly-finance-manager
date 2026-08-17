@@ -126,3 +126,27 @@ export function RecentRecordsSkeleton() {
     </Card>
   );
 }
+
+/**
+ * The insights card renders nothing when no rule fires, so its skeleton is
+ * deliberately short: reserving four rows for something that may not appear
+ * would make the page jump more than showing nothing would.
+ */
+export function InsightsCardSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Worth knowing</CardTitle>
+        <CardDescription>From your records this period</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        {rows(2).map((i) => (
+          <div key={i} className="flex flex-col gap-1.5">
+            <TextBlank className={entryWidth(i)} />
+            <TextBlank className="w-2/3" />
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
