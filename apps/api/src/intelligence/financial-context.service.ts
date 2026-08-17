@@ -11,6 +11,7 @@ import {
   getPeriodWindow,
   type DateRange,
 } from '../common/finance/get-period-window';
+import { calculateDiscretionaryBaseline } from '../common/finance/discretionary-baseline';
 import type { ProjectableRule } from '../common/finance/project-recurring';
 import { GoalsService } from '../goals/goals.service';
 import {
@@ -81,9 +82,14 @@ export interface FinancialContext {
   /** Complete months only, oldest first. Excludes the current month. */
   monthlyHistory: Array<{ month: string; income: number; expense: number }>;
   discretionary: {
-    /** Mean daily non-recurring expense over the lookback. */
+    /** Mean daily non-recurring expense over the available history. */
     dailyRate: number;
+    /** Calendar days actually used as the denominator, once established. */
     lookbackDays: number;
+    /** False while the account is still building enough spending history. */
+    established: boolean;
+    /** Distinct calendar days with non-recurring spending. */
+    spendingDays: number;
   };
 }
 
@@ -345,16 +351,22 @@ export class FinancialContextService {
   /**
    * Mean daily spend on everything that *isn't* a recurring rule.
    *
-   * Recurring transactions are excluded deliberately: they are projected from
-   * their rules, occurrence by occurrence, so including them in the run-rate
-   * too would count every subscription twice.
+   * We deliberately do not divide a brand-new account's first ₹20 by 90.
+   * Until there are 14 distinct spending days, Pocketly has too little history
+   * to call the result a normal daily rate, so no derived reserve is created.
+   * Once established, the denominator is the actual calendar history available
+   * (capped at 90 days), which makes the estimate adapt as the account ages.
    */
   private async loadDiscretionaryRate(user: UserDocument, now: Date) {
     const start = new Date(
       now.getTime() - DISCRETIONARY_LOOKBACK_DAYS * MS_PER_DAY,
     );
 
-    const [row] = await this.transactionModel.aggregate<{ total: number }>([
+    const [row] = await this.transactionModel.aggregate<{
+      total: number;
+      firstSpendDate: Date;
+      spendingDates: string[];
+    }>([
       {
         $match: {
           userId: user._id,
@@ -364,12 +376,29 @@ export class FinancialContextService {
           date: { $gte: start, $lte: now },
         },
       },
-      { $group: { _id: null, total: { $sum: '$amount' } } },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$amount' },
+          firstSpendDate: { $min: '$date' },
+          spendingDates: {
+            $addToSet: {
+              $dateToString: {
+                format: '%Y-%m-%d',
+                date: '$date',
+                timezone: user.timezone,
+              },
+            },
+          },
+        },
+      },
     ]);
 
-    return {
-      dailyRate: Math.round((row?.total ?? 0) / DISCRETIONARY_LOOKBACK_DAYS),
-      lookbackDays: DISCRETIONARY_LOOKBACK_DAYS,
-    };
+    return calculateDiscretionaryBaseline({
+      totalSpend: row?.total ?? 0,
+      firstSpendDate: row?.firstSpendDate ?? null,
+      spendingDays: row?.spendingDates.length ?? 0,
+      now,
+    });
   }
 }
