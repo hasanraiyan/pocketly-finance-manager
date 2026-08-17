@@ -11,7 +11,10 @@ export class AuthToken extends Document {
   @Prop({ required: true, unique: true, index: true })
   tokenHash: string;
 
-  @Prop({ required: true, enum: ['password_reset', 'email_verify'] })
+  @Prop({
+    required: true,
+    enum: ['password_reset', 'email_verify', 'oauth_state'],
+  })
   type: string;
 
   @Prop({ required: true, index: { expires: '0s' } })
