@@ -14,6 +14,9 @@ export const apiClient = createPocketlyClient({ baseUrl });
  */
 export async function getServerApiClient() {
   const cookieStore = await cookies();
-  const token = cookieStore.get(AUTH_TOKEN_COOKIE_NAME)?.value ?? null;
+  const token =
+    cookieStore.get(AUTH_TOKEN_COOKIE_NAME)?.value ||
+    cookieStore.get("pocketly_session")?.value ||
+    null;
   return createPocketlyClient({ baseUrl, getToken: async () => token });
 }

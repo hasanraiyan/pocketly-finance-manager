@@ -39,7 +39,7 @@ import {
 
 export async function Greeting() {
   const { data } = await getProfile();
-  const firstName = data?.data.name.split(" ")[0];
+  const firstName = data?.data?.name?.split(" ")[0];
 
   return (
     <div>

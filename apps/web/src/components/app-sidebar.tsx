@@ -58,7 +58,8 @@ function NavIcon({ icon: Icon }: { icon: (typeof NAV_ITEMS)[number]["icon"] }) {
   return pending ? <Spinner /> : <Icon />;
 }
 
-function initials(name: string) {
+function initials(name?: string) {
+  if (!name) return "P";
   return name
     .split(/\s+/)
     .filter(Boolean)
