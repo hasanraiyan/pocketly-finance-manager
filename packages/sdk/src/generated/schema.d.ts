@@ -763,7 +763,7 @@ export interface components {
              * @default this_month
              * @enum {string}
              */
-            period: "7d" | "this_month" | "last_month" | "3m" | "6m" | "this_year" | "custom";
+            period: "7d" | "this_month" | "last_month" | "3m" | "6m" | "this_year" | "custom" | "all_time";
             /** Format: date-time */
             from?: string;
             /** Format: date-time */

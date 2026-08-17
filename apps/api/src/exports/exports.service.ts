@@ -1,8 +1,8 @@
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bullmq';
-import type { AnalysisPeriod } from '../common/finance/resolve-analysis-range';
 import type { UserDocument } from '../users/schemas/user.schema';
+import type { ExportPeriod } from './dto/export.dto';
 import { EXPORTS_QUEUE, type ExportJobPayload } from './exports.processor';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class ExportsService {
 
   async queuePdfExport(
     user: UserDocument,
-    period: AnalysisPeriod,
+    period: ExportPeriod,
     from?: Date,
     to?: Date,
   ) {
@@ -40,7 +40,7 @@ export class ExportsService {
 
   async queueCsvExport(
     user: UserDocument,
-    period: AnalysisPeriod,
+    period: ExportPeriod,
     from?: Date,
     to?: Date,
   ) {

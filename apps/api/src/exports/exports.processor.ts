@@ -11,7 +11,7 @@ import {
 } from '../categories/schemas/category.schema';
 import { toMajorUnits } from '../common/finance/format-money';
 import { resolveAnalysisRange } from '../common/finance/resolve-analysis-range';
-import type { AnalysisPeriod } from '../common/finance/resolve-analysis-range';
+import type { ExportPeriod } from './dto/export.dto';
 import {
   Transaction,
   TransactionDocument,
@@ -37,7 +37,7 @@ export interface ExportJobPayload {
   userName: string;
   currency: string;
   timezone: string;
-  period: AnalysisPeriod;
+  period: ExportPeriod;
   from?: Date;
   to?: Date;
 }
@@ -72,11 +72,15 @@ export class ExportProcessor extends WorkerHost {
 
     const userObjectId = new Types.ObjectId(userId);
 
-    // 1. Resolve date range
-    const range = resolveAnalysisRange(period, timezone, {
-      from: from ? new Date(from) : undefined,
-      to: to ? new Date(to) : undefined,
-    });
+    // 1. Resolve date range. `all_time` is export-only, so it isn't one of
+    // the ranges resolveAnalysisRange knows how to build.
+    const range =
+      period === 'all_time'
+        ? { start: new Date(0), end: new Date() }
+        : resolveAnalysisRange(period, timezone, {
+            from: from ? new Date(from) : undefined,
+            to: to ? new Date(to) : undefined,
+          });
 
     const dateMatch = { $gte: range.start, $lte: range.end };
     const baseFilter = { userId: userObjectId, deletedAt: null };
@@ -270,6 +274,7 @@ export class ExportProcessor extends WorkerHost {
       '3m': 'Last 3 Months',
       '6m': 'Last 6 Months',
       this_year: 'This Year',
+      all_time: 'All Time',
     };
     return labels[period] ?? `${f(start)} – ${f(end)}`;
   }

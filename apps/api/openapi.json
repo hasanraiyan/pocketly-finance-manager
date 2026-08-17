@@ -3158,7 +3158,8 @@
               "3m",
               "6m",
               "this_year",
-              "custom"
+              "custom",
+              "all_time"
             ]
           },
           "from": {

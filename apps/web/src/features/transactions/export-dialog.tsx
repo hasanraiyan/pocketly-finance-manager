@@ -52,7 +52,11 @@ export function ExportDialog({ trigger }: { trigger: React.ReactNode }) {
   const handleExport = async () => {
     const payload = {
       period,
-      ...(isCustom && from && to ? { from, to } : {}),
+      // A date input yields "2026-08-01", but the API validates a full ISO
+      // datetime, so widen each end to cover the whole day it names.
+      ...(isCustom && from && to
+        ? { from: `${from}T00:00:00`, to: `${to}T23:59:59` }
+        : {}),
     };
 
     if (format === "pdf") {
