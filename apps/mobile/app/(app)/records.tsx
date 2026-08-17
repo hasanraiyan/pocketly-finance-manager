@@ -143,7 +143,7 @@ export default function RecordsScreen() {
           <Pressable
             onPress={() => setExportVisible(true)}
             hitSlop={8}
-            className="h-9 w-9 items-center justify-center rounded-lg border border-border bg-card"
+            className="h-9 w-9 items-center justify-center rounded-lg border border-border bg-card shrink-0 active:opacity-80"
           >
             <Feather name="download" size={16} color={theme.foreground} />
           </Pressable>
@@ -151,7 +151,7 @@ export default function RecordsScreen() {
           <Pressable
             onPress={handleAddRecord}
             hitSlop={8}
-            className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 active:opacity-80"
+            className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 shrink-0 active:opacity-80"
           >
             <Feather name="plus" size={16} color={theme.primaryForeground} />
             <Text className="text-xs font-semibold text-primary-foreground">

@@ -278,7 +278,7 @@ export default function PlanningScreen() {
           <Pressable
             onPress={handleAddBudget}
             hitSlop={8}
-            className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 active:opacity-80"
+            className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 shrink-0 active:opacity-80"
           >
             <Feather name="plus" size={16} color={theme.primaryForeground} />
             <Text className="text-xs font-semibold text-primary-foreground">
@@ -289,7 +289,7 @@ export default function PlanningScreen() {
           <Pressable
             onPress={handleAddGoal}
             hitSlop={8}
-            className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 active:opacity-80"
+            className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 shrink-0 active:opacity-80"
           >
             <Feather name="plus" size={16} color={theme.primaryForeground} />
             <Text className="text-xs font-semibold text-primary-foreground">
@@ -300,7 +300,7 @@ export default function PlanningScreen() {
           <Pressable
             onPress={handleAddRule}
             hitSlop={8}
-            className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 active:opacity-80"
+            className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 shrink-0 active:opacity-80"
           >
             <Feather name="plus" size={16} color={theme.primaryForeground} />
             <Text className="text-xs font-semibold text-primary-foreground">
