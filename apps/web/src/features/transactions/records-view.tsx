@@ -1,7 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Download, Filter, PenLine, Plus, Receipt, Trash2 } from "lucide-react";
+import {
+  Download,
+  Filter,
+  PenLine,
+  Plus,
+  Receipt,
+  Repeat,
+  Trash2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -431,8 +439,14 @@ export function RecordsView({
                 <li key={tx._id} className="flex flex-col gap-1.5 py-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 flex-col">
-                      <span className="truncate text-sm text-foreground">
+                      <span className="flex items-center gap-1.5 truncate text-sm text-foreground">
                         {label}
+                        {tx.recurrenceId && (
+                          <Repeat
+                            aria-label="Added by a repeat"
+                            className="size-3 shrink-0 text-muted-foreground"
+                          />
+                        )}
                       </span>
                       <span className="text-xs text-muted-foreground">
                         {formatDate(tx.date)}
@@ -515,7 +529,15 @@ export function RecordsView({
                     </TableCell>
                     <TableCell className="text-foreground">
                       <div className="flex flex-col">
-                        <span>{label}</span>
+                        <span className="flex items-center gap-1.5">
+                          {label}
+                          {tx.recurrenceId && (
+                            <Repeat
+                              aria-label="Added by a repeat"
+                              className="size-3 shrink-0 text-muted-foreground"
+                            />
+                          )}
+                        </span>
                         {category && (
                           <span className="text-xs text-muted-foreground">
                             {category.name}

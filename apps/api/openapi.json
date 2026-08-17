@@ -2593,6 +2593,16 @@
               "date": {
                 "type": "string"
               },
+              "recurrenceId": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "deletedAt": {
                 "anyOf": [
                   {
@@ -2678,6 +2688,16 @@
                     },
                     "date": {
                       "type": "string"
+                    },
+                    "recurrenceId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "deletedAt": {
                       "anyOf": [

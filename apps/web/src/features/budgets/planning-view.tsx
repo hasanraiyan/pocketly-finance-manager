@@ -27,7 +27,10 @@ import {
 import { ErrorState } from "@/components/error-state";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import type { Account } from "@/features/accounts/hooks";
 import type { Category } from "@/features/categories/hooks";
+import { RecurrencesSection } from "@/features/recurrences/recurrences-section";
+import type { Recurrence } from "@/features/recurrences/hooks";
 import { BudgetFormDialog } from "./budget-form-dialog";
 import { useBudgets, useDeleteBudget, type Budget } from "./hooks";
 
@@ -76,11 +79,17 @@ export function PlanningView({
   initialData,
   initialLoadFailed = false,
   categories,
+  accounts,
+  recurrences,
+  recurrencesLoadFailed = false,
   currency,
 }: {
   initialData: Budget[];
   initialLoadFailed?: boolean;
   categories: Category[];
+  accounts: Account[];
+  recurrences: Recurrence[];
+  recurrencesLoadFailed?: boolean;
   currency: string;
 }) {
   const { data: budgets, isError, isFetching, refetch } =
@@ -206,6 +215,16 @@ export function PlanningView({
           })}
         </div>
       )}
+
+      <div className="mt-2 border-t border-border pt-6">
+        <RecurrencesSection
+          initialData={recurrences}
+          initialLoadFailed={recurrencesLoadFailed}
+          accounts={accounts}
+          categories={categories}
+          currency={currency}
+        />
+      </div>
     </div>
   );
 }

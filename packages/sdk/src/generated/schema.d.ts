@@ -641,6 +641,7 @@ export interface components {
                 accountId: string;
                 toAccountId?: string;
                 date: string;
+                recurrenceId?: string | null;
                 deletedAt: string | null;
                 syncVersion: number;
                 createdAt: string;
@@ -661,6 +662,7 @@ export interface components {
                     accountId: string;
                     toAccountId?: string;
                     date: string;
+                    recurrenceId?: string | null;
                     deletedAt: string | null;
                     syncVersion: number;
                     createdAt: string;

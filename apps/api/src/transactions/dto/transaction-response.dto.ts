@@ -15,6 +15,8 @@ export const transactionSchema = z.object({
   accountId: z.string(),
   toAccountId: z.string().optional(),
   date: z.string(),
+  /** Set when a recurrence rule created this record. */
+  recurrenceId: z.string().nullish(),
   deletedAt: z.string().nullable(),
   syncVersion: z.number(),
   createdAt: z.string(),
