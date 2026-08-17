@@ -131,38 +131,40 @@ export default function RecordsScreen() {
   return (
     <View className="flex-1 bg-background">
       {/* Header Bar */}
-      <View className="flex-row items-center justify-between px-6 pt-16 pb-4 border-b border-border bg-background">
-        <View>
-          <Text className="font-heading text-2xl text-foreground">Records</Text>
-          <Text className="text-xs text-muted-foreground">
-            {transactions.length} entries shown
-          </Text>
-        </View>
-
-        <View className="flex-row items-center gap-2">
-          <Pressable
-            onPress={() => setExportVisible(true)}
-            hitSlop={8}
-            className="h-9 w-9 items-center justify-center rounded-lg border border-border bg-card shrink-0 active:opacity-80"
-          >
-            <Feather name="download" size={16} color={theme.foreground} />
-          </Pressable>
-
-          <Pressable
-            onPress={handleAddRecord}
-            hitSlop={8}
-            className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 shrink-0 active:opacity-80"
-          >
-            <Feather name="plus" size={16} color={theme.primaryForeground} />
-            <Text className="text-xs font-semibold text-primary-foreground">
-              Add Record
+      <View className="w-full border-b border-border bg-background">
+        <View className="w-full max-w-5xl mx-auto flex-row items-center justify-between px-5 md:px-8 pt-16 pb-4">
+          <View>
+            <Text className="font-heading text-2xl text-foreground">Records</Text>
+            <Text className="text-xs text-muted-foreground">
+              {transactions.length} entries shown
             </Text>
-          </Pressable>
+          </View>
+
+          <View className="flex-row items-center gap-2">
+            <Pressable
+              onPress={() => setExportVisible(true)}
+              hitSlop={8}
+              className="h-9 w-9 items-center justify-center rounded-lg border border-border bg-card shrink-0 active:opacity-80"
+            >
+              <Feather name="download" size={16} color={theme.foreground} />
+            </Pressable>
+
+            <Pressable
+              onPress={handleAddRecord}
+              hitSlop={8}
+              className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 shrink-0 active:opacity-80"
+            >
+              <Feather name="plus" size={16} color={theme.primaryForeground} />
+              <Text className="text-xs font-semibold text-primary-foreground">
+                Add Record
+              </Text>
+            </Pressable>
+          </View>
         </View>
       </View>
 
       <ScrollView
-        contentContainerClassName="px-6 py-4 pb-28 gap-4"
+        contentContainerClassName="items-center px-4 md:px-8 py-4 pb-32"
         keyboardShouldPersistTaps="handled"
         refreshControl={
           <RefreshControl
@@ -172,6 +174,7 @@ export default function RecordsScreen() {
           />
         }
       >
+        <View className="w-full max-w-5xl gap-4">
         {/* Search Input */}
         <View className="flex-row items-center rounded-xl bg-card border border-border px-3 h-11">
           <Feather name="search" size={16} color={theme.mutedForeground} />
@@ -455,6 +458,7 @@ export default function RecordsScreen() {
             )}
           </View>
         )}
+        </View>
       </ScrollView>
 
       {/* Add / Edit Transaction Modal */}

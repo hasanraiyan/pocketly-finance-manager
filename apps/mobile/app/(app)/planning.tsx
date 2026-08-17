@@ -266,52 +266,54 @@ export default function PlanningScreen() {
   return (
     <View className="flex-1 bg-background">
       {/* Header Bar */}
-      <View className="flex-row items-center justify-between px-6 pt-16 pb-4 border-b border-border bg-background">
-        <View>
-          <Text className="font-heading text-2xl text-foreground">Planning</Text>
-          <Text className="text-xs text-muted-foreground">
-            Budgets, savings goals & automated alerts
-          </Text>
-        </View>
+      <View className="w-full border-b border-border bg-background">
+        <View className="w-full max-w-5xl mx-auto flex-row items-center justify-between px-5 md:px-8 pt-16 pb-4">
+          <View>
+            <Text className="font-heading text-2xl text-foreground">Planning</Text>
+            <Text className="text-xs text-muted-foreground">
+              Budgets, savings goals & automated alerts
+            </Text>
+          </View>
 
-        {activeTab === "budgets" ? (
-          <Pressable
-            onPress={handleAddBudget}
-            hitSlop={8}
-            className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 shrink-0 active:opacity-80"
-          >
-            <Feather name="plus" size={16} color={theme.primaryForeground} />
-            <Text className="text-xs font-semibold text-primary-foreground">
-              Set Budget
-            </Text>
-          </Pressable>
-        ) : activeTab === "goals" ? (
-          <Pressable
-            onPress={handleAddGoal}
-            hitSlop={8}
-            className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 shrink-0 active:opacity-80"
-          >
-            <Feather name="plus" size={16} color={theme.primaryForeground} />
-            <Text className="text-xs font-semibold text-primary-foreground">
-              New Goal
-            </Text>
-          </Pressable>
-        ) : (
-          <Pressable
-            onPress={handleAddRule}
-            hitSlop={8}
-            className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 shrink-0 active:opacity-80"
-          >
-            <Feather name="plus" size={16} color={theme.primaryForeground} />
-            <Text className="text-xs font-semibold text-primary-foreground">
-              Add Alert
-            </Text>
-          </Pressable>
-        )}
+          {activeTab === "budgets" ? (
+            <Pressable
+              onPress={handleAddBudget}
+              hitSlop={8}
+              className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 shrink-0 active:opacity-80"
+            >
+              <Feather name="plus" size={16} color={theme.primaryForeground} />
+              <Text className="text-xs font-semibold text-primary-foreground">
+                Set Budget
+              </Text>
+            </Pressable>
+          ) : activeTab === "goals" ? (
+            <Pressable
+              onPress={handleAddGoal}
+              hitSlop={8}
+              className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 shrink-0 active:opacity-80"
+            >
+              <Feather name="plus" size={16} color={theme.primaryForeground} />
+              <Text className="text-xs font-semibold text-primary-foreground">
+                New Goal
+              </Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={handleAddRule}
+              hitSlop={8}
+              className="flex-row items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 shrink-0 active:opacity-80"
+            >
+              <Feather name="plus" size={16} color={theme.primaryForeground} />
+              <Text className="text-xs font-semibold text-primary-foreground">
+                Add Alert
+              </Text>
+            </Pressable>
+          )}
+        </View>
       </View>
 
       <ScrollView
-        contentContainerClassName="px-6 py-5 pb-28 gap-5"
+        contentContainerClassName="items-center px-4 md:px-8 py-5 pb-32"
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
@@ -320,6 +322,7 @@ export default function PlanningScreen() {
           />
         }
       >
+        <View className="w-full max-w-5xl gap-5">
         {/* Tab Segment Selector */}
         <View className="flex-row rounded-xl bg-card border border-border p-1">
           <Pressable
@@ -427,7 +430,7 @@ export default function PlanningScreen() {
                 </Button>
               </View>
             ) : (
-              <View className="gap-3">
+              <View className="flex-col md:flex-row md:flex-wrap gap-3">
                 {budgets.map((b) => {
                   const catName = categoryMap.get(b.categoryId) ?? "Category";
                   const spent = b.spent || 0;
@@ -437,7 +440,10 @@ export default function PlanningScreen() {
                   const remaining = Math.max(0, limit - spent);
 
                   return (
-                    <Card key={b._id} className="bg-card border border-border/80">
+                    <Card
+                      key={b._id}
+                      className="w-full md:w-[calc(50%-6px)] bg-card border border-border/80"
+                    >
                       <CardContent className="p-4 gap-3">
                         <View className="flex-row items-start justify-between">
                           <View className="flex-1 pr-2">
@@ -548,7 +554,7 @@ export default function PlanningScreen() {
                 </Button>
               </View>
             ) : (
-              <View className="gap-3">
+              <View className="flex-col md:flex-row md:flex-wrap gap-3">
                 {goals.map((g) => {
                   const pct = Math.min(
                     100,
@@ -561,7 +567,7 @@ export default function PlanningScreen() {
                   const statusInfo = STATUS_CONFIG[g.status] ?? STATUS_CONFIG.stalled;
 
                   return (
-                    <Card key={g._id} className="bg-card border border-border/80">
+                    <Card key={g._id} className="w-full md:w-[calc(50%-6px)] bg-card border border-border/80">
                       <CardContent className="p-4 gap-3">
                         <View className="flex-row items-start justify-between">
                           <View className="flex-1 pr-2">
@@ -673,7 +679,7 @@ export default function PlanningScreen() {
                 </Button>
               </View>
             ) : (
-              <View className="gap-3">
+              <View className="flex-col md:flex-row md:flex-wrap gap-3">
                 {moneyRules.map((rule) => {
                   const desc = describeRule(
                     rule,
@@ -684,7 +690,7 @@ export default function PlanningScreen() {
                   return (
                     <Card
                       key={rule._id}
-                      className={`bg-card border ${
+                      className={`w-full md:w-[calc(50%-6px)] bg-card border ${
                         rule.enabled ? "border-border/80" : "border-border/40 opacity-70"
                       }`}
                     >
@@ -703,12 +709,20 @@ export default function PlanningScreen() {
                             </Text>
                           </View>
 
-                          <Switch
-                            value={rule.enabled}
-                            onValueChange={() => handleToggleRule(rule)}
-                            trackColor={{ false: theme.muted, true: theme.primary }}
-                            thumbColor="#ffffff"
-                          />
+                          <View className="flex-row items-center gap-2">
+                            <Pressable
+                              onPress={() => handleToggleRule(rule)}
+                              className={`h-6 w-11 rounded-full p-0.5 justify-center ${
+                                rule.enabled ? "bg-primary" : "bg-muted"
+                              }`}
+                            >
+                              <View
+                                className={`h-5 w-5 rounded-full bg-white transition-all ${
+                                  rule.enabled ? "self-end" : "self-start"
+                                }`}
+                              />
+                            </Pressable>
+                          </View>
                         </View>
 
                         <View className="flex-row justify-end items-center gap-2 pt-2 border-t border-border/50">
@@ -741,6 +755,7 @@ export default function PlanningScreen() {
             )}
           </View>
         )}
+        </View>
       </ScrollView>
 
       {/* Budget Modal */}

@@ -127,10 +127,10 @@ export function GoalModal({ visible, onClose, goal }: GoalModalProps) {
       onRequestClose={onClose}
     >
       <KeyboardAvoidingView
-        className="flex-1 justify-end bg-black/50"
+        className="flex-1 justify-end md:justify-center md:items-center bg-black/60 md:p-6"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View className="max-h-[90%] rounded-t-3xl bg-background px-6 pb-8 pt-6 border-t border-border">
+        <View className="w-full md:max-w-xl max-h-[90%] rounded-t-3xl md:rounded-3xl bg-background px-6 pb-8 pt-6 border-t md:border border-border">
           <View className="mb-4 flex-row items-center justify-between">
             <Text className="font-heading text-xl text-foreground">
               {isEditing ? "Edit Savings Goal" : "Create Savings Goal"}

@@ -310,15 +310,17 @@ export default function SettingsScreen() {
   return (
     <View className="flex-1 bg-background">
       {/* Header Bar */}
-      <View className="px-6 pt-16 pb-4 border-b border-border bg-background">
-        <Text className="font-heading text-2xl text-foreground">Settings</Text>
-        <Text className="text-xs text-muted-foreground mt-0.5">
-          Profile, categories, MCP connections & security
-        </Text>
+      <View className="w-full border-b border-border bg-background">
+        <View className="w-full max-w-5xl mx-auto px-5 md:px-8 pt-16 pb-4">
+          <Text className="font-heading text-2xl text-foreground">Settings</Text>
+          <Text className="text-xs text-muted-foreground mt-0.5">
+            Profile, categories, MCP connections & security
+          </Text>
+        </View>
       </View>
 
       <ScrollView
-        contentContainerClassName="px-5 py-5 pb-32 gap-4"
+        contentContainerClassName="items-center px-4 md:px-8 py-5 pb-32"
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
@@ -327,491 +329,499 @@ export default function SettingsScreen() {
           />
         }
       >
-        {isLoading ? (
-          <SettingsSkeleton />
-        ) : (
-          <View className="gap-4">
-            {/* 1. Profile Preferences Card */}
-            <Card>
-              <CardContent className="gap-4">
-                <View className="flex-row items-center gap-3.5">
-                  <View className="h-13 w-13 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
-                    <Text className="font-heading text-lg text-primary">
-                      {initials}
-                    </Text>
-                  </View>
-                  <View className="flex-1">
-                    <Text className="text-base font-semibold text-foreground">
-                      {name || authUser?.name || "Pocketly User"}
-                    </Text>
-                    <Text className="text-xs text-muted-foreground mt-0.5">
-                      {profile?.email ?? authUser?.email ?? "user@pocketly.app"}
-                    </Text>
-                  </View>
-                </View>
-
-                {/* Name */}
-                <TextField
-                  label="Display Name"
-                  placeholder="Your full name"
-                  value={name}
-                  onChangeText={setName}
-                />
-
-                {/* Email (Read Only) */}
-                <View className="gap-1.5">
-                  <Text className="text-sm font-medium text-foreground">
-                    Email Address
-                  </Text>
-                  <View className="flex-row items-center justify-between h-11 rounded-lg border border-border bg-muted/40 px-3">
-                    <Text className="text-sm text-muted-foreground">
-                      {profile?.email ?? authUser?.email ?? ""}
-                    </Text>
-                    <View className="flex-row items-center gap-1 rounded bg-positive/10 px-1.5 py-0.5">
-                      <Feather name="check" size={10} color={theme.positive} />
-                      <Text className="text-[10px] font-semibold text-positive">
-                        Verified
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-
-                {/* Base Currency */}
-                <View className="gap-2">
-                  <Text className="text-sm font-medium text-foreground">
-                    Base Ledger Currency
-                  </Text>
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    className="-mx-1"
-                  >
-                    <View className="flex-row gap-2 px-1">
-                      {SUPPORTED_CURRENCIES.map((c) => {
-                        const isSelected = currency === c.code;
-                        return (
-                          <Pressable
-                            key={c.code}
-                            onPress={() => setCurrency(c.code)}
-                            className={`rounded-xl px-3.5 py-2 border ${
-                              isSelected
-                                ? "bg-primary border-primary"
-                                : "bg-card border-border"
-                            }`}
-                          >
-                            <Text
-                              className={`text-xs font-semibold ${
-                                isSelected
-                                  ? "text-primary-foreground"
-                                  : "text-foreground"
-                              }`}
-                            >
-                              {c.code} ({c.symbol})
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-                  </ScrollView>
-                </View>
-
-                {profileMsg && (
-                  <View
-                    className={`rounded-lg p-3 ${
-                      profileMsg.includes("success")
-                        ? "bg-positive/10 border border-positive/20"
-                        : "bg-negative/10 border border-negative/20"
-                    }`}
-                  >
-                    <Text
-                      className={`text-xs text-center ${
-                        profileMsg.includes("success")
-                          ? "text-positive font-medium"
-                          : "text-negative"
-                      }`}
-                    >
-                      {profileMsg}
-                    </Text>
-                  </View>
-                )}
-
-                <Button
-                  loading={updateProfile.isPending}
-                  onPress={handleSaveProfile}
-                  className="mt-1"
-                >
-                  Save Profile Changes
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* 2. Categories Management Card */}
-            <Card>
-              <CardContent className="gap-4">
-                <View className="flex-row items-center justify-between gap-2">
-                  <View className="flex-row items-center gap-2 flex-1">
-                    <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                      <Feather name="tag" size={14} color={theme.primary} />
-                    </View>
-                    <Text className="text-sm font-semibold text-foreground">
-                      Categories
-                    </Text>
-                  </View>
-
-                  <Pressable
-                    onPress={() => handleAddCategory("expense")}
-                    hitSlop={6}
-                    className="flex-row items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-1.5 shrink-0 active:opacity-75"
-                  >
-                    <Feather name="plus" size={13} color={theme.primary} />
-                    <Text className="text-xs font-semibold text-primary">
-                      Add Category
-                    </Text>
-                  </Pressable>
-                </View>
-
-                {/* Expense Categories */}
-                <View className="gap-2">
-                  <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Expense Categories ({expenseCategories.length})
-                  </Text>
-                  <View className="flex-row flex-wrap gap-2">
-                    {expenseCategories.map((cat) => (
-                      <Pressable
-                        key={cat._id}
-                        onPress={() => handleEditCategory(cat)}
-                        className="flex-row items-center gap-2 rounded-xl bg-muted/40 border border-border/80 px-3 py-2 active:opacity-75"
-                      >
-                        <View
-                          style={{ backgroundColor: cat.color ?? theme.primary }}
-                          className="h-2.5 w-2.5 rounded-full shrink-0"
-                        />
-                        <Text
-                          numberOfLines={1}
-                          className="text-xs font-medium text-foreground max-w-[140px]"
-                        >
-                          {cat.name}
+        <View className="w-full max-w-5xl gap-5">
+          {isLoading ? (
+            <SettingsSkeleton />
+          ) : (
+            <View className="flex-col md:flex-row gap-5">
+              {/* Left Column: Profile & Categories */}
+              <View className="flex-1 gap-5">
+                {/* 1. Profile Preferences Card */}
+                <Card>
+                  <CardContent className="gap-4">
+                    <View className="flex-row items-center gap-3.5">
+                      <View className="h-13 w-13 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
+                        <Text className="font-heading text-lg text-primary">
+                          {initials}
                         </Text>
-                        <Pressable
-                          onPress={() => handleDeleteCategory(cat)}
-                          hitSlop={8}
-                          className="ml-0.5 shrink-0"
-                        >
-                          <Feather name="trash-2" size={11} color={theme.negative} />
-                        </Pressable>
-                      </Pressable>
-                    ))}
-                  </View>
-                </View>
-
-                {/* Income Categories */}
-                <View className="gap-2 pt-3 border-t border-border/50">
-                  <View className="flex-row items-center justify-between gap-2">
-                    <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Income Categories ({incomeCategories.length})
-                    </Text>
-                    <Pressable
-                      onPress={() => handleAddCategory("income")}
-                      hitSlop={6}
-                      className="flex-row items-center gap-1 rounded-lg bg-positive/10 px-2.5 py-1 shrink-0 active:opacity-75"
-                    >
-                      <Feather name="plus" size={12} color={theme.positive} />
-                      <Text className="text-xs font-semibold text-positive">
-                        Add Income
-                      </Text>
-                    </Pressable>
-                  </View>
-                  <View className="flex-row flex-wrap gap-2">
-                    {incomeCategories.map((cat) => (
-                      <Pressable
-                        key={cat._id}
-                        onPress={() => handleEditCategory(cat)}
-                        className="flex-row items-center gap-2 rounded-xl bg-muted/40 border border-border/80 px-3 py-2 active:opacity-75"
-                      >
-                        <View
-                          style={{ backgroundColor: cat.color ?? theme.positive }}
-                          className="h-2.5 w-2.5 rounded-full shrink-0"
-                        />
-                        <Text
-                          numberOfLines={1}
-                          className="text-xs font-medium text-foreground max-w-[140px]"
-                        >
-                          {cat.name}
+                      </View>
+                      <View className="flex-1">
+                        <Text className="text-base font-semibold text-foreground">
+                          {name || authUser?.name || "Pocketly User"}
                         </Text>
-                        <Pressable
-                          onPress={() => handleDeleteCategory(cat)}
-                          hitSlop={8}
-                          className="ml-0.5 shrink-0"
-                        >
-                          <Feather name="trash-2" size={11} color={theme.negative} />
-                        </Pressable>
-                      </Pressable>
-                    ))}
-                  </View>
-                </View>
-              </CardContent>
-            </Card>
-
-            {/* 3. Connected Apps & MCP Connections Card */}
-            <Card>
-              <CardContent className="gap-3">
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-row items-center gap-2">
-                    <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                      <Feather name="cpu" size={14} color={theme.primary} />
+                        <Text className="text-xs text-muted-foreground mt-0.5">
+                          {profile?.email ?? authUser?.email ?? "user@pocketly.app"}
+                        </Text>
+                      </View>
                     </View>
-                    <Text className="text-sm font-semibold text-foreground">
-                      Connected Apps & MCP
-                    </Text>
-                  </View>
 
-                  <Text className="font-mono text-xs font-semibold text-muted-foreground">
-                    {connections.length} connected
-                  </Text>
-                </View>
+                    {/* Name */}
+                    <TextField
+                      label="Display Name"
+                      placeholder="Your full name"
+                      value={name}
+                      onChangeText={setName}
+                    />
 
-                <Text className="text-xs text-muted-foreground leading-relaxed">
-                  AI tools and assistants (Claude, Cursor, Antigravity) authorized to interact with your Pocketly financial ledger via MCP.
-                </Text>
-
-                {connections.length === 0 ? (
-                  <View className="items-center justify-center py-4 rounded-xl bg-muted/20 border border-border/40">
-                    <Text className="text-xs text-muted-foreground text-center">
-                      No external MCP clients connected yet.
-                    </Text>
-                  </View>
-                ) : (
-                  <View className="gap-2.5 mt-1">
-                    {connections.map((conn) => (
-                      <View
-                        key={conn.id}
-                        className="flex-row items-center justify-between rounded-xl bg-card border border-border p-3"
-                      >
-                        <View className="flex-1 pr-2">
-                          <Text className="text-xs font-semibold text-foreground">
-                            {conn.clientName}
-                          </Text>
-                          <Text className="text-[11px] text-muted-foreground mt-0.5">
-                            {conn.scopes
-                              .map((s) => SCOPE_LABELS[s] || s)
-                              .slice(0, 2)
-                              .join(" • ")}
+                    {/* Email (Read Only) */}
+                    <View className="gap-1.5">
+                      <Text className="text-sm font-medium text-foreground">
+                        Email Address
+                      </Text>
+                      <View className="flex-row items-center justify-between h-11 rounded-lg border border-border bg-muted/40 px-3">
+                        <Text className="text-sm text-muted-foreground">
+                          {profile?.email ?? authUser?.email ?? ""}
+                        </Text>
+                        <View className="flex-row items-center gap-1 rounded bg-positive/10 px-1.5 py-0.5">
+                          <Feather name="check" size={10} color={theme.positive} />
+                          <Text className="text-[10px] font-semibold text-positive">
+                            Verified
                           </Text>
                         </View>
+                      </View>
+                    </View>
 
-                        <Pressable
-                          onPress={() => handleDisconnectApp(conn)}
-                          hitSlop={6}
-                          className="rounded-md bg-negative/10 px-2.5 py-1"
+                    {/* Base Currency */}
+                    <View className="gap-2">
+                      <Text className="text-sm font-medium text-foreground">
+                        Base Ledger Currency
+                      </Text>
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        className="-mx-1"
+                      >
+                        <View className="flex-row gap-2 px-1">
+                          {SUPPORTED_CURRENCIES.map((c) => {
+                            const isSelected = currency === c.code;
+                            return (
+                              <Pressable
+                                key={c.code}
+                                onPress={() => setCurrency(c.code)}
+                                className={`rounded-xl px-3.5 py-2 border ${
+                                  isSelected
+                                    ? "bg-primary border-primary"
+                                    : "bg-card border-border"
+                                }`}
+                              >
+                                <Text
+                                  className={`text-xs font-semibold ${
+                                    isSelected
+                                      ? "text-primary-foreground"
+                                      : "text-foreground"
+                                  }`}
+                                >
+                                  {c.code} ({c.symbol})
+                                </Text>
+                              </Pressable>
+                            );
+                          })}
+                        </View>
+                      </ScrollView>
+                    </View>
+
+                    {profileMsg && (
+                      <View
+                        className={`rounded-lg p-3 ${
+                          profileMsg.includes("success")
+                            ? "bg-positive/10 border border-positive/20"
+                            : "bg-negative/10 border border-negative/20"
+                        }`}
+                      >
+                        <Text
+                          className={`text-xs text-center ${
+                            profileMsg.includes("success")
+                              ? "text-positive font-medium"
+                              : "text-negative"
+                          }`}
                         >
-                          <Text className="text-xs font-medium text-negative">
-                            Disconnect
+                          {profileMsg}
+                        </Text>
+                      </View>
+                    )}
+
+                    <Button
+                      loading={updateProfile.isPending}
+                      onPress={handleSaveProfile}
+                      className="mt-1"
+                    >
+                      Save Profile Changes
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* 2. Categories Management Card */}
+                <Card>
+                  <CardContent className="gap-4">
+                    <View className="flex-row items-center justify-between gap-2">
+                      <View className="flex-row items-center gap-2 flex-1">
+                        <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                          <Feather name="tag" size={14} color={theme.primary} />
+                        </View>
+                        <Text className="text-sm font-semibold text-foreground">
+                          Categories
+                        </Text>
+                      </View>
+
+                      <Pressable
+                        onPress={() => handleAddCategory("expense")}
+                        hitSlop={6}
+                        className="flex-row items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-1.5 shrink-0 active:opacity-75"
+                      >
+                        <Feather name="plus" size={13} color={theme.primary} />
+                        <Text className="text-xs font-semibold text-primary">
+                          Add Category
+                        </Text>
+                      </Pressable>
+                    </View>
+
+                    {/* Expense Categories */}
+                    <View className="gap-2">
+                      <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        Expense Categories ({expenseCategories.length})
+                      </Text>
+                      <View className="flex-row flex-wrap gap-2">
+                        {expenseCategories.map((cat) => (
+                          <Pressable
+                            key={cat._id}
+                            onPress={() => handleEditCategory(cat)}
+                            className="flex-row items-center gap-2 rounded-xl bg-muted/40 border border-border/80 px-3 py-2 active:opacity-75"
+                          >
+                            <View
+                              style={{ backgroundColor: cat.color ?? theme.primary }}
+                              className="h-2.5 w-2.5 rounded-full shrink-0"
+                            />
+                            <Text
+                              numberOfLines={1}
+                              className="text-xs font-medium text-foreground max-w-[140px]"
+                            >
+                              {cat.name}
+                            </Text>
+                            <Pressable
+                              onPress={() => handleDeleteCategory(cat)}
+                              hitSlop={8}
+                              className="ml-0.5 shrink-0"
+                            >
+                              <Feather name="trash-2" size={11} color={theme.negative} />
+                            </Pressable>
+                          </Pressable>
+                        ))}
+                      </View>
+                    </View>
+
+                    {/* Income Categories */}
+                    <View className="gap-2 pt-3 border-t border-border/50">
+                      <View className="flex-row items-center justify-between gap-2">
+                        <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                          Income Categories ({incomeCategories.length})
+                        </Text>
+                        <Pressable
+                          onPress={() => handleAddCategory("income")}
+                          hitSlop={6}
+                          className="flex-row items-center gap-1 rounded-lg bg-positive/10 px-2.5 py-1 shrink-0 active:opacity-75"
+                        >
+                          <Feather name="plus" size={12} color={theme.positive} />
+                          <Text className="text-xs font-semibold text-positive">
+                            Add Income
                           </Text>
                         </Pressable>
                       </View>
-                    ))}
-                  </View>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* 4. Export Reports Card */}
-            <Card>
-              <CardContent className="gap-3">
-                <View className="flex-row items-center gap-2">
-                  <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                    <Feather name="download" size={14} color={theme.primary} />
-                  </View>
-                  <Text className="text-sm font-semibold text-foreground">
-                    Export Ledger Reports
-                  </Text>
-                </View>
-
-                <Text className="text-xs text-muted-foreground leading-relaxed">
-                  Generate formatted PDF transaction reports or CSV spreadsheets for personal accounting and tax prep.
-                </Text>
-
-                <Button
-                  variant="outline"
-                  onPress={() => setExportModalVisible(true)}
-                  className="mt-1 flex-row items-center gap-2"
-                >
-                  <Feather name="file-text" size={16} color={theme.foreground} />
-                  <Text className="text-sm font-medium text-foreground">
-                    Export PDF / CSV Report
-                  </Text>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* 5. Push Notifications Card */}
-            <Card>
-              <CardContent className="gap-3">
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-row items-center gap-2">
-                    <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                      <Feather name="bell" size={14} color={theme.primary} />
+                      <View className="flex-row flex-wrap gap-2">
+                        {incomeCategories.map((cat) => (
+                          <Pressable
+                            key={cat._id}
+                            onPress={() => handleEditCategory(cat)}
+                            className="flex-row items-center gap-2 rounded-xl bg-muted/40 border border-border/80 px-3 py-2 active:opacity-75"
+                          >
+                            <View
+                              style={{ backgroundColor: cat.color ?? theme.positive }}
+                              className="h-2.5 w-2.5 rounded-full shrink-0"
+                            />
+                            <Text
+                              numberOfLines={1}
+                              className="text-xs font-medium text-foreground max-w-[140px]"
+                            >
+                              {cat.name}
+                            </Text>
+                            <Pressable
+                              onPress={() => handleDeleteCategory(cat)}
+                              hitSlop={8}
+                              className="ml-0.5 shrink-0"
+                            >
+                              <Feather name="trash-2" size={11} color={theme.negative} />
+                            </Pressable>
+                          </Pressable>
+                        ))}
+                      </View>
                     </View>
-                    <Text className="text-sm font-semibold text-foreground">
-                      Push Notifications
-                    </Text>
-                  </View>
+                  </CardContent>
+                </Card>
+              </View>
 
-                  <View className="flex-row items-center gap-1 rounded bg-positive/10 px-2 py-0.5">
-                    <Feather name="check" size={10} color={theme.positive} />
-                    <Text className="text-[10px] font-semibold text-positive">
-                      Enabled
-                    </Text>
-                  </View>
-                </View>
+              {/* Right Column: Connected Apps, Push Notifications, Export, Security, Sessions & Danger Zone */}
+              <View className="flex-1 gap-5">
+                {/* 3. Connected Apps & MCP Connections Card */}
+                <Card>
+                  <CardContent className="gap-3">
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-row items-center gap-2">
+                        <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                          <Feather name="cpu" size={14} color={theme.primary} />
+                        </View>
+                        <Text className="text-sm font-semibold text-foreground">
+                          Connected Apps & MCP
+                        </Text>
+                      </View>
 
-                <Text className="text-xs text-muted-foreground leading-relaxed">
-                  Receive instant alerts for budget overspends, low account balances, and automated money rules.
-                </Text>
-
-                <Button
-                  variant="outline"
-                  loading={sendTestNotification.isPending}
-                  onPress={handleSendTestNotification}
-                  className="mt-1"
-                >
-                  Send Test Notification
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* 6. Security Card */}
-            <Card>
-              <CardContent className="gap-3">
-                <View className="flex-row items-center gap-2">
-                  <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                    <Feather name="lock" size={14} color={theme.primary} />
-                  </View>
-                  <Text className="text-sm font-semibold text-foreground">
-                    Security & Authentication
-                  </Text>
-                </View>
-
-                <Text className="text-xs text-muted-foreground leading-relaxed">
-                  Protect your Pocketly account with an 8+ character password and monitor your active login sessions.
-                </Text>
-
-                <Button
-                  variant="outline"
-                  onPress={() => setPasswordModalVisible(true)}
-                  className="mt-1"
-                >
-                  Change Password
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* 6. Active Sessions Card */}
-            <Card>
-              <CardContent className="gap-4">
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-row items-center gap-2">
-                    <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                      <Feather name="smartphone" size={14} color={theme.primary} />
+                      <Text className="font-mono text-xs font-semibold text-muted-foreground">
+                        {connections.length} connected
+                      </Text>
                     </View>
-                    <Text className="text-sm font-semibold text-foreground">
-                      Active Login Sessions
+
+                    <Text className="text-xs text-muted-foreground leading-relaxed">
+                      AI tools and assistants (Claude, Cursor, Antigravity) authorized to interact with your Pocketly financial ledger via MCP.
                     </Text>
-                  </View>
 
-                  <Text className="font-mono text-xs font-semibold text-muted-foreground">
-                    {sessions.length} device{sessions.length === 1 ? "" : "s"}
-                  </Text>
-                </View>
-
-                <View className="gap-2.5">
-                  {sessions.map((session) => (
-                    <View
-                      key={session.id}
-                      className={`flex-row items-center justify-between rounded-xl p-3.5 border ${
-                        session.isCurrent
-                          ? "bg-primary/5 border-primary/40"
-                          : "bg-muted/30 border-border/70"
-                      }`}
-                    >
-                      <View className="flex-1 pr-2">
-                        <View className="flex-row items-center gap-2">
-                          <Feather
-                            name={
-                              session.userAgent?.toLowerCase().includes("mobile")
-                                ? "smartphone"
-                                : "monitor"
-                            }
-                            size={14}
-                            color={session.isCurrent ? theme.primary : theme.foreground}
-                          />
-                          <Text className="text-xs font-semibold text-foreground">
-                            {session.userAgent
-                              ? session.userAgent.slice(0, 30)
-                              : "Active Device"}
-                          </Text>
-                          {session.isCurrent && (
-                            <View className="rounded bg-primary/15 px-1.5 py-0.5">
-                              <Text className="text-[10px] font-bold text-primary">
-                                This Device
+                    {connections.length === 0 ? (
+                      <View className="items-center justify-center py-4 rounded-xl bg-muted/20 border border-border/40">
+                        <Text className="text-xs text-muted-foreground text-center">
+                          No external MCP clients connected yet.
+                        </Text>
+                      </View>
+                    ) : (
+                      <View className="gap-2.5 mt-1">
+                        {connections.map((conn) => (
+                          <View
+                            key={conn.id}
+                            className="flex-row items-center justify-between rounded-xl bg-card border border-border p-3"
+                          >
+                            <View className="flex-1 pr-2">
+                              <Text className="text-xs font-semibold text-foreground">
+                                {conn.clientName}
+                              </Text>
+                              <Text className="text-[11px] text-muted-foreground mt-0.5">
+                                {conn.scopes
+                                  .map((s) => SCOPE_LABELS[s] || s)
+                                  .slice(0, 2)
+                                  .join(" • ")}
                               </Text>
                             </View>
-                          )}
-                        </View>
 
-                        <Text className="text-[11px] text-muted-foreground mt-1">
-                          {session.ipAddress ? `IP: ${session.ipAddress} • ` : ""}
-                          Active since {formatDate(session.createdAt)}
+                            <Pressable
+                              onPress={() => handleDisconnectApp(conn)}
+                              hitSlop={6}
+                              className="rounded-md bg-negative/10 px-2.5 py-1"
+                            >
+                              <Text className="text-xs font-medium text-negative">
+                                Disconnect
+                              </Text>
+                            </Pressable>
+                          </View>
+                        ))}
+                      </View>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* 4. Export Reports Card */}
+                <Card>
+                  <CardContent className="gap-3">
+                    <View className="flex-row items-center gap-2">
+                      <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                        <Feather name="download" size={14} color={theme.primary} />
+                      </View>
+                      <Text className="text-sm font-semibold text-foreground">
+                        Export Ledger Reports
+                      </Text>
+                    </View>
+
+                    <Text className="text-xs text-muted-foreground leading-relaxed">
+                      Generate formatted PDF transaction reports or CSV spreadsheets for personal accounting and tax prep.
+                    </Text>
+
+                    <Button
+                      variant="outline"
+                      onPress={() => setExportModalVisible(true)}
+                      className="mt-1 flex-row items-center gap-2"
+                    >
+                      <Feather name="file-text" size={16} color={theme.foreground} />
+                      <Text className="text-sm font-medium text-foreground">
+                        Export PDF / CSV Report
+                      </Text>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* 5. Push Notifications Card */}
+                <Card>
+                  <CardContent className="gap-3">
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-row items-center gap-2">
+                        <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                          <Feather name="bell" size={14} color={theme.primary} />
+                        </View>
+                        <Text className="text-sm font-semibold text-foreground">
+                          Push Notifications
                         </Text>
                       </View>
 
-                      {!session.isCurrent && (
-                        <Pressable
-                          onPress={() => handleRevokeSession(session)}
-                          hitSlop={6}
-                          className="rounded-md bg-negative/10 px-2.5 py-1"
-                        >
-                          <Text className="text-xs font-medium text-negative">
-                            Revoke
-                          </Text>
-                        </Pressable>
-                      )}
+                      <View className="flex-row items-center gap-1 rounded bg-positive/10 px-2 py-0.5">
+                        <Feather name="check" size={10} color={theme.positive} />
+                        <Text className="text-[10px] font-semibold text-positive">
+                          Enabled
+                        </Text>
+                      </View>
                     </View>
-                  ))}
-                </View>
 
-                {otherSessionsCount > 0 && (
-                  <Button
-                    variant="outline"
-                    onPress={handleRevokeAllOtherSessions}
-                    loading={revokeOthers.isPending}
-                    className="mt-1"
-                  >
-                    Sign Out Other Devices ({otherSessionsCount})
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
+                    <Text className="text-xs text-muted-foreground leading-relaxed">
+                      Receive instant alerts for budget overspends, low account balances, and automated money rules.
+                    </Text>
 
-            {/* 7. Account Actions / Danger Zone */}
-            <Card>
-              <CardContent className="gap-3">
-                <Button variant="outline" onPress={handleSignOut}>
-                  Sign Out of Pocketly
-                </Button>
+                    <Button
+                      variant="outline"
+                      loading={sendTestNotification.isPending}
+                      onPress={handleSendTestNotification}
+                      className="mt-1"
+                    >
+                      Send Test Notification
+                    </Button>
+                  </CardContent>
+                </Card>
 
-                <Pressable
-                  onPress={handleDeleteAccount}
-                  className="items-center justify-center py-2"
-                >
-                  <Text className="text-xs font-medium text-negative">
-                    Delete Account Permanently
-                  </Text>
-                </Pressable>
-              </CardContent>
-            </Card>
-          </View>
-        )}
+                {/* 6. Security Card */}
+                <Card>
+                  <CardContent className="gap-3">
+                    <View className="flex-row items-center gap-2">
+                      <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                        <Feather name="lock" size={14} color={theme.primary} />
+                      </View>
+                      <Text className="text-sm font-semibold text-foreground">
+                        Security & Authentication
+                      </Text>
+                    </View>
+
+                    <Text className="text-xs text-muted-foreground leading-relaxed">
+                      Protect your Pocketly account with an 8+ character password and monitor your active login sessions.
+                    </Text>
+
+                    <Button
+                      variant="outline"
+                      onPress={() => setPasswordModalVisible(true)}
+                      className="mt-1"
+                    >
+                      Change Password
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* 7. Active Sessions Card */}
+                <Card>
+                  <CardContent className="gap-4">
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-row items-center gap-2">
+                        <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                          <Feather name="smartphone" size={14} color={theme.primary} />
+                        </View>
+                        <Text className="text-sm font-semibold text-foreground">
+                          Active Login Sessions
+                        </Text>
+                      </View>
+
+                      <Text className="font-mono text-xs font-semibold text-muted-foreground">
+                        {sessions.length} device{sessions.length === 1 ? "" : "s"}
+                      </Text>
+                    </View>
+
+                    <View className="gap-2.5">
+                      {sessions.map((session) => (
+                        <View
+                          key={session.id}
+                          className={`flex-row items-center justify-between rounded-xl p-3.5 border ${
+                            session.isCurrent
+                              ? "bg-primary/5 border-primary/40"
+                              : "bg-muted/30 border-border/70"
+                          }`}
+                        >
+                          <View className="flex-1 pr-2">
+                            <View className="flex-row items-center gap-2">
+                              <Feather
+                                name={
+                                  session.userAgent?.toLowerCase().includes("mobile")
+                                    ? "smartphone"
+                                    : "monitor"
+                                }
+                                size={14}
+                                color={session.isCurrent ? theme.primary : theme.foreground}
+                              />
+                              <Text className="text-xs font-semibold text-foreground">
+                                {session.userAgent
+                                  ? session.userAgent.slice(0, 30)
+                                  : "Active Device"}
+                              </Text>
+                              {session.isCurrent && (
+                                <View className="rounded bg-primary/15 px-1.5 py-0.5">
+                                  <Text className="text-[10px] font-bold text-primary">
+                                    This Device
+                                  </Text>
+                                </View>
+                              )}
+                            </View>
+
+                            <Text className="text-[11px] text-muted-foreground mt-1">
+                              {session.ipAddress ? `IP: ${session.ipAddress} • ` : ""}
+                              Active since {formatDate(session.createdAt)}
+                            </Text>
+                          </View>
+
+                          {!session.isCurrent && (
+                            <Pressable
+                              onPress={() => handleRevokeSession(session)}
+                              hitSlop={6}
+                              className="rounded-md bg-negative/10 px-2.5 py-1"
+                            >
+                              <Text className="text-xs font-medium text-negative">
+                                Revoke
+                              </Text>
+                            </Pressable>
+                          )}
+                        </View>
+                      ))}
+                    </View>
+
+                    {otherSessionsCount > 0 && (
+                      <Button
+                        variant="outline"
+                        onPress={handleRevokeAllOtherSessions}
+                        loading={revokeOthers.isPending}
+                        className="mt-1"
+                      >
+                        Sign Out Other Devices ({otherSessionsCount})
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* 8. Account Actions / Danger Zone */}
+                <Card>
+                  <CardContent className="gap-3">
+                    <Button variant="outline" onPress={handleSignOut}>
+                      Sign Out of Pocketly
+                    </Button>
+
+                    <Pressable
+                      onPress={handleDeleteAccount}
+                      className="items-center justify-center py-2"
+                    >
+                      <Text className="text-xs font-medium text-negative">
+                        Delete Account Permanently
+                      </Text>
+                    </Pressable>
+                  </CardContent>
+                </Card>
+              </View>
+            </View>
+          )}
+        </View>
       </ScrollView>
 
       {/* Change Password Modal */}
