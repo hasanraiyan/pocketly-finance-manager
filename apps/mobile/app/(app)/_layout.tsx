@@ -1,3 +1,4 @@
+import { usePushNotificationSetup } from "@/features/notifications/hooks";
 import { useAuth } from "@/lib/auth-provider";
 import { Feather } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
@@ -6,6 +7,7 @@ import { theme } from "@/lib/theme";
 
 export default function AppLayout() {
   const { isLoaded, isSignedIn } = useAuth();
+  usePushNotificationSetup();
 
   if (!isLoaded) {
     return <View className="flex-1 bg-background" />;

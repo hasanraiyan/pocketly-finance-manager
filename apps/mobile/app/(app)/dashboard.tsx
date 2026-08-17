@@ -1,248 +1,594 @@
-import { useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "expo-router";
+import React, { useMemo, useState } from "react";
 import { Feather } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
+import { Link, useRouter } from "expo-router";
 import {
   ActivityIndicator,
+  Pressable,
   RefreshControl,
   ScrollView,
   Text,
   View,
 } from "react-native";
 import { Button } from "@/components/Button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/Card";
+import { Card, CardContent } from "@/components/Card";
 import { ProgressBar } from "@/components/ProgressBar";
+import { AccountModal } from "@/features/accounts/AccountModal";
+import {
+  resolveAccountIconKey,
+  ACCOUNT_ICONS,
+  type AccountType,
+} from "@/features/accounts/account-icons";
+import { type Account } from "@/features/accounts/hooks";
+import { BudgetModal } from "@/features/budgets/BudgetModal";
+import { type Budget } from "@/features/budgets/hooks";
+import { DashboardSkeleton } from "@/features/dashboard/DashboardSkeleton";
+import { GoalModal } from "@/features/goals/GoalModal";
+import { type Goal } from "@/features/goals/hooks";
+import {
+  useCreateTransaction,
+  useTransactions,
+  type Transaction,
+} from "@/features/transactions/hooks";
+import { TransactionModal } from "@/features/transactions/TransactionModal";
+import { usePocketlyClient } from "@/lib/api-client";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { theme } from "@/lib/theme";
-import { usePocketlyClient } from "@/lib/api-client";
 
 export default function DashboardScreen() {
+  const router = useRouter();
   const client = usePocketlyClient();
+
+  const [checklistDismissed, setChecklistDismissed] = useState(false);
+
+  // Modals state for dashboard quick actions
+  const [txModalVisible, setTxModalVisible] = useState(false);
+  const [accountModalVisible, setAccountModalVisible] = useState(false);
+  const [budgetModalVisible, setBudgetModalVisible] = useState(false);
+  const [goalModalVisible, setGoalModalVisible] = useState(false);
 
   const { data, isLoading, isError, refetch, isRefetching } = useQuery({
     queryKey: ["dashboard"],
     queryFn: async () => {
-      const [profileRes, overviewRes, accountsRes, budgetsRes, transactionsRes] =
-        await Promise.all([
-          client.GET("/users/me"),
-          client.GET("/analysis"),
-          client.GET("/accounts", { params: { query: { limit: 5 } } }),
-          client.GET("/budgets", { params: { query: { limit: 4 } } }),
-          client.GET("/transactions", { params: { query: { limit: 6 } } }),
-        ]);
+      const [
+        profileRes,
+        overviewRes,
+        accountsRes,
+        budgetsRes,
+        transactionsRes,
+        goalsRes,
+        categoriesRes,
+      ] = await Promise.all([
+        client.GET("/users/me"),
+        client.GET("/analysis", { params: { query: { period: "this_month" } } }),
+        client.GET("/accounts", { params: { query: { limit: 100 } } }),
+        client.GET("/budgets", { params: { query: { limit: 100 } } }),
+        client.GET("/transactions", { params: { query: { limit: 10 } } }),
+        client.GET("/goals", { params: { query: { limit: 100 } } }),
+        client.GET("/categories", { params: { query: { limit: 100 } } }),
+      ]);
 
       if (profileRes.error || !profileRes.data) {
-        throw new Error("Couldn't load your account");
+        throw new Error("Couldn't load dashboard data");
       }
 
-      const { currency, name } = profileRes.data.data;
-      const accounts = accountsRes.data?.data.items ?? [];
+      const profile = profileRes.data.data;
+      const accounts = accountsRes.data?.data?.items ?? [];
+      const budgets = budgetsRes.data?.data?.items ?? [];
+      const transactions = transactionsRes.data?.data?.items ?? [];
+      const goals = goalsRes.data?.data?.items ?? [];
+      const categories = categoriesRes.data?.data?.items ?? [];
+      const overview = overviewRes.data?.data;
+
+      const totalBalance = accounts.reduce((sum, a) => sum + (a.balance || 0), 0);
+      const totalBudgeted = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
+      const totalSpent = budgets.reduce((sum, b) => sum + (b.spent || 0), 0);
 
       return {
-        currency,
-        firstName: name.split(" ")[0],
-        overview: overviewRes.data?.data,
+        currency: profile.currency ?? "USD",
+        name: profile.name ?? "User",
+        firstName: (profile.name ?? "User").split(" ")[0],
+        overview,
         accounts,
-        budgets: budgetsRes.data?.data.items ?? [],
-        transactions: transactionsRes.data?.data.items ?? [],
-        totalBalance: accounts.reduce((sum, a) => sum + a.balance, 0),
+        budgets,
+        transactions,
+        goals,
+        categories,
+        totalBalance,
+        totalBudgeted,
+        totalSpent,
       };
     },
   });
 
-  const onRefresh = useCallback(() => {
-    refetch();
-  }, [refetch]);
+  const categoryMap = useMemo(() => {
+    return new Map((data?.categories ?? []).map((c) => [c._id, c]));
+  }, [data?.categories]);
 
-  if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator color={theme.primary} />
-      </View>
-    );
-  }
+  const accountMap = useMemo(() => {
+    return new Map((data?.accounts ?? []).map((a) => [a._id, a.name]));
+  }, [data?.accounts]);
 
-  if (isError || !data) {
-    return (
-      <View className="flex-1 items-center justify-center gap-2 bg-background px-8">
-        <Text className="font-heading text-lg text-foreground">
-          Can&apos;t reach Pocketly right now
-        </Text>
-        <Text className="text-center text-sm text-muted-foreground">
-          We couldn&apos;t load your account. Pull down to try again.
-        </Text>
-      </View>
-    );
-  }
+  // Greeting time
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  }, []);
 
-  const { currency, firstName, overview, accounts, budgets, transactions } =
-    data;
+  // Checklist items
+  const checklist = useMemo(() => {
+    if (!data) return [];
+    return [
+      {
+        id: "account",
+        label: "Link your first account",
+        done: data.accounts.length > 0,
+        action: () => setAccountModalVisible(true),
+      },
+      {
+        id: "transaction",
+        label: "Record your first expense or income",
+        done: data.transactions.length > 0,
+        action: () => setTxModalVisible(true),
+      },
+      {
+        id: "budget",
+        label: "Set a monthly category budget",
+        done: data.budgets.length > 0,
+        action: () => setBudgetModalVisible(true),
+      },
+      {
+        id: "goal",
+        label: "Create a savings goal",
+        done: data.goals.length > 0,
+        action: () => setGoalModalVisible(true),
+      },
+    ];
+  }, [data]);
+
+  const completedSteps = checklist.filter((s) => s.done).length;
+  const isAllDone = completedSteps === checklist.length;
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerClassName="gap-6 p-4 pt-16"
-      refreshControl={
-        <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} />
-      }
-    >
-      <View>
-        <Text className="font-heading text-2xl text-foreground">
-          Hi {firstName}
-        </Text>
-        <Text className="text-sm text-muted-foreground">
-          Here&apos;s where things stand.
-        </Text>
-      </View>
-
-      <View className="gap-6 rounded-xl bg-primary p-6">
-        <Text className="text-xs tracking-wide text-primary-foreground/70 uppercase">
-          Total balance
-        </Text>
-        <Text className="font-heading text-4xl text-primary-foreground">
-          {formatCurrency(data.totalBalance, currency)}
-        </Text>
-        <View className="flex-row flex-wrap gap-x-5 gap-y-2 border-t border-primary-foreground/15 pt-4">
-          <View className="flex-row items-center gap-1.5">
-            <Feather name="arrow-up-right" size={14} color={theme.primaryForeground} />
-            <Text className="text-sm text-primary-foreground">
-              Income {formatCurrency(overview?.income ?? 0, currency)}
-            </Text>
-          </View>
-          <View className="flex-row items-center gap-1.5">
-            <Feather name="arrow-down-right" size={14} color={theme.primaryForeground} />
-            <Text className="text-sm text-primary-foreground">
-              Expenses {formatCurrency(overview?.expense ?? 0, currency)}
-            </Text>
-          </View>
-          <Text className="text-sm text-primary-foreground">
-            Net {formatCurrency(overview?.net ?? 0, currency)}
+    <View className="flex-1 bg-background">
+      {/* Header Bar */}
+      <View className="flex-row items-center justify-between px-6 pt-16 pb-4 border-b border-border bg-background">
+        <View>
+          <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {greeting}
+          </Text>
+          <Text className="font-heading text-2xl text-foreground">
+            {data?.firstName ? `Hi ${data.firstName}` : "Dashboard"}
           </Text>
         </View>
+
+        <Pressable
+          onPress={() => router.push("/(app)/settings")}
+          hitSlop={8}
+          className="h-10 w-10 items-center justify-center rounded-full bg-muted/60"
+        >
+          <Feather name="settings" size={18} color={theme.foreground} />
+        </Pressable>
       </View>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Accounts</CardTitle>
-          <CardDescription>
-            {accounts.length} account{accounts.length === 1 ? "" : "s"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="gap-1">
-          {accounts.length === 0 ? (
-            <View className="items-start gap-3 py-2">
-              <Text className="text-sm text-muted-foreground">
-                Add your first account to start tracking.
-              </Text>
-              <Link href="/(app)/accounts" asChild>
-                <Button variant="outline">Add an account</Button>
-              </Link>
-            </View>
-          ) : (
-            accounts.map((account) => (
-              <View
-                key={account._id}
-                className="flex-row items-center justify-between border-l-2 border-primary py-2 pl-3"
-              >
-                <Text className="text-sm text-foreground">{account.name}</Text>
-                <Text className="text-sm text-foreground">
-                  {formatCurrency(account.balance, currency)}
-                </Text>
-              </View>
-            ))
-          )}
-        </CardContent>
-      </Card>
+      <ScrollView
+        contentContainerClassName="px-5 py-5 pb-32 gap-5"
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={refetch}
+            tintColor={theme.primary}
+          />
+        }
+      >
+        {isLoading && !isRefetching ? (
+          <DashboardSkeleton />
+        ) : isError || !data ? (
+          <View className="items-center justify-center rounded-2xl bg-card border border-border p-8 text-center">
+            <Feather name="alert-circle" size={32} color={theme.negative} />
+            <Text className="mt-3 font-heading text-lg text-foreground">
+              Couldn&apos;t load dashboard
+            </Text>
+            <Text className="mt-1 text-center text-xs text-muted-foreground mb-4">
+              Pull down or tap retry to connect with Pocketly.
+            </Text>
+            <Button variant="outline" onPress={() => refetch()}>
+              Retry
+            </Button>
+          </View>
+        ) : (
+          <View className="gap-5">
+            {/* 1. Onboarding Checklist (if not complete & not dismissed) */}
+            {!checklistDismissed && !isAllDone && (
+              <Card className="bg-card border border-primary/30">
+                <CardContent className="gap-3">
+                  <View className="flex-row items-center justify-between">
+                    <View className="flex-row items-center gap-2">
+                      <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                        <Feather name="check-circle" size={14} color={theme.primary} />
+                      </View>
+                      <Text className="text-sm font-semibold text-foreground">
+                        Getting Started ({completedSteps}/{checklist.length})
+                      </Text>
+                    </View>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Budgets</CardTitle>
-          <CardDescription>This period</CardDescription>
-        </CardHeader>
-        <CardContent className="gap-4">
-          {budgets.length === 0 ? (
-            <View className="items-start gap-3 py-2">
-              <Text className="text-sm text-muted-foreground">
-                Create a budget to start tracking your spending.
-              </Text>
-              <Link href="/(app)/planning" asChild>
-                <Button variant="outline">Create a budget</Button>
-              </Link>
-            </View>
-          ) : (
-            budgets.map((budget) => (
-              <View key={budget._id} className="gap-1.5">
+                    <Pressable
+                      onPress={() => setChecklistDismissed(true)}
+                      hitSlop={6}
+                    >
+                      <Text className="text-xs text-muted-foreground">Dismiss</Text>
+                    </Pressable>
+                  </View>
+
+                  <ProgressBar value={completedSteps} max={checklist.length} />
+
+                  <View className="gap-2 mt-1">
+                    {checklist.map((step) => (
+                      <Pressable
+                        key={step.id}
+                        onPress={step.done ? undefined : step.action}
+                        className={`flex-row items-center justify-between p-2.5 rounded-xl border ${
+                          step.done
+                            ? "bg-muted/20 border-border/40 opacity-60"
+                            : "bg-card border-border active:opacity-75"
+                        }`}
+                      >
+                        <View className="flex-row items-center gap-2.5 flex-1 pr-2">
+                          <View
+                            className={`h-5 w-5 items-center justify-center rounded-full ${
+                              step.done ? "bg-positive" : "border border-border"
+                            }`}
+                          >
+                            {step.done && (
+                              <Feather name="check" size={11} color="#ffffff" />
+                            )}
+                          </View>
+                          <Text
+                            className={`text-xs ${
+                              step.done
+                                ? "text-muted-foreground line-through"
+                                : "font-medium text-foreground"
+                            }`}
+                          >
+                            {step.label}
+                          </Text>
+                        </View>
+
+                        {!step.done && (
+                          <Feather
+                            name="chevron-right"
+                            size={14}
+                            color={theme.mutedForeground}
+                          />
+                        )}
+                      </Pressable>
+                    ))}
+                  </View>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* 2. Total Net Worth Hero Card */}
+            <Card className="bg-card border border-border/80">
+              <CardContent className="gap-4">
                 <View className="flex-row items-center justify-between">
-                  <Text className="text-sm text-foreground">
-                    {formatCurrency(budget.spent, currency)} of{" "}
-                    {formatCurrency(budget.amount, currency)}
+                  <Text className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Total Net Worth
                   </Text>
-                  <Text
-                    className={`text-sm ${
-                      budget.percentageUsed > 100
-                        ? "text-negative"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {budget.percentageUsed}%
-                  </Text>
+                  <View className="h-7 w-7 items-center justify-center rounded-full bg-primary/10">
+                    <Feather name="credit-card" size={14} color={theme.primary} />
+                  </View>
                 </View>
-                <ProgressBar value={budget.percentageUsed} />
-              </View>
-            ))
-          )}
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent records</CardTitle>
-        </CardHeader>
-        <CardContent className="gap-0 p-0 pb-2">
-          {transactions.length === 0 ? (
-            <View className="items-start gap-3 px-4 py-2">
-              <Text className="text-sm text-muted-foreground">
-                Add your first transaction to see it here.
-              </Text>
-              <Link href="/(app)/records" asChild>
-                <Button variant="outline">Add a record</Button>
-              </Link>
-            </View>
-          ) : (
-            transactions.map((tx, i) => (
-              <View
-                key={tx._id}
-                className={`flex-row items-center justify-between px-4 py-3 ${
-                  i > 0 ? "border-t border-border" : ""
-                }`}
-              >
-                <View>
-                  <Text className="text-sm text-foreground">
-                    {tx.description || tx.type}
-                  </Text>
-                  <Text className="text-xs text-muted-foreground">
-                    {formatDate(tx.date)}
-                  </Text>
-                </View>
-                <Text
-                  className={`text-sm ${
-                    tx.type === "expense" ? "text-negative" : "text-positive"
-                  }`}
-                >
-                  {tx.type === "expense" ? "-" : "+"}
-                  {formatCurrency(tx.amount, currency)}
+                <Text className="font-mono text-3xl font-bold tracking-tight text-foreground">
+                  {formatCurrency(data.totalBalance, data.currency)}
                 </Text>
-              </View>
-            ))
-          )}
-        </CardContent>
-      </Card>
-    </ScrollView>
+
+                {/* Cash Flow summary ribbon */}
+                <View className="flex-row justify-between items-center pt-3 border-t border-border/60">
+                  <View>
+                    <Text className="text-[10px] uppercase font-medium text-muted-foreground">
+                      This Month Income
+                    </Text>
+                    <Text className="font-mono text-xs font-bold text-positive mt-0.5">
+                      +{formatCurrency(data.overview?.income ?? 0, data.currency)}
+                    </Text>
+                  </View>
+
+                  <View>
+                    <Text className="text-[10px] uppercase font-medium text-muted-foreground">
+                      Expenses
+                    </Text>
+                    <Text className="font-mono text-xs font-bold text-negative mt-0.5">
+                      -{formatCurrency(data.overview?.expense ?? 0, data.currency)}
+                    </Text>
+                  </View>
+
+                  <View className="items-end">
+                    <Text className="text-[10px] uppercase font-medium text-muted-foreground">
+                      Net Flow
+                    </Text>
+                    <Text
+                      className={`font-mono text-xs font-bold mt-0.5 ${
+                        (data.overview?.net ?? 0) >= 0
+                          ? "text-positive"
+                          : "text-negative"
+                      }`}
+                    >
+                      {(data.overview?.net ?? 0) >= 0 ? "+" : ""}
+                      {formatCurrency(data.overview?.net ?? 0, data.currency)}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* 4 Quick Action Buttons */}
+                <View className="flex-row gap-2 pt-2 border-t border-border/60">
+                  <Pressable
+                    onPress={() => setTxModalVisible(true)}
+                    className="flex-1 items-center justify-center rounded-xl bg-primary py-2.5 active:opacity-80"
+                  >
+                    <Feather name="plus" size={14} color={theme.primaryForeground} />
+                    <Text className="text-[11px] font-semibold text-primary-foreground mt-0.5">
+                      Record
+                    </Text>
+                  </Pressable>
+
+                  <Pressable
+                    onPress={() => setAccountModalVisible(true)}
+                    className="flex-1 items-center justify-center rounded-xl bg-muted/70 py-2.5 active:opacity-80"
+                  >
+                    <Feather name="folder-plus" size={14} color={theme.foreground} />
+                    <Text className="text-[11px] font-semibold text-foreground mt-0.5">
+                      Account
+                    </Text>
+                  </Pressable>
+
+                  <Pressable
+                    onPress={() => setBudgetModalVisible(true)}
+                    className="flex-1 items-center justify-center rounded-xl bg-muted/70 py-2.5 active:opacity-80"
+                  >
+                    <Feather name="pie-chart" size={14} color={theme.foreground} />
+                    <Text className="text-[11px] font-semibold text-foreground mt-0.5">
+                      Budget
+                    </Text>
+                  </Pressable>
+
+                  <Pressable
+                    onPress={() => setGoalModalVisible(true)}
+                    className="flex-1 items-center justify-center rounded-xl bg-muted/70 py-2.5 active:opacity-80"
+                  >
+                    <Feather name="award" size={14} color={theme.foreground} />
+                    <Text className="text-[11px] font-semibold text-foreground mt-0.5">
+                      Goal
+                    </Text>
+                  </Pressable>
+                </View>
+              </CardContent>
+            </Card>
+
+            {/* 3. Monthly Budgets Overview */}
+            <Card>
+              <CardContent className="gap-3.5">
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center gap-2">
+                    <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                      <Feather name="pie-chart" size={14} color={theme.primary} />
+                    </View>
+                    <Text className="text-sm font-semibold text-foreground">
+                      Monthly Budgets
+                    </Text>
+                  </View>
+
+                  <Pressable
+                    onPress={() => router.push("/(app)/planning")}
+                    hitSlop={6}
+                  >
+                    <Text className="text-xs font-semibold text-primary">
+                      Manage →
+                    </Text>
+                  </Pressable>
+                </View>
+
+                {data.budgets.length === 0 ? (
+                  <View className="items-center justify-center py-4 rounded-xl bg-muted/20 border border-border/40">
+                    <Text className="text-xs text-muted-foreground text-center">
+                      No category budgets set for this month.
+                    </Text>
+                  </View>
+                ) : (
+                  <View className="gap-3">
+                    {data.budgets.slice(0, 4).map((b) => {
+                      const catName =
+                        categoryMap.get(b.categoryId)?.name ?? "Category";
+                      const isOver = (b.spent || 0) > b.amount;
+                      const remaining = Math.max(0, b.amount - (b.spent || 0));
+
+                      return (
+                        <View key={b._id} className="gap-1.5">
+                          <View className="flex-row justify-between items-center">
+                            <Text className="text-xs font-medium text-foreground">
+                              {catName}
+                            </Text>
+                            <Text className="font-mono text-xs text-muted-foreground">
+                              {formatCurrency(b.spent || 0, data.currency)} /{" "}
+                              {formatCurrency(b.amount, data.currency)}
+                            </Text>
+                          </View>
+
+                          <ProgressBar
+                            value={b.spent || 0}
+                            max={b.amount}
+                            color={isOver ? theme.negative : undefined}
+                          />
+
+                          <View className="flex-row justify-between items-center">
+                            <Text className="text-[10px] text-muted-foreground">
+                              {isOver ? (
+                                <Text className="text-negative font-semibold">
+                                  Over budget
+                                </Text>
+                              ) : (
+                                `${formatCurrency(remaining, data.currency)} remaining`
+                              )}
+                            </Text>
+                            <Text className="text-[10px] font-mono text-muted-foreground">
+                              {Math.round(((b.spent || 0) / (b.amount || 1)) * 100)}%
+                            </Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+                  </View>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* 4. Recent Transactions Feed */}
+            <Card>
+              <CardContent className="gap-3.5">
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center gap-2">
+                    <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                      <Feather name="clock" size={14} color={theme.primary} />
+                    </View>
+                    <Text className="text-sm font-semibold text-foreground">
+                      Recent Records
+                    </Text>
+                  </View>
+
+                  <Pressable
+                    onPress={() => router.push("/(app)/records")}
+                    hitSlop={6}
+                  >
+                    <Text className="text-xs font-semibold text-primary">
+                      All Records →
+                    </Text>
+                  </Pressable>
+                </View>
+
+                {data.transactions.length === 0 ? (
+                  <View className="items-center justify-center py-4 rounded-xl bg-muted/20 border border-border/40">
+                    <Text className="text-xs text-muted-foreground text-center">
+                      No records logged yet.
+                    </Text>
+                  </View>
+                ) : (
+                  <View className="gap-2">
+                    {data.transactions.slice(0, 5).map((tx) => {
+                      const isIncome = tx.type === "income";
+                      const isTransfer = tx.type === "transfer";
+                      const accountName = accountMap.get(tx.accountId) ?? "Account";
+                      const categoryName = tx.categoryId
+                        ? categoryMap.get(tx.categoryId)?.name
+                        : undefined;
+
+                      return (
+                        <View
+                          key={tx._id}
+                          className="flex-row items-center justify-between p-3 rounded-xl bg-muted/30 border border-border/60"
+                        >
+                          <View className="flex-row items-center gap-3 flex-1 pr-2">
+                            <View
+                              className={`h-9 w-9 items-center justify-center rounded-xl ${
+                                isTransfer
+                                  ? "bg-muted"
+                                  : isIncome
+                                  ? "bg-positive/10"
+                                  : "bg-negative/10"
+                              }`}
+                            >
+                              <Feather
+                                name={
+                                  isTransfer
+                                    ? "repeat"
+                                    : isIncome
+                                    ? "arrow-up-right"
+                                    : "arrow-down-right"
+                                }
+                                size={16}
+                                color={
+                                  isTransfer
+                                    ? theme.foreground
+                                    : isIncome
+                                    ? theme.positive
+                                    : theme.negative
+                                }
+                              />
+                            </View>
+
+                            <View className="flex-1">
+                              <Text
+                                numberOfLines={1}
+                                className="text-xs font-semibold text-foreground"
+                              >
+                                {tx.description ||
+                                  (isTransfer
+                                    ? "Account Transfer"
+                                    : isIncome
+                                    ? "Income"
+                                    : "Expense")}
+                              </Text>
+                              <View className="flex-row items-center gap-1.5 mt-0.5">
+                                <Text className="text-[10px] text-muted-foreground">
+                                  {formatDate(tx.date)}
+                                </Text>
+                                <Text className="text-[10px] text-muted-foreground/60">•</Text>
+                                <Text
+                                  numberOfLines={1}
+                                  className="text-[10px] text-muted-foreground"
+                                >
+                                  {categoryName ?? accountName}
+                                </Text>
+                              </View>
+                            </View>
+                          </View>
+
+                          <Text
+                            className={`font-mono text-xs font-bold ${
+                              isTransfer
+                                ? "text-foreground"
+                                : isIncome
+                                ? "text-positive"
+                                : "text-negative"
+                            }`}
+                          >
+                            {isTransfer ? "" : isIncome ? "+" : "-"}
+                            {formatCurrency(tx.amount, data.currency)}
+                          </Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                )}
+              </CardContent>
+            </Card>
+          </View>
+        )}
+      </ScrollView>
+
+      {/* Quick Action Modals */}
+      <TransactionModal
+        visible={txModalVisible}
+        onClose={() => setTxModalVisible(false)}
+      />
+
+      <AccountModal
+        visible={accountModalVisible}
+        onClose={() => setAccountModalVisible(false)}
+        defaultCurrency={data?.currency ?? "USD"}
+      />
+
+      <BudgetModal
+        visible={budgetModalVisible}
+        onClose={() => setBudgetModalVisible(false)}
+      />
+
+      <GoalModal
+        visible={goalModalVisible}
+        onClose={() => setGoalModalVisible(false)}
+      />
+    </View>
   );
 }

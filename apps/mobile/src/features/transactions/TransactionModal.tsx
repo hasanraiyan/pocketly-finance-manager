@@ -31,7 +31,7 @@ interface TransactionModalProps {
   visible: boolean;
   onClose: () => void;
   transaction?: Transaction | null;
-  filters: TransactionFilters;
+  filters?: TransactionFilters;
 }
 
 const TYPE_OPTIONS: Array<{
@@ -53,7 +53,7 @@ export function TransactionModal({
   visible,
   onClose,
   transaction,
-  filters,
+  filters = {},
 }: TransactionModalProps) {
   const isEditing = Boolean(transaction);
   const { data: accounts = [] } = useAccounts();

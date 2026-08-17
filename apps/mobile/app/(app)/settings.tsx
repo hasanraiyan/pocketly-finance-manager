@@ -19,6 +19,7 @@ import {
   type Category,
 } from "@/features/categories/hooks";
 import { ChangePasswordModal } from "@/features/settings/ChangePasswordModal";
+import { useSendTestNotification } from "@/features/notifications/hooks";
 import {
   SCOPE_LABELS,
   SUPPORTED_CURRENCIES,
@@ -75,7 +76,20 @@ export default function SettingsScreen() {
   const revokeSession = useRevokeSession();
   const revokeOthers = useRevokeOtherSessions();
   const disconnectClient = useDisconnectOAuthClient();
+  const sendTestNotification = useSendTestNotification();
   const deleteAccount = useDeleteMyAccount();
+
+  async function handleSendTestNotification() {
+    try {
+      await sendTestNotification.mutateAsync();
+      Alert.alert(
+        "Test Notification Sent",
+        "A push notification has been dispatched to your registered devices!",
+      );
+    } catch {
+      Alert.alert("Notification Error", "Could not dispatch test push alert.");
+    }
+  }
 
   const [name, setName] = useState("");
   const [currency, setCurrency] = useState("USD");
@@ -630,7 +644,43 @@ export default function SettingsScreen() {
               </CardContent>
             </Card>
 
-            {/* 5. Security Card */}
+            {/* 5. Push Notifications Card */}
+            <Card>
+              <CardContent className="gap-3">
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center gap-2">
+                    <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                      <Feather name="bell" size={14} color={theme.primary} />
+                    </View>
+                    <Text className="text-sm font-semibold text-foreground">
+                      Push Notifications
+                    </Text>
+                  </View>
+
+                  <View className="flex-row items-center gap-1 rounded bg-positive/10 px-2 py-0.5">
+                    <Feather name="check" size={10} color={theme.positive} />
+                    <Text className="text-[10px] font-semibold text-positive">
+                      Enabled
+                    </Text>
+                  </View>
+                </View>
+
+                <Text className="text-xs text-muted-foreground leading-relaxed">
+                  Receive instant alerts for budget overspends, low account balances, and automated money rules.
+                </Text>
+
+                <Button
+                  variant="outline"
+                  loading={sendTestNotification.isPending}
+                  onPress={handleSendTestNotification}
+                  className="mt-1"
+                >
+                  Send Test Notification
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* 6. Security Card */}
             <Card>
               <CardContent className="gap-3">
                 <View className="flex-row items-center gap-2">
