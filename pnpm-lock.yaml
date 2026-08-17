@@ -20,6 +20,9 @@ importers:
       '@clerk/express':
         specifier: ^2.1.57
         version: 2.1.57(express@5.2.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@clerk/shared':
+        specifier: ^4.29.1
+        version: 4.29.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@modelcontextprotocol/sdk':
         specifier: ^1.30.0
         version: 1.30.0(zod@4.4.3)

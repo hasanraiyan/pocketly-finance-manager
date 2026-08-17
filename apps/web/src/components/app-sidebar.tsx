@@ -1,7 +1,7 @@
 "use client";
 
 import Link, { useLinkStatus } from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Wallet,
@@ -9,9 +9,8 @@ import {
   LineChart,
   Target,
   Settings,
-  LogOut,
 } from "lucide-react";
-import { useClerk } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
 import {
   Sidebar,
   SidebarContent,
@@ -23,18 +22,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import type { SessionUser } from "@/lib/get-session";
 
 export const NAV_ITEMS = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -57,23 +45,8 @@ function NavIcon({ icon: Icon }: { icon: (typeof NAV_ITEMS)[number]["icon"] }) {
   return pending ? <Spinner /> : <Icon />;
 }
 
-function initials(name?: string) {
-  if (!name) return "P";
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
-}
-
-export function AppSidebar({ user }: { user: SessionUser }) {
+export function AppSidebar() {
   const pathname = usePathname();
-  const { signOut } = useClerk();
-
-  async function handleSignOut() {
-    await signOut({ redirectUrl: "/" });
-  }
 
   return (
     <Sidebar collapsible="icon">
@@ -105,34 +78,28 @@ export function AppSidebar({ user }: { user: SessionUser }) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <button
-                type="button"
-                className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-sidebar-accent"
-              />
-            }
-          >
-            <Avatar size="sm">
-              {user.image && <AvatarImage src={user.image} alt={user.name} />}
-              <AvatarFallback>{initials(user.name)}</AvatarFallback>
-            </Avatar>
-            <span className="truncate text-sm text-sidebar-foreground group-data-[collapsible=icon]:hidden">
-              {user.name || user.email}
-            </span>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent side="top" align="start">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}>
-              <LogOut />
-              Sign out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/*
+          Clerk's own menu, rather than a hand-rolled one: it adds "Manage
+          account" (password, devices, connected accounts) next to Sign out,
+          and it owns the identity display, so a long email is truncated by
+          Clerk instead of overflowing the popover as it did before.
+        */}
+        <UserButton
+          showName
+          appearance={{
+            elements: {
+              rootBox: "w-full",
+              userButtonTrigger:
+                "w-full rounded-md px-2 py-1.5 hover:bg-sidebar-accent focus:shadow-none",
+              userButtonBox: "w-full flex-row justify-start gap-2",
+              userButtonOuterIdentifier:
+                "min-w-0 truncate pl-0 text-sm text-sidebar-foreground group-data-[collapsible=icon]:hidden",
+              userButtonPopoverCard: "max-w-[min(20rem,calc(100vw-2rem))]",
+              userPreviewMainIdentifier: "truncate",
+              userPreviewSecondaryIdentifier: "truncate",
+            },
+          }}
+        />
       </SidebarFooter>
     </Sidebar>
   );
