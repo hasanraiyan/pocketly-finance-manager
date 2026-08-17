@@ -21,10 +21,10 @@ pnpm workspaces + Turborepo. `apps/mobile` (Expo) is planned but not started —
 
 - **Codegen, not hand-written types**: `openapi-typescript` turns the OpenAPI spec into `paths`/`components` types (`pnpm --filter @pocketly/sdk generate`, committed output in `src/generated/schema.d.ts`). Regenerate it whenever `apps/api/openapi.json` changes.
 - **Runtime**: `openapi-fetch` — tiny, zero-dependency, built on the global `fetch`. Works unmodified in the browser, Node, and React Native/Expo, which is exactly what "web now, mobile later" needs.
-- **Auth is injected, not hardcoded**: the package has no dependency on Clerk. `createPocketlyClient({ baseUrl, getToken })` accepts an async `getToken()` callback and injects `Authorization: Bearer <token>` via a middleware — `apps/web` will supply this from `@clerk/nextjs`, `apps/mobile` will eventually supply it from `@clerk/clerk-expo`. Same shape, different SDK, no coupling.
+- **Auth is injected, not hardcoded**: the package has no dependency on any identity provider. `createPocketlyClient({ baseUrl, getToken })` accepts an async `getToken()` callback and injects `Authorization: Bearer <token>` via a middleware — `apps/web`'s `AuthProvider` (`lib/auth-provider.tsx`) supplies this, refreshing the access token first if it's expired. Same shape works for `apps/mobile` later.
 - **`baseUrl` must include `/api/v1`** — the generated spec's paths (`/health`, `/accounts`, ...) don't include the global prefix, since `apps/api/scripts/generate-docs.ts` generates the doc from a raw `TestingModule` app that never calls `setGlobalPrefix`.
 
-`apps/web/src/lib/api-client.ts` is the current instantiation point (unauthenticated so far — Clerk isn't wired into `apps/web` yet).
+`apps/web/src/lib/use-pocketly-client.ts` (client components) and `lib/api-client.ts#getServerApiClient` (Server Components) are the instantiation points.
 
 ## Backend (`apps/api`)
 
@@ -35,11 +35,9 @@ HTTP request
     ↓
 requestIdMiddleware     reads/generates X-Request-Id, sets it on the response, first of everything
     ↓
-clerkMiddleware        parses the Clerk session token (Express middleware, every request)
-    ↓
 ThrottlerGuard         100 req/min per client (global)
     ↓
-ClerkAuthGuard         resolves the Clerk session → Pocketly User, attaches req.user
+JwtAuthGuard           verifies the Pocketly-issued access token (RS256, via JwtKeysService), attaches req.user
     ↓
 LoggingInterceptor      records start time; after the response/error, logs method+path+status+duration+requestId+userId
     ↓
@@ -84,16 +82,15 @@ Every financial document has a `userId`. Every query filters and writes by `{ _i
 
 ### Auth
 
-Clerk owns identity (`@clerk/express`: `clerkMiddleware()` + `getAuth()`). Pocketly owns authorization: `ClerkAuthGuard` is a global guard (`APP_GUARD`) that resolves the Clerk user to a Pocketly `User` document (creating one on first sight, via `UsersService.findOrCreateByClerkId`) and attaches it to the request. Routes are private by default; `@Public()` opts a route out (`GET /health`, `POST /webhooks/clerk`).
+Pocketly is its own identity provider (`apps/api/src/auth/`) — no external provider, no webhook sync to keep in step. Pieces:
 
-### Staying in sync with Clerk
+- **`PasswordService`** — Argon2id hashing (`@node-rs/argon2`) for `User.passwordHash`.
+- **`JwtKeysService`** — the RS256 signing/verification service. Generates one keypair lazily on first boot, persists it in MongoDB (`SigningKey` singleton, `findOneAndUpdate(..., { upsert: true })` so concurrent instances converge on one key), and every process reads that same key afterward. Signs both regular session tokens and MCP OAuth tokens — one signing mechanism, one JWKS.
+- **`TokenService`** — opaque refresh-token generation/hashing (SHA-256) and timing-safe comparison.
+- **`AuthService`** — `register`/`login`/`refresh`/`logout`, session listing/revocation, password change. `refresh` rotates: the presented `RefreshToken` row is marked `revokedAt`, a new one is issued. Access tokens carry an `sid` claim pointing back at the `RefreshToken` row they descend from, which is how `GET /auth/sessions` marks "this device" without needing the refresh token itself on every request.
+- **`JwtAuthGuard`** — global guard (`APP_GUARD`) that verifies the access token (issuer `pocketly`, audience `pocketly-api`) and resolves `req.user` from its `sub` claim via `UsersService.findById`. Routes are private by default; `@Public()` opts a route out (`GET /health`, `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, the `/oauth2/*` endpoints MCP clients call directly).
 
-Two paths keep the Pocketly `User` profile aligned with Clerk, for different situations:
-
-- **Lazy, on first API call**: `UsersService.findOrCreateByClerkId` creates the Pocketly profile the first time a Clerk user hits any authenticated route. Fine for new users, but doesn't react to changes made *after* that.
-- **Pushed, via webhook**: `POST /webhooks/clerk` (`src/webhooks/`) verifies the request came from Clerk using Svix signature verification (`@clerk/express/webhooks`'s `verifyWebhook`, `CLERK_WEBHOOK_SIGNING_SECRET`), then handles two event types — `user.updated` syncs `email`/`name`/`imageUrl` via `UsersService.syncFromClerk` (never `currency`/`timezone`/`phone`, which are Pocketly-owned), `user.deleted` erases the user's financial data the same way `DELETE /users/me` does (`UsersService.eraseByClerkId`), just without the redundant call back to Clerk to delete an identity that's already gone. Both handlers no-op if the Clerk user isn't one we've ever seen — nothing to sync.
-
-Signature verification needs the exact raw request bytes, so `main.ts` boots the app with `{ rawBody: true }` — Nest preserves `req.rawBody` (a `Buffer`) alongside the normally-parsed `req.body` for every request, and only the webhook handler reads it.
+`RefreshToken` documents are Pocketly's own session bookkeeping — one row per device/browser, TTL-indexed so an expired-and-never-used row cleans itself up, and what backs the "Active Sessions & Devices" list in Settings.
 
 ### Response shape & pagination
 
@@ -108,29 +105,37 @@ Every list endpoint (`accounts`, `categories`, `transactions`, `budgets`) uses c
 
 ### Request tracing
 
-`requestIdMiddleware` (`common/logging/request-id.middleware.ts`) runs first, before Clerk — every response carries an `X-Request-Id` header (reusing an incoming one if the caller sent it), and `LoggingInterceptor` includes it in every log line, so a specific request can be traced through the logs even without a full log-aggregation setup.
+`requestIdMiddleware` (`common/logging/request-id.middleware.ts`) runs first, before the auth guard — every response carries an `X-Request-Id` header (reusing an incoming one if the caller sent it), and `LoggingInterceptor` includes it in every log line, so a specific request can be traced through the logs even without a full log-aggregation setup.
 
 ### API docs
 
-- Swagger UI: `GET /docs` (interactive, Clerk bearer-auth button, persisted across reloads).
+- Swagger UI: `GET /docs` (interactive, bearer-auth button that takes a Pocketly access token, persisted across reloads).
 - Raw OpenAPI JSON: `GET /docs-json`, or generate it to a file with `pnpm --filter api docs:generate` (also produces `apps/api/postman/pocketly-api.postman_collection.json`).
 - DTOs are Zod schemas (`nestjs-zod`'s `createZodDto`) — they generate their own OpenAPI schema automatically, no duplicate `@ApiProperty()` decoration needed.
 
 ## Frontend (`apps/web`)
 
-Next.js 16 (App Router), TypeScript, Tailwind, wired to both the API and Clerk.
+Next.js 16 (App Router), TypeScript, Tailwind, wired to the API directly — no external identity provider.
 
-- `@clerk/nextjs`: `ClerkProvider` in `app/layout.tsx`, and `src/proxy.ts` (Next 16's rename of `middleware.ts`) running `clerkMiddleware()` with a route matcher that `auth.protect()`s everything under `(app)`. Sign-in/sign-up are Clerk's prebuilt `<SignIn />`/`<SignUp />` on catch-all routes; password reset, email verification and Google sign-in are flows Clerk owns entirely, so there are no Pocketly pages for them.
-- API calls go through `@pocketly/sdk`: `lib/use-pocketly-client.ts` (client components) feeds it Clerk's `getToken`, `lib/api-client.ts#getServerApiClient` does the same from `auth()` for Server Components. Identical contract to `apps/mobile/src/lib/api-client.ts`.
-- `lib/get-session.ts#getServerSession` wraps Clerk's `currentUser()` for the marketing pages, which only read the session to decide between "Dashboard" and "Sign in".
+- **`AuthProvider`** (`lib/auth-provider.tsx`, wraps the app in `layout.tsx`) holds the access token in memory and mirrors it into a short-lived, non-httpOnly cookie so Server Components can read it too (`lib/auth-tokens.ts`); the refresh token lives in `localStorage`, used only by the client-side `refresh()` call. Concurrent `getToken()` calls share one in-flight refresh (refresh tokens rotate on use, so two simultaneous refreshes would otherwise race each other).
+- `src/proxy.ts` (Next 16's rename of `middleware.ts`) decode-checks the access-token cookie (presence + expiry, no signature verification at the edge) and redirects to `/sign-in?redirect=<path>` for the protected route prefixes; real verification happens per-request on the API.
+- `/sign-in` and `/sign-up` are hand-built pages (`features/auth/sign-in-form.tsx`/`sign-up-form.tsx`) posting to `/auth/login`/`/auth/register` — no external hosted auth UI.
+- API calls go through `@pocketly/sdk`: `lib/use-pocketly-client.ts` (client components) feeds it `AuthProvider`'s `getToken`, `lib/api-client.ts#getServerApiClient` reads the access-token cookie via `next/headers` for Server Components (no refresh capability needed there — the token is short-lived, and a stale one just means the client-side layer refreshes on the next interaction).
+- `lib/get-session.ts#getServerSession` does a local decode-only read of the access-token cookie for the marketing pages, which only need to decide between "Dashboard" and "Sign in".
 
 ## MCP + OAuth
 
-The API is an OAuth *protected resource* only — Clerk is the authorization server. An MCP client hits `POST /mcp` unauthenticated, gets a 401 carrying `WWW-Authenticate: Bearer resource_metadata="..."`, reads `/.well-known/oauth-protected-resource/mcp` (`mcp/well-known.controller.ts`), and runs the whole authorize/consent/token flow — including dynamic client registration — against Clerk. Pocketly hosts none of those endpoints and signs none of those tokens.
+The API is its own OAuth 2.1 authorization server for MCP clients (`apps/api/src/mcp/oauth/`), not just a protected resource. An MCP client hits `POST /mcp` unauthenticated, gets a 401 carrying `WWW-Authenticate: Bearer resource_metadata="..."`, reads `/.well-known/oauth-protected-resource/mcp` (`mcp/well-known.controller.ts`), and runs the whole flow against Pocketly's own endpoints:
 
-Clerk's origin is derived from `CLERK_PUBLISHABLE_KEY` (which encodes the Frontend API domain, parsed with `@clerk/shared`'s `parsePublishableKey`) rather than configured separately, so it cannot drift from the instance the rest of the app authenticates against. If the key is missing the discovery routes return 503 instead of an empty `authorization_servers` array — a valid-looking document that strands every client. Those routes are also `@RawResponse()`: the discovery documents are read by generic OAuth clients expecting top-level fields, so the API's `{ data: ... }` envelope would make them unparseable. Clients that probe the resource origin for authorization-server metadata (ChatGPT's connector does) get a 302 to Clerk's real document.
+- `POST /oauth2/register` — Dynamic Client Registration (RFC 7591), `@Public()`.
+- `GET /oauth2/authorize` — a plain browser navigation from the MCP client, so it can only carry cookies, not a custom header. Reads the web app's access-token cookie; redirects to `/sign-in` if absent/invalid, otherwise to `apps/web`'s `/mcp-connect` consent page with the request's client/PKCE/scope params in the query string.
+- `POST /oauth2/consent` — called by `/mcp-connect` itself (an authenticated page in the web app, Bearer-token protected like any other API route), not by the MCP client. Issues a single-use, PKCE-bound authorization code and returns the URL to redirect the browser to (the *MCP client's* `redirect_uri`, not a Pocketly route).
+- `POST /oauth2/token` — exchanges the code for an access token after verifying the PKCE code verifier.
+- `GET /oauth2/jwks` — the same `JwtKeysService` keypair session tokens use, exposed for MCP clients to verify tokens themselves if they choose to.
 
-`McpAuthGuard` verifies the resulting access token with `getAuth(req, { acceptsToken: 'oauth_token' })`, resolves the Pocketly `User`, and records the client in `mcp_connections` (what Settings → Connections lists). `mcp_revocations` is the instant-disconnect deny-list for JWT-format tokens, which stay valid until expiry — see the schema comment for why opaque tokens don't need it.
+`register`, `authorize`, `token`, and `jwks` are `@ApiExcludeEndpoint()`'d and `@RawResponse()`'d — they're RFC-shaped endpoints for MCP clients, not typed Pocketly API consumers, and a generic OAuth client can't parse Pocketly's usual `{ data: ... }` envelope. `consent` is the one endpoint in the controller meant for `@pocketly/sdk` consumption, so it's fully documented/typed instead.
+
+`McpAuthGuard` verifies the resulting access token against the `/mcp` audience (not the session audience — see `security.md`), resolves the Pocketly `User`, and records the client in `mcp_connections` (what Settings → Connections lists). Disconnecting deletes the `OAuthConsent` row and writes a marker to `mcp_revocations` keyed by `userId`+`clientId`, checked against the token's `iat` so revocation is immediate rather than "whenever the token expires".
 
 ## Testing
 
