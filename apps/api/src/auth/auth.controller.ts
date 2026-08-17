@@ -8,7 +8,7 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { ApiExcludeController } from '@nestjs/swagger';
+import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -17,12 +17,17 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { SendVerificationEmailDto } from './dto/send-verification-email.dto';
+import {
+  AuthResponseDto,
+  GetSessionResponseDto,
+  AuthMessageResponseDto,
+} from './dto/auth-response.dto';
 import { Public } from '../common/auth/public.decorator';
 
 const COOKIE_NAME = 'pocketly_session';
 const COOKIE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
-@ApiExcludeController()
+@ApiTags('auth')
 @Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -30,6 +35,7 @@ export class AuthController {
   @Public()
   @Post(['sign-up', 'sign-up/email'])
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AuthResponseDto })
   async signUp(
     @Body() dto: SignUpDto,
     @Req() req: Request,
@@ -55,6 +61,7 @@ export class AuthController {
   @Public()
   @Post(['sign-in', 'sign-in/email'])
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AuthResponseDto })
   async signIn(
     @Body() dto: SignInDto,
     @Req() req: Request,
@@ -77,6 +84,7 @@ export class AuthController {
   @Public()
   @Post('verify-email')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AuthResponseDto })
   async verifyEmail(
     @Body() dto: VerifyEmailDto,
     @Req() req: Request,
@@ -96,6 +104,7 @@ export class AuthController {
   @Public()
   @Post(['send-verification-email', 'resend-verification-email'])
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AuthMessageResponseDto })
   async sendVerificationEmail(@Body() dto: SendVerificationEmailDto) {
     const webBaseUrl = process.env.WEB_BASE_URL ?? 'http://localhost:3000';
     return this.authService.sendVerificationEmail(dto.email, webBaseUrl);
@@ -104,6 +113,7 @@ export class AuthController {
   @Public()
   @Post('sign-out')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AuthMessageResponseDto })
   async signOut(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
@@ -118,6 +128,7 @@ export class AuthController {
 
   @Public()
   @Get('session')
+  @ApiOkResponse({ type: GetSessionResponseDto })
   async getSession(@Req() req: Request) {
     const token = this.extractToken(req);
     if (!token) {
@@ -146,6 +157,7 @@ export class AuthController {
   @Public()
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AuthMessageResponseDto })
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
     const webBaseUrl = process.env.WEB_BASE_URL ?? 'http://localhost:3000';
     return this.authService.forgotPassword(dto.email, webBaseUrl);
@@ -154,6 +166,7 @@ export class AuthController {
   @Public()
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AuthMessageResponseDto })
   async resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword({
       token: dto.token,
