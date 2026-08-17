@@ -44,27 +44,27 @@ export function registerCategoriesTools(
 
       switch (rawArgs.action) {
         case 'list': {
-          const scope = requireScope(ctx.token, 'pocketly:read');
+          const scope = requireScope(ctx.scopes, 'pocketly:read');
           if (!scope.ok) return errorResult(scope.message);
           const query = paginationQuerySchema.parse(rawArgs);
           return textResult(await categories.findAll(ctx.user._id, query));
         }
         case 'get': {
-          const scope = requireScope(ctx.token, 'pocketly:read');
+          const scope = requireScope(ctx.scopes, 'pocketly:read');
           if (!scope.ok) return errorResult(scope.message);
           if (!rawArgs.id)
             return errorResult('"id" is required for action "get"');
           return textResult(await categories.findOne(ctx.user._id, rawArgs.id));
         }
         case 'create': {
-          const scope = requireScope(ctx.token, 'pocketly:write');
+          const scope = requireScope(ctx.scopes, 'pocketly:write');
           if (!scope.ok) return errorResult(scope.message);
           const parsed = createCategorySchema.safeParse(rawArgs);
           if (!parsed.success) return zodErrorResult(parsed.error);
           return textResult(await categories.create(ctx.user._id, parsed.data));
         }
         case 'update': {
-          const scope = requireScope(ctx.token, 'pocketly:write');
+          const scope = requireScope(ctx.scopes, 'pocketly:write');
           if (!scope.ok) return errorResult(scope.message);
           if (!rawArgs.id)
             return errorResult('"id" is required for action "update"');
@@ -76,7 +76,7 @@ export function registerCategoriesTools(
           );
         }
         case 'delete': {
-          const scope = requireScope(ctx.token, 'pocketly:write');
+          const scope = requireScope(ctx.scopes, 'pocketly:write');
           if (!scope.ok) return errorResult(scope.message);
           if (!rawArgs.id)
             return errorResult('"id" is required for action "delete"');

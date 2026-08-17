@@ -1,19 +1,4 @@
-import { cookies } from "next/headers";
-import { AUTH_TOKEN_COOKIE_NAME } from "./auth-token";
-
-function getAuthBaseUrl(): string {
-  if (process.env.NEXT_PUBLIC_API_AUTH_URL) {
-    return process.env.NEXT_PUBLIC_API_AUTH_URL;
-  }
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/v1\/?$/, "/api/auth");
-  }
-  return process.env.NODE_ENV === "production"
-    ? "https://api.pocketly.hasanraiyan.me/api/auth"
-    : "http://localhost:4000/api/auth";
-}
-
-const authBaseUrl = getAuthBaseUrl();
+import { currentUser } from "@clerk/nextjs/server";
 
 export type SessionUser = {
   id: string;
@@ -23,37 +8,33 @@ export type SessionUser = {
 };
 
 /**
- * Resource-based auth check for Server Components: asks the API's
- * handler to resolve the bearer token into a session.
+ * Server-side session read for Server Components. Clerk is the source of
+ * truth for identity, so this doesn't call the Pocketly API at all -- pages
+ * that need the Pocketly *profile* (currency, timezone) fetch it separately
+ * via `getServerApiClient`.
  */
 export async function getServerSession(): Promise<{
   user: SessionUser;
 } | null> {
-  const cookieStore = await cookies();
-  const token =
-    cookieStore.get(AUTH_TOKEN_COOKIE_NAME)?.value ||
-    cookieStore.get("pocketly_session")?.value;
-  if (!token) return null;
+  const user = await currentUser();
+  if (!user) return null;
 
-  try {
-    const response = await fetch(`${authBaseUrl}/session`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-    });
-    if (!response.ok) return null;
+  const email =
+    user.primaryEmailAddress?.emailAddress ??
+    user.emailAddresses[0]?.emailAddress ??
+    "";
 
-    const data: unknown = await response.json().catch(() => null);
-    if (
-      !data ||
-      typeof data !== "object" ||
-      !("user" in data) ||
-      !data.user
-    ) {
-      return null;
-    }
+  const name =
+    [user.firstName, user.lastName].filter(Boolean).join(" ") ||
+    user.username ||
+    email.split("@")[0];
 
-    return data as { user: SessionUser };
-  } catch {
-    return null;
-  }
+  return {
+    user: {
+      id: user.id,
+      email,
+      name,
+      image: user.imageUrl,
+    },
+  };
 }

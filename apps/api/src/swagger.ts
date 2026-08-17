@@ -14,7 +14,7 @@ export function buildOpenApiConfig() {
         scheme: 'bearer',
         bearerFormat: 'JWT',
         description:
-          'Better Auth session token. Returned in the set-auth-token response header from POST /api/auth/sign-in/email (or /sign-up/email).',
+          'Clerk session token. Obtain one from the web or mobile app (Clerk `getToken()`); the API verifies it via clerkMiddleware.',
       },
       'jwt',
     )

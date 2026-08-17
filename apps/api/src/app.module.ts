@@ -8,18 +8,18 @@ import { ZodValidationPipe } from 'nestjs-zod';
 import { AccountsModule } from './accounts/accounts.module';
 import { AnalysisModule } from './analysis/analysis.module';
 import { AppController } from './app.controller';
-import { AuthModule } from './auth/auth.module';
 import { BudgetsModule } from './budgets/budgets.module';
 import { CategoriesModule } from './categories/categories.module';
 import { DatabaseModule } from './common/database/database.module';
 import { TransformInterceptor } from './common/http/transform.interceptor';
-import { AppAuthGuard } from './common/auth/app-auth.guard';
+import { ClerkAuthGuard } from './common/auth/clerk-auth.guard';
 import { LoggingInterceptor } from './common/logging/logging.interceptor';
 import { ExportsModule } from './exports/exports.module';
 import { McpModule } from './mcp/mcp.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UsersModule } from './users/users.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
 
 @Module({
   imports: [
@@ -41,7 +41,6 @@ import { UsersModule } from './users/users.module';
       }),
     }),
     DatabaseModule,
-    AuthModule,
     UsersModule,
     AccountsModule,
     CategoriesModule,
@@ -51,13 +50,19 @@ import { UsersModule } from './users/users.module';
     ExportsModule,
     McpModule,
     NotificationsModule,
+    WebhooksModule,
   ],
   controllers: [AppController],
   providers: [
     { provide: APP_FILTER, useClass: SentryGlobalFilter },
     { provide: APP_PIPE, useClass: ZodValidationPipe },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
-    { provide: APP_GUARD, useClass: AppAuthGuard },
+    // Registered as a provider and aliased into APP_GUARD (rather than
+    // `useClass` inline) so e2e tests can swap it for a stand-in via
+    // `overrideProvider(ClerkAuthGuard)` -- an inline useClass has no token
+    // to override.
+    ClerkAuthGuard,
+    { provide: APP_GUARD, useExisting: ClerkAuthGuard },
     { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
     { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
   ],

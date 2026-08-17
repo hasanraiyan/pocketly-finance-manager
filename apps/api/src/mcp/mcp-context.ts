@@ -1,4 +1,3 @@
-import { decodeJwt } from 'jose';
 import { AccountsService } from '../accounts/accounts.service';
 import { AnalysisService } from '../analysis/analysis.service';
 import { BudgetsService } from '../budgets/budgets.service';
@@ -19,31 +18,29 @@ export interface McpToolServices {
 export interface McpToolContext {
   user: UserDocument;
   token: string;
+  /**
+   * Pocketly scopes this connection holds, decided in McpAuthGuard from
+   * Clerk's verification of the access token. See GRANTED_SCOPES there for
+   * why this is currently all-or-nothing.
+   */
+  scopes: McpScope[];
   services: McpToolServices;
 }
 
 /**
- * Re-verifies the access token against a specific scope right before a tool acts on it.
+ * Checks a specific scope right before a tool acts on it. The scopes come
+ * from Clerk's verification of the access token (McpAuthGuard) -- never from
+ * an unverified client-side decode of the token itself.
  */
 export function requireScope(
-  token: string,
+  scopes: McpScope[],
   scope: McpScope,
 ): { ok: true } | { ok: false; message: string } {
-  try {
-    const payload = decodeJwt(token);
-    const scopes =
-      typeof payload.scope === 'string' ? payload.scope.split(' ') : [];
-    if (!scopes.includes(scope)) {
-      return {
-        ok: false,
-        message: `This action requires the "${scope}" scope, which wasn't granted to this connection.`,
-      };
-    }
-    return { ok: true };
-  } catch {
+  if (!scopes.includes(scope)) {
     return {
       ok: false,
-      message: `Invalid access token`,
+      message: `This action requires the "${scope}" scope, which wasn't granted to this connection.`,
     };
   }
+  return { ok: true };
 }

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Fraunces, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -86,7 +87,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
     >
       <body className="min-h-full flex flex-col">
-        <Providers>{children}</Providers>
+        <ClerkProvider
+          appearance={{
+            variables: {
+              colorPrimary: "#2f6f4e",
+              fontFamily: "var(--font-sans)",
+              borderRadius: "0.5rem",
+            },
+          }}
+        >
+          <Providers>{children}</Providers>
+        </ClerkProvider>
       </body>
     </html>
   );

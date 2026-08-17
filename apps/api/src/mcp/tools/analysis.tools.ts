@@ -39,7 +39,7 @@ export function registerAnalysisTools(
       },
     },
     async (rawArgs) => {
-      const scope = requireScope(ctx.token, 'pocketly:read');
+      const scope = requireScope(ctx.scopes, 'pocketly:read');
       if (!scope.ok) return errorResult(scope.message);
 
       const { metric, ...rest } = rawArgs as { metric?: string } & Record<
@@ -76,7 +76,7 @@ export function registerAnalysisTools(
       inputSchema: {},
     },
     async () => {
-      const scope = requireScope(ctx.token, 'pocketly:read');
+      const scope = requireScope(ctx.scopes, 'pocketly:read');
       if (!scope.ok) return errorResult(scope.message);
 
       const { analysis, accounts } = ctx.services;

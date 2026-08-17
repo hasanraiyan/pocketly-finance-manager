@@ -23,11 +23,15 @@ export const SITE_NAME = "Pocketly";
 export const SITE_DESCRIPTION =
   "Pocketly is a personal finance ledger: track accounts, log income and expenses in seconds, set budgets per category, and see your spending patterns without a spreadsheet.";
 
-const apiAuthUrl =
-  process.env.NEXT_PUBLIC_API_AUTH_URL ?? "http://localhost:4000/api/auth";
+const apiUrl =
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
 
-/** The MCP endpoint URL to hand to an AI client -- see auth.config.ts's mcpResourceUri (the API mounts /mcp as a sibling of /api/auth, both off the same origin). */
-export const MCP_SERVER_URL = apiAuthUrl.replace(/\/api\/auth\/?$/, "/mcp");
+/**
+ * The MCP endpoint URL to hand to an AI client. The API mounts /mcp at its
+ * own origin root (outside the api/v1 prefix), because MCP clients address it
+ * as the canonical resource URI advertised in the protected-resource metadata.
+ */
+export const MCP_SERVER_URL = apiUrl.replace(/\/api\/v1\/?$/, "/mcp");
 
 export const SITE_KEYWORDS = [
   "personal finance app",

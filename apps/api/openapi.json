@@ -39,452 +39,6 @@
         ]
       }
     },
-    "/api/auth/sign-up": {
-      "post": {
-        "operationId": "AuthController_signUp[0]",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignUpDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/sign-up/email": {
-      "post": {
-        "operationId": "AuthController_signUp[1]",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignUpDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/sign-in": {
-      "post": {
-        "operationId": "AuthController_signIn[0]",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignInDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/sign-in/email": {
-      "post": {
-        "operationId": "AuthController_signIn[1]",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignInDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/verify-email": {
-      "post": {
-        "operationId": "AuthController_verifyEmail",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/VerifyEmailDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/send-verification-email": {
-      "post": {
-        "operationId": "AuthController_sendVerificationEmail[0]",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SendVerificationEmailDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthMessageResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/resend-verification-email": {
-      "post": {
-        "operationId": "AuthController_sendVerificationEmail[1]",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SendVerificationEmailDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthMessageResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/sign-out": {
-      "post": {
-        "operationId": "AuthController_signOut",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthMessageResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/session": {
-      "get": {
-        "operationId": "AuthController_getSession[0]",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetSessionResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/get-session": {
-      "get": {
-        "operationId": "AuthController_getSession[1]",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetSessionResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/forgot-password": {
-      "post": {
-        "operationId": "AuthController_forgotPassword",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ForgotPasswordDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthMessageResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/reset-password": {
-      "post": {
-        "operationId": "AuthController_resetPassword",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ResetPasswordDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthMessageResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/change-password": {
-      "post": {
-        "operationId": "AuthController_changePassword",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangePasswordDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthMessageResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/sessions": {
-      "get": {
-        "operationId": "AuthController_getSessions",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ActiveSessionsListResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/sessions/revoke": {
-      "post": {
-        "operationId": "AuthController_revokeSession",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RevokeSessionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthMessageResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
-    "/api/auth/sessions/revoke-others": {
-      "post": {
-        "operationId": "AuthController_revokeOtherSessions",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthMessageResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "auth"
-        ]
-      }
-    },
     "/users/me": {
       "get": {
         "operationId": "UsersController_getProfile",
@@ -1970,6 +1524,32 @@
         ]
       }
     },
+    "/mcp-connections": {
+      "get": {
+        "operationId": "McpConnectionsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/McpConnectionListDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "tags": [
+          "mcp-connections"
+        ]
+      }
+    },
     "/mcp-connections/{clientId}": {
       "delete": {
         "operationId": "McpConnectionsController_revoke",
@@ -2020,291 +1600,10 @@
         "scheme": "bearer",
         "bearerFormat": "JWT",
         "type": "http",
-        "description": "Better Auth session token. Returned in the set-auth-token response header from POST /api/auth/sign-in/email (or /sign-up/email)."
+        "description": "Clerk session token. Obtain one from the web or mobile app (Clerk `getToken()`); the API verifies it via clerkMiddleware."
       }
     },
     "schemas": {
-      "SignUpDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 8
-          },
-          "name": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "required": [
-          "email",
-          "password",
-          "name"
-        ]
-      },
-      "AuthResponseDto": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string"
-          },
-          "user": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "email": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "emailVerified": {
-                "type": "boolean"
-              }
-            },
-            "required": [
-              "id",
-              "email",
-              "emailVerified"
-            ],
-            "x-nestjs_zod-self-required": true
-          },
-          "session": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "expiresAt": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "id",
-              "expiresAt"
-            ],
-            "x-nestjs_zod-self-required": true
-          }
-        },
-        "required": [
-          "token",
-          "user",
-          "session"
-        ]
-      },
-      "SignInDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "required": [
-          "email",
-          "password"
-        ]
-      },
-      "VerifyEmailDto": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "required": [
-          "token"
-        ]
-      },
-      "SendVerificationEmailDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
-          }
-        },
-        "required": [
-          "email"
-        ]
-      },
-      "AuthMessageResponseDto": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "message": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "success"
-        ]
-      },
-      "GetSessionResponseDto": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "email": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "emailVerified": {
-                "type": "boolean"
-              }
-            },
-            "required": [
-              "id",
-              "email",
-              "emailVerified"
-            ],
-            "x-nestjs_zod-self-required": true
-          },
-          "session": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "userId": {
-                "type": "string"
-              },
-              "expiresAt": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "id",
-              "userId",
-              "expiresAt"
-            ],
-            "x-nestjs_zod-self-required": true
-          }
-        },
-        "required": [
-          "user",
-          "session"
-        ]
-      },
-      "ForgotPasswordDto": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
-          }
-        },
-        "required": [
-          "email"
-        ]
-      },
-      "ResetPasswordDto": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string",
-            "minLength": 1
-          },
-          "newPassword": {
-            "type": "string",
-            "minLength": 8
-          }
-        },
-        "required": [
-          "token",
-          "newPassword"
-        ]
-      },
-      "ChangePasswordDto": {
-        "type": "object",
-        "properties": {
-          "currentPassword": {
-            "type": "string"
-          },
-          "newPassword": {
-            "type": "string",
-            "minLength": 8
-          }
-        },
-        "required": [
-          "newPassword"
-        ]
-      },
-      "ActiveSessionsListResponseDto": {
-        "type": "object",
-        "properties": {
-          "items": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                },
-                "ipAddress": {
-                  "type": "string"
-                },
-                "userAgent": {
-                  "type": "string"
-                },
-                "expiresAt": {
-                  "type": "string"
-                },
-                "createdAt": {
-                  "type": "string"
-                },
-                "isCurrent": {
-                  "type": "boolean"
-                }
-              },
-              "required": [
-                "id",
-                "expiresAt",
-                "createdAt",
-                "isCurrent"
-              ]
-            }
-          }
-        },
-        "required": [
-          "items"
-        ]
-      },
-      "RevokeSessionDto": {
-        "type": "object",
-        "properties": {
-          "sessionId": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "required": [
-          "sessionId"
-        ]
-      },
       "UserDto": {
         "type": "object",
         "properties": {
@@ -4043,6 +3342,60 @@
             "required": [
               "jobId",
               "message"
+            ],
+            "x-nestjs_zod-self-required": true
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "McpConnectionListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "clientId": {
+                      "type": "string"
+                    },
+                    "clientName": {
+                      "type": "string"
+                    },
+                    "scopes": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "lastSeenAt": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "clientId",
+                    "clientName",
+                    "scopes",
+                    "createdAt",
+                    "lastSeenAt"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "items"
             ],
             "x-nestjs_zod-self-required": true
           }

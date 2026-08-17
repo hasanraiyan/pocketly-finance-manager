@@ -37,8 +37,8 @@ export class McpController {
 
   @Post()
   async handlePost(@Req() req: Request, @Res() res: Response) {
-    const { mcpUser, mcpToken } = req as McpAuthenticatedRequest;
-    const server = this.serverFactory.build(mcpUser, mcpToken);
+    const { mcpUser, mcpToken, mcpScopes } = req as McpAuthenticatedRequest;
+    const server = this.serverFactory.build(mcpUser, mcpToken, mcpScopes);
 
     try {
       const transport = new StreamableHTTPServerTransport({

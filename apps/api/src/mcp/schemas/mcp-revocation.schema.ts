@@ -4,12 +4,12 @@ import { HydratedDocument } from 'mongoose';
 export type McpRevocationDocument = HydratedDocument<McpRevocation>;
 
 /**
- * MCP access tokens are JWTs -- verified locally by signature alone, with
- * no server-side revocation list, so an already-issued token normally
- * keeps working until its own ~1h expiry even after the user disconnects
- * the app (deleting the OAuth consent record only blocks a *future*
- * re-authorization, per Better Auth's oauth-provider; confirmed by reading
- * its refresh-token grant handler, which never checks consent existence).
+ * Clerk can issue MCP access tokens in JWT format, which are verified from
+ * their signature alone. Such a token keeps working until its own ~1h expiry
+ * even after the user disconnects the app, because revoking the grant at
+ * Clerk only blocks a *future* authorization -- there is nothing to consult
+ * at verification time. (Opaque `oat_` tokens don't have this problem: Clerk
+ * checks those against its own store on every verification.)
  *
  * This collection is Pocketly's own lightweight deny-list on top of that:
  * one row per "disconnect" click, keyed by (authUserId, clientId). Every
@@ -25,11 +25,11 @@ export type McpRevocationDocument = HydratedDocument<McpRevocation>;
  */
 @Schema({ timestamps: { createdAt: true, updatedAt: false } })
 export class McpRevocation {
-  /** Better Auth's own user id -- matches the JWT's `sub` claim. */
+  /** Clerk user id -- matches the access token's `sub` claim. */
   @Prop({ required: true })
   authUserId!: string;
 
-  /** OAuth client id -- matches the JWT's `azp`/`client_id` claim. */
+  /** OAuth client id, as reported by Clerk when it verifies the token. */
   @Prop({ required: true })
   clientId!: string;
 

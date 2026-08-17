@@ -11,8 +11,7 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
-import { clearStoredAuthToken } from "@/lib/auth-token";
+import { useClerk } from "@clerk/nextjs";
 import {
   Sidebar,
   SidebarContent,
@@ -70,12 +69,10 @@ function initials(name?: string) {
 
 export function AppSidebar({ user }: { user: SessionUser }) {
   const pathname = usePathname();
-  const router = useRouter();
+  const { signOut } = useClerk();
 
   async function handleSignOut() {
-    await authClient.signOut();
-    clearStoredAuthToken();
-    router.push("/");
+    await signOut({ redirectUrl: "/" });
   }
 
   return (

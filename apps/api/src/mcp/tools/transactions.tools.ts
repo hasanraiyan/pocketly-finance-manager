@@ -61,13 +61,13 @@ export function registerTransactionsTools(
 
       switch (rawArgs.action) {
         case 'list': {
-          const scope = requireScope(ctx.token, 'pocketly:read');
+          const scope = requireScope(ctx.scopes, 'pocketly:read');
           if (!scope.ok) return errorResult(scope.message);
           const query = transactionQuerySchema.parse(rawArgs);
           return textResult(await transactions.findAll(ctx.user._id, query));
         }
         case 'get': {
-          const scope = requireScope(ctx.token, 'pocketly:read');
+          const scope = requireScope(ctx.scopes, 'pocketly:read');
           if (!scope.ok) return errorResult(scope.message);
           if (!rawArgs.id)
             return errorResult('"id" is required for action "get"');
@@ -76,7 +76,7 @@ export function registerTransactionsTools(
           );
         }
         case 'create': {
-          const scope = requireScope(ctx.token, 'pocketly:write');
+          const scope = requireScope(ctx.scopes, 'pocketly:write');
           if (!scope.ok) return errorResult(scope.message);
           const parsed = createTransactionSchema.safeParse(rawArgs);
           if (!parsed.success) return zodErrorResult(parsed.error);
@@ -85,7 +85,7 @@ export function registerTransactionsTools(
           );
         }
         case 'update': {
-          const scope = requireScope(ctx.token, 'pocketly:write');
+          const scope = requireScope(ctx.scopes, 'pocketly:write');
           if (!scope.ok) return errorResult(scope.message);
           if (!rawArgs.id)
             return errorResult('"id" is required for action "update"');
@@ -97,7 +97,7 @@ export function registerTransactionsTools(
           );
         }
         case 'delete': {
-          const scope = requireScope(ctx.token, 'pocketly:write');
+          const scope = requireScope(ctx.scopes, 'pocketly:write');
           if (!scope.ok) return errorResult(scope.message);
           if (!rawArgs.id)
             return errorResult('"id" is required for action "delete"');

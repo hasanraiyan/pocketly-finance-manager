@@ -6,7 +6,7 @@ import { BudgetsService } from '../budgets/budgets.service';
 import { CategoriesService } from '../categories/categories.service';
 import { TransactionsService } from '../transactions/transactions.service';
 import { UserDocument } from '../users/schemas/user.schema';
-import { McpToolContext } from './mcp-context';
+import { McpScope, McpToolContext } from './mcp-context';
 import { registerAccountsTools } from './tools/accounts.tools';
 import { registerAnalysisTools } from './tools/analysis.tools';
 import { registerBudgetsTools } from './tools/budgets.tools';
@@ -31,11 +31,12 @@ export class McpServerFactory {
     private readonly analysis: AnalysisService,
   ) {}
 
-  build(user: UserDocument, token: string): McpServer {
+  build(user: UserDocument, token: string, scopes: McpScope[]): McpServer {
     const server = new McpServer({ name: 'pocketly', version: '1.0.0' });
     const ctx: McpToolContext = {
       user,
       token,
+      scopes,
       services: {
         accounts: this.accounts,
         transactions: this.transactions,

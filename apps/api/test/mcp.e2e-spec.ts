@@ -8,11 +8,11 @@ import { AppModule } from '../src/app.module';
 /**
  * Covers what's specific to this app's own wiring: auth enforcement on
  * /mcp, and that it's excluded from the global prefix, matching main.ts.
- * The login/consent pages live in apps/web now (see its sign-in page's MCP
- * re-entry branch and app/mcp-connect); the OAuth authorize -> consent ->
- * token exchange dance itself (Better Auth's oauth-provider plugin) is
- * exercised via the MCP Inspector against a running dev server -- see the
- * MCP plan's manual verification section -- rather than re-simulated here.
+ * The authorize -> consent -> token exchange itself belongs to Clerk now, so
+ * it's exercised with the MCP Inspector against a running dev server rather
+ * than re-simulated here. Note there's no clerkMiddleware in this app: that
+ * is deliberate, and asserts the guard fails closed (401, not 500) when
+ * Clerk can't evaluate the request at all.
  */
 describe('MCP (e2e)', () => {
   let mongod: MongoMemoryServer;

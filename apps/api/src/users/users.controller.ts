@@ -13,7 +13,7 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { AuthService } from '../auth/auth.service';
+import { clerkClient } from '@clerk/express';
 import { CurrentUser } from '../common/auth/current-user.decorator';
 import type { UserDocument } from './schemas/user.schema';
 import { DeleteAccountDto } from './dto/delete-account.dto';
@@ -25,10 +25,7 @@ import { UsersService } from './users.service';
 @ApiBearerAuth('jwt')
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
   @ApiOkResponse({ type: UserDto })
@@ -57,7 +54,9 @@ export class UsersController {
     @Body() dto: DeleteAccountDto,
   ) {
     await this.usersService.deleteAccount(user);
-    // Erase the identity itself (email/password, sessions)
-    await this.authService.deleteAuthUser(user.authUserId);
+    // Erase the identity itself (email/password, sessions, connections).
+    // Clerk fires `user.deleted` back at our webhook, which no-ops -- the
+    // profile it would erase is already gone.
+    await clerkClient.users.deleteUser(user.authUserId);
   }
 }

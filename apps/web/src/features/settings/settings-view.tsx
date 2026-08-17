@@ -22,9 +22,12 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
-import { clearStoredAuthToken } from "@/lib/auth-token";
-import { useExportCsv, useExportPdf } from "@/features/transactions/hooks";
+import { useClerk } from "@clerk/nextjs";
+import {
+  useExportCsv,
+  useExportPdf,
+  type ExportPdfInput,
+} from "@/features/transactions/hooks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/password-input";
@@ -561,15 +564,13 @@ function DangerZoneCard() {
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const deleteAccount = useDeleteMyAccount();
-  const router = useRouter();
+  const { signOut } = useClerk();
 
   async function handleDelete() {
     await deleteAccount.mutateAsync();
-    // The account (and its Better Auth identity) is already gone server-side
-    // at this point, so this call is just best-effort local cleanup.
-    await authClient.signOut().catch(() => {});
-    clearStoredAuthToken();
-    router.push("/");
+    // The account and its Clerk identity are already gone server-side at this
+    // point, so this is just clearing the now-dead session locally.
+    await signOut({ redirectUrl: "/" }).catch(() => {});
   }
 
   return (
@@ -721,7 +722,7 @@ function NotificationsCard() {
 }
 
 function ExportDataCard() {
-  const [period, setPeriod] = useState("all_time");
+  const [period, setPeriod] = useState<ExportPdfInput["period"]>("all_time");
   const exportPdf = useExportPdf();
   const exportCsv = useExportCsv();
 
@@ -747,7 +748,9 @@ function ExportDataCard() {
             <div className="w-48">
               <NativeSelect
                 value={period}
-                onChange={(e) => setPeriod(e.target.value)}
+                onChange={(e) =>
+                  setPeriod(e.target.value as ExportPdfInput["period"])
+                }
                 disabled={isPending}
               >
                 <NativeSelectOption value="all_time">All time</NativeSelectOption>

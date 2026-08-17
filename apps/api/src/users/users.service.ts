@@ -28,11 +28,17 @@ export class UsersService {
     private readonly budgetModel: Model<BudgetDocument>,
   ) {}
 
-  async findByAuthUserId(authUserId: string): Promise<UserDocument | null> {
-    return this.userModel.findOne({ authUserId }).exec();
+  async findByClerkId(clerkUserId: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ authUserId: clerkUserId }).exec();
   }
 
-  async findOrCreateByAuthUserId(
+  /**
+   * `authUserId` holds the Clerk user id (`user_...`). Profiles migrated from
+   * the old auth system keep their previous id in `legacyAuthUserId`; the
+   * email fallback below is what lets a migrated user land on their existing
+   * profile even if the id rewrite missed them.
+   */
+  async findOrCreateByClerkId(
     authUserId: string,
     email: string,
     name: string,
@@ -48,6 +54,9 @@ export class UsersService {
     if (existing) {
       let needsSave = false;
       if (existing.authUserId !== authUserId) {
+        // Matched on email, not id: a pre-Clerk profile being adopted by its
+        // Clerk identity. Keep the old id so the two can still be reconciled.
+        existing.legacyAuthUserId ??= existing.authUserId;
         existing.authUserId = authUserId;
         needsSave = true;
       }
@@ -71,6 +80,36 @@ export class UsersService {
       name,
       imageUrl,
     });
+  }
+
+  /**
+   * Applies a Clerk `user.updated` event. Only ever touches Clerk-owned
+   * fields -- `currency`, `timezone` and `phone` are Pocketly's and must
+   * survive a profile edit made in Clerk's UI. No-ops for a Clerk user we've
+   * never seen; there is nothing to sync until they call the API.
+   */
+  async syncFromClerk(
+    clerkUserId: string,
+    fields: { email?: string; name?: string; imageUrl?: string },
+  ): Promise<void> {
+    const user = await this.findByClerkId(clerkUserId);
+    if (!user) return;
+
+    if (fields.email) user.email = fields.email.toLowerCase().trim();
+    if (fields.name) user.name = fields.name;
+    if (fields.imageUrl) user.imageUrl = fields.imageUrl;
+
+    await user.save();
+  }
+
+  /**
+   * Applies a Clerk `user.deleted` event: same erasure as `DELETE /users/me`,
+   * minus the call back to Clerk to delete an identity that is already gone.
+   */
+  async eraseByClerkId(clerkUserId: string): Promise<void> {
+    const user = await this.findByClerkId(clerkUserId);
+    if (!user) return;
+    await this.deleteAccount(user);
   }
 
   async updateProfile(

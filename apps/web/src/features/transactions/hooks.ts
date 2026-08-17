@@ -222,44 +222,27 @@ export function useDeleteTransaction(filters: TransactionFilters) {
 // PDF Export
 // ---------------------------------------------------------------------------
 
-export interface ExportPdfInput {
-  period: string;
-  from?: string;
-  to?: string;
-}
+/**
+ * Taken straight from the generated SDK rather than restated here, so an
+ * added or renamed period on the API becomes a compile error in the UI
+ * instead of a 400 at runtime.
+ */
+export type ExportPdfInput = components["schemas"]["ExportQueryDto"];
 
 /**
  * Queues an async PDF export job on the server.
  * The server returns 202 immediately; the PDF is emailed once generated.
  */
 export function useExportPdf() {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
+  const client = usePocketlyClient();
 
   return useMutation({
     mutationFn: async (params: ExportPdfInput) => {
-      // We use fetch directly because the SDK client doesn't handle
-      // 202 responses with arbitrary JSON bodies out of the box.
-      const { getStoredAuthToken } = await import("@/lib/auth-token");
-      const token = getStoredAuthToken();
-
-      const res = await fetch(`${baseUrl}/exports/pdf`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(params),
+      const { data, error } = await client.POST("/exports/pdf", {
+        body: params,
       });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(
-          (body as { message?: string }).message ?? "Export failed",
-        );
-      }
-
-      return res.json() as Promise<{ jobId: string; message: string }>;
+      if (error) throw error;
+      return data.data;
     },
     onSuccess: (data) => {
       toast.add({
@@ -283,31 +266,15 @@ export function useExportPdf() {
  * The server returns 202 immediately; the CSV file is emailed once generated.
  */
 export function useExportCsv() {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
+  const client = usePocketlyClient();
 
   return useMutation({
     mutationFn: async (params: ExportPdfInput) => {
-      const { getStoredAuthToken } = await import("@/lib/auth-token");
-      const token = getStoredAuthToken();
-
-      const res = await fetch(`${baseUrl}/exports/csv`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(params),
+      const { data, error } = await client.POST("/exports/csv", {
+        body: params,
       });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(
-          (body as { message?: string }).message ?? "CSV export failed",
-        );
-      }
-
-      return res.json() as Promise<{ jobId: string; message: string }>;
+      if (error) throw error;
+      return data.data;
     },
     onSuccess: (data) => {
       toast.add({

@@ -6,6 +6,14 @@ Status as of the current implementation — this is a living document, not a com
 
 **Authentication** — Clerk is the sole identity provider (`@clerk/express`). No custom password/session/OAuth code exists in this repo, and none should be added (SRS §7).
 
+**Token audience pinning** — `clerkMiddleware({ authorizedParties })` in `main.ts` (`CLERK_AUTHORIZED_PARTIES`, comma-separated origins) restricts which origins may present a session token to this API, so a token minted for a different Clerk-backed app can't be replayed against Pocketly.
+
+**MCP access** — the API is only an OAuth protected resource; Clerk is the authorization server, hosts the consent screen, and signs the tokens. `McpAuthGuard` verifies each token with `getAuth(req, { acceptsToken: 'oauth_token' })` — a session token is not accepted at `/mcp`, and an OAuth token is not accepted at the REST API. Disconnecting writes a marker to `mcp_revocations`, which the guard enforces against a JWT token's `iat` so revocation is immediate rather than "whenever the token expires".
+
+**MCP access is all-or-nothing (known limitation)** — Clerk's OAuth applications only issue from its own fixed scope set (`openid`/`profile`/`email`/`offline_access`/metadata/org); [custom scopes are documented as not yet available](https://clerk.com/docs/guides/configure/auth-strategies/oauth/how-clerk-implements-oauth). So a user cannot grant an MCP client read-only access at the consent screen: an authorized connection gets full read **and write** over their financial data. The per-tool `requireScope` checks remain in place and are driven by `GRANTED_SCOPES` in `mcp-auth.guard.ts` — one line to change when Clerk ships custom scopes, or if we add a per-connection read-only toggle enforced on our side. Until then, the compensating controls are Clerk's consent screen (which names the app) and instant disconnect from Settings.
+
+**Dynamic client registration** — enabling DCR on the Clerk OAuth application (needed for MCP clients that self-register, e.g. Claude) exposes a public, unauthenticated client-registration endpoint on the authorization server. Clerk enforces the consent screen whenever it is enabled; anyone can register a client, so the consent screen and the connection list in Settings are what stand between a registered client and a user's data.
+
 **Authorization** — every financial document (`Account`, `Category`, `Transaction`, `Budget`) has a `userId`. `ClerkAuthGuard` is global (`APP_GUARD`); every route requires a valid Clerk session unless explicitly marked `@Public()`. Every service method fetches/writes by `{ _id, userId }` together — never `_id` alone — so one user's request can never see or mutate another user's row. This is covered by an integration test (`transactions.integration.spec.ts`) that explicitly asserts a second user is rejected.
 
 **Input validation** — every request body/query is validated by a Zod schema (`nestjs-zod`, global `ZodValidationPipe`) before it reaches any service or database code. Invalid requests are rejected with 400 before touching business logic.
@@ -32,7 +40,7 @@ Status as of the current implementation — this is a living document, not a com
 
 **Response envelope** — `TransformInterceptor` (global, `APP_INTERCEPTOR`) wraps every success response in `{ data: ... }`, consistently across every route. Doesn't touch the error path (Nest's default `{ statusCode, message, error }` shape is unchanged) or a 204's empty body.
 
-**Webhook signature verification** — `POST /webhooks/clerk` is `@Public()` (no Clerk session — Clerk itself is the caller), but every request is verified via Svix signature (`@clerk/backend/webhooks`'s `verifyWebhook`, `CLERK_WEBHOOK_SIGNING_SECRET`) before any event is processed; an invalid/missing signature is rejected before touching the database. Requires `{ rawBody: true }` in `main.ts` since signature verification needs the exact original bytes, not Nest's re-serialized parsed body.
+**Webhook signature verification** — `POST /webhooks/clerk` is `@Public()` (no Clerk session — Clerk itself is the caller), but every request is verified via Svix signature (`@clerk/express/webhooks`'s `verifyWebhook`, `CLERK_WEBHOOK_SIGNING_SECRET`) before any event is processed; an invalid/missing signature is rejected before touching the database. Requires `{ rawBody: true }` in `main.ts` since signature verification needs the exact original bytes, not Nest's re-serialized parsed body.
 
 **Readiness check** — `GET /health` checks live MongoDB connection state (`mongoose.Connection.readyState`), not just process liveness, and returns 503 if the database is unreachable — so a load balancer/orchestrator can tell "the process is up" apart from "the process can actually serve requests."
 

@@ -81,7 +81,7 @@ Clerk owns identity (`@clerk/express`: `clerkMiddleware()` + `getAuth()`). Pocke
 Two paths keep the Pocketly `User` profile aligned with Clerk, for different situations:
 
 - **Lazy, on first API call**: `UsersService.findOrCreateByClerkId` creates the Pocketly profile the first time a Clerk user hits any authenticated route. Fine for new users, but doesn't react to changes made *after* that.
-- **Pushed, via webhook**: `POST /webhooks/clerk` (`src/webhooks/`) verifies the request came from Clerk using Svix signature verification (`@clerk/backend/webhooks`'s `verifyWebhook`, `CLERK_WEBHOOK_SIGNING_SECRET`), then handles two event types — `user.updated` syncs `email`/`name`/`imageUrl` (never `currency`/`timezone`, which are Pocketly-owned), `user.deleted` erases the user's financial data the same way `DELETE /users/me` does (`UsersService.eraseAllData`), just without the redundant call back to Clerk to delete an identity that's already gone. Both handlers no-op if the Clerk user isn't one we've ever seen — nothing to sync.
+- **Pushed, via webhook**: `POST /webhooks/clerk` (`src/webhooks/`) verifies the request came from Clerk using Svix signature verification (`@clerk/express/webhooks`'s `verifyWebhook`, `CLERK_WEBHOOK_SIGNING_SECRET`), then handles two event types — `user.updated` syncs `email`/`name`/`imageUrl` via `UsersService.syncFromClerk` (never `currency`/`timezone`/`phone`, which are Pocketly-owned), `user.deleted` erases the user's financial data the same way `DELETE /users/me` does (`UsersService.eraseByClerkId`), just without the redundant call back to Clerk to delete an identity that's already gone. Both handlers no-op if the Clerk user isn't one we've ever seen — nothing to sync.
 
 Signature verification needs the exact raw request bytes, so `main.ts` boots the app with `{ rawBody: true }` — Nest preserves `req.rawBody` (a `Buffer`) alongside the normally-parsed `req.body` for every request, and only the webhook handler reads it.
 
@@ -108,7 +108,17 @@ Every list endpoint (`accounts`, `categories`, `transactions`, `budgets`) uses c
 
 ## Frontend (`apps/web`)
 
-Next.js 16 (App Router), TypeScript, Tailwind. Not yet wired to the API or to Clerk — that's the next planned step.
+Next.js 16 (App Router), TypeScript, Tailwind, wired to both the API and Clerk.
+
+- `@clerk/nextjs`: `ClerkProvider` in `app/layout.tsx`, and `src/proxy.ts` (Next 16's rename of `middleware.ts`) running `clerkMiddleware()` with a route matcher that `auth.protect()`s everything under `(app)`. Sign-in/sign-up are Clerk's prebuilt `<SignIn />`/`<SignUp />` on catch-all routes; password reset, email verification and Google sign-in are flows Clerk owns entirely, so there are no Pocketly pages for them.
+- API calls go through `@pocketly/sdk`: `lib/use-pocketly-client.ts` (client components) feeds it Clerk's `getToken`, `lib/api-client.ts#getServerApiClient` does the same from `auth()` for Server Components. Identical contract to `apps/mobile/src/lib/api-client.ts`.
+- `lib/get-session.ts#getServerSession` wraps Clerk's `currentUser()` for the marketing pages, which only read the session to decide between "Dashboard" and "Sign in".
+
+## MCP + OAuth
+
+The API is an OAuth *protected resource* only — Clerk is the authorization server. An MCP client hits `POST /mcp` unauthenticated, gets a 401 carrying `WWW-Authenticate: Bearer resource_metadata="..."`, reads `/.well-known/oauth-protected-resource/mcp` (`mcp/well-known.controller.ts`, pointing at `CLERK_ISSUER_URL`), and runs the whole authorize/consent/token flow — including dynamic client registration — against Clerk. Pocketly hosts none of those endpoints and signs none of those tokens.
+
+`McpAuthGuard` verifies the resulting access token with `getAuth(req, { acceptsToken: 'oauth_token' })`, resolves the Pocketly `User`, and records the client in `mcp_connections` (what Settings → Connections lists). `mcp_revocations` is the instant-disconnect deny-list for JWT-format tokens, which stay valid until expiry — see the schema comment for why opaque tokens don't need it.
 
 ## Testing
 
