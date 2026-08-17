@@ -1,5 +1,8 @@
 import { Types } from 'mongoose';
+import type { Request } from 'express';
 import { AdminController } from './admin.controller';
+
+const mockRequest = { ip: '127.0.0.1' } as unknown as Request;
 
 describe('AdminController', () => {
   let controller: AdminController;
@@ -58,12 +61,11 @@ describe('AdminController', () => {
       status: 'planned' as const,
       internalNotes: 'Top priority',
     };
-    const req = { ip: '127.0.0.1' };
     const result = await controller.updateFeedback(
       mockAdmin,
       '123',
       updateDto,
-      req,
+      mockRequest,
     );
 
     expect(mockFeedbackService.adminUpdate).toHaveBeenCalledWith(
@@ -81,12 +83,11 @@ describe('AdminController', () => {
   });
 
   it('updates user role and writes audit log', async () => {
-    const req = { ip: '127.0.0.1' };
     const result = await controller.updateUserRole(
       mockAdmin,
       'user1',
       { role: 'admin' },
-      req,
+      mockRequest,
     );
 
     expect(mockUsersService.setUserRole).toHaveBeenCalledWith('user1', 'admin');
