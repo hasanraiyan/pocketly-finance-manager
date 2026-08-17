@@ -1,61 +1,42 @@
-import { getServerApiClient } from "@/lib/api-client";
-import { AnalysisView } from "@/features/analysis/analysis-view";
+import { Suspense } from "react";
+import { AnalysisShell } from "@/features/analysis/analysis-shell";
+import {
+  AccountBreakdownSlot,
+  CashFlowSlot,
+  CategoryBreakdownSlot,
+  StatCardsSlot,
+} from "@/features/analysis/slots";
+import {
+  AccountBreakdownSkeleton,
+  CashFlowCardSkeleton,
+  CategoryBreakdownSkeleton,
+  StatCardsSkeleton,
+} from "@/features/analysis/skeletons";
 
-export default async function AnalysisPage() {
-  const client = await getServerApiClient();
-  const [
-    profileRes,
-    overviewRes,
-    cashFlowRes,
-    categoryBreakdownRes,
-    accountBreakdownRes,
-    categoriesRes,
-  ] = await Promise.all([
-    client.GET("/users/me"),
-    client.GET("/analysis", { params: { query: { period: "this_month" } } }),
-    client.GET("/analysis/cash-flow", {
-      params: { query: { period: "this_month" } },
-    }),
-    client.GET("/analysis/categories", {
-      params: { query: { period: "this_month" } },
-    }),
-    client.GET("/analysis/accounts", {
-      params: { query: { period: "this_month" } },
-    }),
-    client.GET("/categories", { params: { query: { limit: 100 } } }),
-  ]);
-
+/**
+ * Deliberately not `async`: the heading and period selector belong to the
+ * static shell, and each card resolves its own aggregate behind its own
+ * boundary instead of all six calls blocking the page.
+ */
+export default function AnalysisPage() {
   return (
-    <AnalysisView
-      initialOverview={
-        overviewRes.data?.data ?? {
-          period: { start: "", end: "" },
-          income: 0,
-          expense: 0,
-          net: 0,
-        }
-      }
-      initialCashFlow={cashFlowRes.data?.data ?? { period: { start: "", end: "" }, days: [] }}
-      initialCategoryBreakdown={
-        categoryBreakdownRes.data?.data ?? {
-          period: { start: "", end: "" },
-          categories: [],
-        }
-      }
-      initialAccountBreakdown={
-        accountBreakdownRes.data?.data ?? {
-          period: { start: "", end: "" },
-          accounts: [],
-        }
-      }
-      initialLoadFailed={Boolean(
-        overviewRes.error ||
-          cashFlowRes.error ||
-          categoryBreakdownRes.error ||
-          accountBreakdownRes.error,
-      )}
-      categories={categoriesRes.data?.data.items ?? []}
-      currency={profileRes.data?.data.currency ?? "INR"}
-    />
+    <AnalysisShell>
+      <Suspense fallback={<StatCardsSkeleton />}>
+        <StatCardsSlot />
+      </Suspense>
+
+      <Suspense fallback={<CashFlowCardSkeleton />}>
+        <CashFlowSlot />
+      </Suspense>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Suspense fallback={<CategoryBreakdownSkeleton />}>
+          <CategoryBreakdownSlot />
+        </Suspense>
+        <Suspense fallback={<AccountBreakdownSkeleton />}>
+          <AccountBreakdownSlot />
+        </Suspense>
+      </div>
+    </AnalysisShell>
   );
 }
