@@ -1,5 +1,15 @@
 # Clerk Migration Plan
 
+> **Superseded.** Clerk has since been removed from `apps/api` and `apps/web` in favor of a
+> custom NestJS + JWT auth system (Argon2id passwords, RS256 access/refresh tokens, a
+> self-hosted OAuth 2.1 authorization server for MCP) — see `docs/security.md` and
+> `docs/architecture.md` for the current design. The two bugs documented in §1 below
+> (per-boot key regeneration, hardcoded `JWT_SECRET` fallback) are exactly what the new
+> `JwtKeysService`'s persisted-keypair design fixes. Kept here as history, not as current
+> state. **`apps/mobile` still authenticates via `@clerk/expo` and has not been migrated** —
+> since the API no longer accepts Clerk-issued tokens, the mobile app cannot currently reach
+> the API until it's migrated too.
+
 Replace the hand-rolled auth system (email/password + sessions + Google OAuth + a
 home-grown OAuth 2.1 authorization server for MCP) with Clerk:
 

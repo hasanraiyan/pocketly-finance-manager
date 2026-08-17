@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { usePocketlyClient } from "@/lib/use-pocketly-client";
@@ -62,6 +62,7 @@ function ConsentForm() {
       // Leaving the app entirely -- data.data.url is the connecting MCP
       // client's own redirect_uri (an external app, not a Next.js route),
       // so the Next.js router doesn't apply here.
+      // eslint-disable-next-line react-hooks/immutability
       window.location.href = data.data.url;
     } catch {
       setSubmitting(null);
