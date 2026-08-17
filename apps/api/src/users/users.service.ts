@@ -37,12 +37,34 @@ export class UsersService {
     email: string,
     name: string,
   ): Promise<UserDocument> {
-    const existing = await this.userModel.findOne({ authUserId }).exec();
+    const normalizedEmail = email.toLowerCase().trim();
+    const existing = await this.userModel
+      .findOne({
+        $or: [{ authUserId }, { email: normalizedEmail }],
+      })
+      .exec();
+
     if (existing) {
+      let needsSave = false;
+      if (existing.authUserId !== authUserId) {
+        existing.authUserId = authUserId;
+        needsSave = true;
+      }
+      if (name && existing.name !== name) {
+        existing.name = name;
+        needsSave = true;
+      }
+      if (needsSave) {
+        await existing.save();
+      }
       return existing;
     }
 
-    return this.userModel.create({ authUserId, email, name });
+    return this.userModel.create({
+      authUserId,
+      email: normalizedEmail,
+      name,
+    });
   }
 
   async updateProfile(
