@@ -11,6 +11,8 @@ const isProtectedRoute = createRouteMatcher([
   "/records(.*)",
   "/planning(.*)",
   "/analysis(.*)",
+  "/feedback(.*)",
+  "/admin(.*)",
   "/settings(.*)",
 ]);
 
