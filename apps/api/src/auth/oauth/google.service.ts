@@ -11,6 +11,7 @@ import { AuthSession, AuthSessionDocument } from '../schemas/auth-session.schema
 import { AuthToken, AuthTokenDocument } from '../schemas/auth-token.schema';
 import { TokenService } from '../token.service';
 import { UsersService } from '../../users/users.service';
+import { JwtService } from '@nestjs/jwt';
 
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const OAUTH_STATE_TTL_MS = 10 * 60 * 1000; // 10 minutes
@@ -26,6 +27,7 @@ export class GoogleAuthService {
     private readonly authTokenModel: Model<AuthTokenDocument>,
     private readonly tokenService: TokenService,
     private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async getAuthorizationUrl(webRedirectUri?: string) {
@@ -186,8 +188,13 @@ export class GoogleAuthService {
       userAgent: params.userAgent,
     });
 
+    const jwtToken = await this.jwtService.signAsync({
+      sub: authUser._id.toString(),
+      sessionId: sessionDoc._id.toString(),
+    });
+
     return {
-      token: rawSessionToken,
+      token: jwtToken,
       user: {
         id: authUser._id.toString(),
         email: authUser.email,

@@ -1,5 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -8,7 +9,7 @@ import { TokenService } from './token.service';
 import { GoogleAuthService } from './oauth/google.service';
 import { OAuthController } from './oauth/oauth.controller';
 import { OAuthService } from './oauth/oauth.service';
-import { JwtService } from './oauth/jwt.service';
+import { JwtService as McpJwtService } from './oauth/jwt.service';
 import { WellKnownController } from './oauth/well-known.controller';
 import { AuthUser, AuthUserSchema } from './schemas/auth-user.schema';
 import { AuthSession, AuthSessionSchema } from './schemas/auth-session.schema';
@@ -27,6 +28,12 @@ import { OAuthConsent, OAuthConsentSchema } from './schemas/oauth-consent.schema
       { name: OAuthCode.name, schema: OAuthCodeSchema },
       { name: OAuthConsent.name, schema: OAuthConsentSchema },
     ]),
+    JwtModule.register({
+      global: true,
+      secret:
+        process.env.JWT_SECRET || 'pocketly-jwt-secret-key-production-2026',
+      signOptions: { expiresIn: '30d' },
+    }),
     forwardRef(() => UsersModule),
   ],
   controllers: [AuthController, OAuthController, WellKnownController],
@@ -36,7 +43,7 @@ import { OAuthConsent, OAuthConsentSchema } from './schemas/oauth-consent.schema
     TokenService,
     GoogleAuthService,
     OAuthService,
-    JwtService,
+    McpJwtService,
   ],
   exports: [
     AuthService,
@@ -44,7 +51,7 @@ import { OAuthConsent, OAuthConsentSchema } from './schemas/oauth-consent.schema
     TokenService,
     GoogleAuthService,
     OAuthService,
-    JwtService,
+    McpJwtService,
   ],
 })
 export class AuthModule {}

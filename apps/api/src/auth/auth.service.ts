@@ -21,6 +21,7 @@ import {
 } from './schemas/auth-token.schema';
 import { PasswordService } from './password.service';
 import { TokenService } from './token.service';
+import { JwtService } from '@nestjs/jwt';
 
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const SESSION_REFRESH_THRESHOLD_MS = 15 * 24 * 60 * 60 * 1000; // 15 days
@@ -39,6 +40,7 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService,
     private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async signUp(params: {
@@ -256,12 +258,12 @@ export class AuthService {
   }
 
   async createSession(params: {
-    userId: Types.ObjectId;
+    userId: Types.ObjectId | string;
     ipAddress?: string;
     userAgent?: string;
   }) {
-    const rawToken = this.tokenService.generateToken(32);
-    const tokenHash = this.tokenService.hashToken(rawToken);
+    const rawSessionToken = this.tokenService.generateToken(32);
+    const tokenHash = this.tokenService.hashToken(rawSessionToken);
     const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
 
     const doc = await this.authSessionModel.create({
@@ -272,38 +274,88 @@ export class AuthService {
       userAgent: params.userAgent,
     });
 
-    return { rawToken, doc };
+    const jwtToken = await this.jwtService.signAsync({
+      sub: params.userId.toString(),
+      sessionId: doc._id.toString(),
+    });
+
+    return { rawToken: jwtToken, doc };
   }
 
   async validateSession(rawToken: string) {
-    const tokenHash = this.tokenService.hashToken(rawToken);
-    const session = await this.authSessionModel
-      .findOne({
-        tokenHash,
-        expiresAt: { $gt: new Date() },
-      })
-      .exec();
+    if (!rawToken) return null;
 
-    if (!session) {
-      return null;
+    // 1. Try verifying as signed NestJS JWT
+    try {
+      const payload = await this.jwtService.verifyAsync<{
+        sub: string;
+        sessionId?: string;
+      }>(rawToken);
+
+      if (payload?.sub) {
+        const authUser = await this.authUserModel.findById(payload.sub).exec();
+        if (!authUser || authUser.banned) {
+          return null;
+        }
+
+        let session = payload.sessionId
+          ? await this.authSessionModel.findById(payload.sessionId).exec()
+          : null;
+
+        if (!session) {
+          session = {
+            _id: new Types.ObjectId(payload.sub),
+            userId: authUser._id,
+            expiresAt: new Date(Date.now() + SESSION_TTL_MS),
+          } as any;
+        }
+
+        return { authUser, session };
+      }
+    } catch {
+      // 2. Fallback to opaque token hash
+      const tokenHash = this.tokenService.hashToken(rawToken);
+      const session = await this.authSessionModel
+        .findOne({
+          tokenHash,
+          expiresAt: { $gt: new Date() },
+        })
+        .exec();
+
+      if (!session) {
+        return null;
+      }
+
+      const authUser = await this.authUserModel
+        .findById(session.userId)
+        .exec();
+      if (!authUser || authUser.banned) {
+        return null;
+      }
+
+      // Sliding window renewal if session is within 15 days of expiring
+      const timeLeft = session.expiresAt.getTime() - Date.now();
+      if (timeLeft < SESSION_REFRESH_THRESHOLD_MS) {
+        session.expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+        await session.save();
+      }
+
+      return { authUser, session };
     }
 
-    const authUser = await this.authUserModel.findById(session.userId).exec();
-    if (!authUser || authUser.banned) {
-      return null;
-    }
-
-    // Sliding window renewal if session is within 15 days of expiring
-    const timeLeft = session.expiresAt.getTime() - Date.now();
-    if (timeLeft < SESSION_REFRESH_THRESHOLD_MS) {
-      session.expiresAt = new Date(Date.now() + SESSION_TTL_MS);
-      await session.save();
-    }
-
-    return { authUser, session };
+    return null;
   }
 
   async signOut(rawToken: string) {
+    try {
+      const payload = await this.jwtService.verifyAsync<{ sessionId?: string }>(
+        rawToken,
+      );
+      if (payload?.sessionId) {
+        await this.authSessionModel.deleteOne({ _id: payload.sessionId });
+        return;
+      }
+    } catch {}
     const tokenHash = this.tokenService.hashToken(rawToken);
     await this.authSessionModel.deleteOne({ tokenHash });
   }

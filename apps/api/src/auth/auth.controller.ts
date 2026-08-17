@@ -213,6 +213,10 @@ export class AuthController {
       sessionData.authUser._id.toString(),
     );
 
+    const defaultExpiresAt = new Date(
+      Date.now() + 30 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
     return {
       user: {
         id: sessionData.authUser._id.toString(),
@@ -221,9 +225,18 @@ export class AuthController {
         emailVerified: sessionData.authUser.emailVerified,
       },
       session: {
-        id: sessionData.session._id.toString(),
-        userId: sessionData.session.userId.toString(),
-        expiresAt: sessionData.session.expiresAt,
+        id:
+          sessionData.session?._id?.toString() ??
+          sessionData.authUser._id.toString(),
+        userId:
+          sessionData.session?.userId?.toString() ??
+          sessionData.authUser._id.toString(),
+        expiresAt:
+          sessionData.session?.expiresAt instanceof Date
+            ? sessionData.session.expiresAt.toISOString()
+            : typeof sessionData.session?.expiresAt === 'string'
+              ? sessionData.session.expiresAt
+              : defaultExpiresAt,
       },
     };
   }
