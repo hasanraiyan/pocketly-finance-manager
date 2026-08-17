@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useMemo, useState } from "react";
+import { DEFAULT_PERIOD } from "./constants";
 import type { AnalysisPeriod } from "./hooks";
 
 /**
@@ -9,8 +10,6 @@ import type { AnalysisPeriod } from "./hooks";
  * selection can't just be local state in a shared parent component -- it
  * rides in context instead.
  */
-
-export const DEFAULT_PERIOD: AnalysisPeriod = "this_month";
 
 type PeriodContextValue = {
   period: AnalysisPeriod;

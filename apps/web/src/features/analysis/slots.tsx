@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { getServerApiClient } from "@/lib/api-client";
-import { DEFAULT_PERIOD } from "./period-context";
+import { DEFAULT_PERIOD } from "./constants";
 import {
   AccountBreakdownCard,
   CashFlowCard,
