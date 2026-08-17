@@ -13,6 +13,7 @@ import { JwtKeysService } from '../auth/jwt-keys.service';
 import { UsersService } from '../users/users.service';
 import { UserDocument } from '../users/schemas/user.schema';
 import { McpScope } from './mcp-context';
+import { OAuthClient } from './oauth/schemas/oauth-client.schema';
 import { McpConnection } from './schemas/mcp-connection.schema';
 import { McpRevocation } from './schemas/mcp-revocation.schema';
 
@@ -44,6 +45,8 @@ export class McpAuthGuard implements CanActivate {
     private readonly revocationModel: Model<McpRevocation>,
     @InjectModel(McpConnection.name)
     private readonly connectionModel: Model<McpConnection>,
+    @InjectModel(OAuthClient.name)
+    private readonly clientModel: Model<OAuthClient>,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -94,9 +97,23 @@ export class McpAuthGuard implements CanActivate {
     if (!user) throw new UnauthorizedException();
 
     if (clientId) {
+      // Settings' "Connected apps" list reads clientName off this row, not
+      // off OAuthClient directly -- without this lookup it falls back to the
+      // raw clientId (e.g. "mcp_Zt0JYFsDAOodSIW8CkHESw") since this row never
+      // had a name of its own.
+      const client = await this.clientModel
+        .findOne({ clientId })
+        .select('clientName')
+        .exec();
       await this.connectionModel.updateOne(
         { userId, clientId },
-        { $set: { scopes: GRANTED_SCOPES, lastSeenAt: new Date() } },
+        {
+          $set: {
+            scopes: GRANTED_SCOPES,
+            lastSeenAt: new Date(),
+            ...(client?.clientName ? { clientName: client.clientName } : {}),
+          },
+        },
         { upsert: true },
       );
     }
