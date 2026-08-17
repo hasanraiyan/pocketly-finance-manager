@@ -8,6 +8,7 @@ import {
   Receipt,
   LineChart,
   Target,
+  Flag,
   Settings,
 } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
@@ -29,6 +30,7 @@ export const NAV_ITEMS = [
   { title: "Accounts", url: "/accounts", icon: Wallet },
   { title: "Records", url: "/records", icon: Receipt },
   { title: "Analysis", url: "/analysis", icon: LineChart },
+  { title: "Goals", url: "/goals", icon: Flag },
   { title: "Planning", url: "/planning", icon: Target },
   { title: "Settings", url: "/settings", icon: Settings },
 ];

@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { analysisQuerySchema } from '../../analysis/dto/analysis-query.dto';
-import { paginationQuerySchema } from '../../common/pagination/pagination-query.dto';
 import { McpToolContext, requireScope } from '../mcp-context';
 import { errorResult, textResult } from '../mcp-result';
 
@@ -82,26 +81,25 @@ export function registerAnalysisTools(
     {
       title: 'Get financial overview',
       description:
-        "A snapshot of the user's current standing: total balance across accounts, and this month's income, expense, and net.",
+        'A snapshot of where the user stands right now: total balance across accounts, this month\'s income, expense and net, how much is safe to spend today, and the projected balance at the end of the month. Use this as the one-shot answer to "how am I doing"; use get_outlook for the detail behind the forward-looking figures.',
       inputSchema: {},
     },
     async () => {
       const scope = requireScope(ctx.scopes, 'pocketly:read');
       if (!scope.ok) return errorResult(scope.message);
 
-      const { analysis, accounts } = ctx.services;
+      const { analysis, accounts, safeToSpend, forecast } = ctx.services;
       const query = analysisQuerySchema.parse({});
-      const [overview, accountsPage] = await Promise.all([
+      const [overview, allAccounts, spendable, projection] = await Promise.all([
         analysis.getOverview(ctx.user, query),
-        // Personal accounts realistically number in the single/low double
-        // digits; the schema's max (100) comfortably covers real usage
-        // without needing to paginate for a one-shot overview.
-        accounts.findAll(
-          ctx.user._id,
-          paginationQuerySchema.parse({ limit: 100 }),
-        ),
+        // findAllForContext, not findAll: the latter is the paginated REST
+        // list (capped at 100), which would under-report the total for
+        // anyone with more accounts than that.
+        accounts.findAllForContext(ctx.user._id),
+        safeToSpend.safeToSpend(ctx.user),
+        forecast.forecast(ctx.user, 'month'),
       ]);
-      const totalBalance = accountsPage.items.reduce(
+      const totalBalance = allAccounts.reduce(
         (sum, account) => sum + account.balance,
         0,
       );
@@ -109,11 +107,16 @@ export function registerAnalysisTools(
       return textResult({
         currency: ctx.user.currency,
         totalBalance,
-        accountCount: accountsPage.items.length,
+        accountCount: allAccounts.length,
         period: overview.period,
         income: overview.income,
         expense: overview.expense,
         net: overview.net,
+        safeToSpend: spendable.amount,
+        safeToSpendShortfall: spendable.shortfall,
+        projectedMonthEndBalance: projection.projectedBalance,
+        // Null unless the balance is projected to go negative first.
+        projectedShortfallDate: projection.shortfallDate,
       });
     },
   );

@@ -1,10 +1,15 @@
 import {
   budgetPaceInsight,
   categorySpikeInsight,
+  forecastShortfallInsight,
+  goalDelayInsight,
   largestExpenseInsight,
   netNegativeInsight,
+  positiveTrendInsight,
   rankInsights,
+  recurringGrowthInsight,
   recurringLoadInsight,
+  savingsOpportunityInsight,
   type Insight,
 } from './insight-rules';
 
@@ -200,6 +205,240 @@ describe('largestExpenseInsight', () => {
 
   it('stays silent with no expenses at all', () => {
     expect(largestExpenseInsight(null, 0, format)).toBeNull();
+  });
+});
+
+describe('forecastShortfallInsight', () => {
+  it('stays silent when the balance never goes negative', () => {
+    expect(
+      forecastShortfallInsight(
+        {
+          shortfallDate: null,
+          lowestBalance: 500_000,
+          projectedBalance: 900_000,
+        },
+        format,
+      ),
+    ).toBeNull();
+  });
+
+  it('names the day and says what to do about it', () => {
+    const insight = forecastShortfallInsight(
+      {
+        shortfallDate: '2026-04-22',
+        lowestBalance: -300_000,
+        projectedBalance: -100_000,
+      },
+      format,
+    );
+
+    expect(insight?.title).toBe("You're on track to run out around 2026-04-22");
+    expect(insight?.detail).toBe('At this rate the period ends at ₹-1000.00.');
+    expect(insight?.action).toContain('Cut back now');
+  });
+
+  /**
+   * A dip that recovers is a timing problem, not a spending problem, and the
+   * advice for the two is different.
+   */
+  it('distinguishes a dip that recovers from one that does not', () => {
+    const insight = forecastShortfallInsight(
+      {
+        shortfallDate: '2026-04-22',
+        lowestBalance: -300_000,
+        projectedBalance: 4_000_000,
+      },
+      format,
+    );
+
+    expect(insight?.detail).toContain('Money lands later in the period');
+    expect(insight?.action).toContain('Move a bill later');
+  });
+
+  it('outranks every other rule', () => {
+    const shortfall = forecastShortfallInsight(
+      { shortfallDate: '2026-04-22', lowestBalance: -1, projectedBalance: -1 },
+      format,
+    );
+    const pace = budgetPaceInsight(
+      {
+        categoryName: 'Food',
+        limit: 600_000,
+        spent: 400_000,
+        daysElapsed: 10,
+        daysInPeriod: 30,
+      },
+      format,
+    );
+
+    expect(shortfall!.weight).toBeGreaterThan(pace!.weight);
+  });
+});
+
+describe('goalDelayInsight', () => {
+  it('outranks a merely at-risk goal when the deadline has already passed', () => {
+    const insight = goalDelayInsight(
+      {
+        name: 'College fees',
+        status: 'overdue',
+        monthlyShortfall: 300_000,
+        requiredMonthly: 500_000,
+      },
+      format,
+    );
+
+    expect(insight?.title).toBe("College fees's date has already passed");
+    expect(insight?.detail).toBe('₹5000.00 would close it out today.');
+
+    const atRisk = goalDelayInsight(
+      {
+        name: 'Trip',
+        status: 'at_risk',
+        monthlyShortfall: 300_000,
+        requiredMonthly: 500_000,
+      },
+      format,
+    );
+    expect(insight!.weight).toBeGreaterThan(atRisk!.weight);
+  });
+
+  it('says what the deadline actually needs', () => {
+    const insight = goalDelayInsight(
+      {
+        name: 'College fees',
+        status: 'at_risk',
+        monthlyShortfall: 300_000,
+        requiredMonthly: 500_000,
+      },
+      format,
+    );
+
+    expect(insight?.title).toBe("College fees won't make its date");
+    expect(insight?.detail).toBe(
+      "You'd need ₹5000.00 a month — that's ₹3000.00 more than you're putting in.",
+    );
+  });
+
+  it('flags a goal nothing is going into', () => {
+    const insight = goalDelayInsight(
+      {
+        name: 'Emergency fund',
+        status: 'stalled',
+        monthlyShortfall: 0,
+        requiredMonthly: null,
+      },
+      format,
+    );
+
+    expect(insight?.title).toBe("Emergency fund isn't moving");
+    expect(insight?.action).toBe('Set a monthly amount to give it one.');
+  });
+
+  it('says nothing about a goal that is on track', () => {
+    expect(
+      goalDelayInsight(
+        {
+          name: 'Trip',
+          status: 'on_track',
+          monthlyShortfall: 0,
+          requiredMonthly: 100_000,
+        },
+        format,
+      ),
+    ).toBeNull();
+  });
+
+  it('ignores a shortfall too small to be worth saying', () => {
+    expect(
+      goalDelayInsight(
+        {
+          name: 'Trip',
+          status: 'at_risk',
+          monthlyShortfall: 1_000,
+          requiredMonthly: 100_000,
+        },
+        format,
+      ),
+    ).toBeNull();
+  });
+});
+
+describe('recurringGrowthInsight', () => {
+  it('reports fixed costs climbing against their own recent level', () => {
+    const insight = recurringGrowthInsight(1_500_000, 1_000_000, format);
+
+    expect(insight?.title).toBe('Your fixed costs are up ₹5000.00 a month');
+    expect(insight?.action).toContain('subscription');
+  });
+
+  it('stays silent for a rise that is only arithmetically true', () => {
+    expect(recurringGrowthInsight(1_040_000, 1_000_000, format)).toBeNull();
+  });
+
+  it('stays silent without a prior level to compare against', () => {
+    expect(recurringGrowthInsight(1_500_000, 0, format)).toBeNull();
+  });
+});
+
+describe('savingsOpportunityInsight', () => {
+  it('points out a surplus nothing has a claim on', () => {
+    const insight = savingsOpportunityInsight(
+      { income: 5_000_000, expense: 3_000_000 },
+      0,
+      format,
+    );
+
+    expect(insight?.title).toBe('₹20000.00 is sitting spare');
+    expect(insight?.action).toBe('Set a goal so it goes somewhere on purpose.');
+  });
+
+  /**
+   * Telling someone who already has a plan that they should have a plan is
+   * how insight panels get ignored.
+   */
+  it('says nothing to someone already saving towards a goal', () => {
+    expect(
+      savingsOpportunityInsight(
+        { income: 5_000_000, expense: 3_000_000 },
+        500_000,
+        format,
+      ),
+    ).toBeNull();
+  });
+
+  it('says nothing when there is no surplus', () => {
+    expect(
+      savingsOpportunityInsight(
+        { income: 3_000_000, expense: 3_000_000 },
+        0,
+        format,
+      ),
+    ).toBeNull();
+  });
+});
+
+describe('positiveTrendInsight', () => {
+  it('says something good when spending is genuinely down', () => {
+    const insight = positiveTrendInsight(2_000_000, 3_000_000, format);
+
+    expect(insight?.title).toBe('Spending is down 33%');
+    expect(insight?.detail).toBe(
+      '₹20000.00 so far, against ₹30000.00 expected by now.',
+    );
+  });
+
+  it('ignores a drop too small to mean anything', () => {
+    expect(positiveTrendInsight(2_950_000, 3_000_000, format)).toBeNull();
+  });
+
+  it('stays silent when spending is up', () => {
+    expect(positiveTrendInsight(3_500_000, 3_000_000, format)).toBeNull();
+  });
+
+  it('carries no action -- there is nothing to fix', () => {
+    expect(
+      positiveTrendInsight(2_000_000, 3_000_000, format)?.action,
+    ).toBeUndefined();
   });
 });
 

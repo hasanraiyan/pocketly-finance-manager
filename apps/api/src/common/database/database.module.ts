@@ -7,6 +7,7 @@ import {
   Category,
   CategorySchema,
 } from '../../categories/schemas/category.schema';
+import { Goal, GoalSchema } from '../../goals/schemas/goal.schema';
 import {
   McpConnection,
   McpConnectionSchema,
@@ -15,6 +16,10 @@ import {
   McpRevocation,
   McpRevocationSchema,
 } from '../../mcp/schemas/mcp-revocation.schema';
+import {
+  MoneyRule,
+  MoneyRuleSchema,
+} from '../../money-rules/schemas/money-rule.schema';
 import {
   Recurrence,
   RecurrenceSchema,
@@ -50,6 +55,8 @@ import { User, UserSchema } from '../../users/schemas/user.schema';
       { name: McpRevocation.name, schema: McpRevocationSchema },
       { name: McpConnection.name, schema: McpConnectionSchema },
       { name: Recurrence.name, schema: RecurrenceSchema },
+      { name: Goal.name, schema: GoalSchema },
+      { name: MoneyRule.name, schema: MoneyRuleSchema },
     ]),
   ],
   exports: [MongooseModule],

@@ -3,6 +3,12 @@ import { AnalysisService } from '../analysis/analysis.service';
 import { InsightsService } from '../analysis/insights.service';
 import { BudgetsService } from '../budgets/budgets.service';
 import { CategoriesService } from '../categories/categories.service';
+import { GoalsService } from '../goals/goals.service';
+import { ForecastService } from '../intelligence/forecast.service';
+import { HealthScoreService } from '../intelligence/health-score.service';
+import { SafeToSpendService } from '../intelligence/safe-to-spend.service';
+import { ScenarioService } from '../intelligence/scenario.service';
+import { MoneyRulesService } from '../money-rules/money-rules.service';
 import { RecurrencesService } from '../recurrences/recurrences.service';
 import { TransactionsService } from '../transactions/transactions.service';
 import { UserDocument } from '../users/schemas/user.schema';
@@ -17,6 +23,12 @@ export interface McpToolServices {
   analysis: AnalysisService;
   insights: InsightsService;
   recurrences: RecurrencesService;
+  goals: GoalsService;
+  moneyRules: MoneyRulesService;
+  forecast: ForecastService;
+  safeToSpend: SafeToSpendService;
+  health: HealthScoreService;
+  scenarios: ScenarioService;
 }
 
 export interface McpToolContext {

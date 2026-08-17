@@ -54,6 +54,26 @@ export const getRecentTransactions = cache(async () => {
   return client.GET("/transactions", { params: { query: { limit: 6 } } });
 });
 
+export const getSafeToSpend = cache(async () => {
+  const client = await getServerApiClient();
+  return client.GET("/intelligence/safe-to-spend");
+});
+
+export const getForecast = cache(async () => {
+  const client = await getServerApiClient();
+  return client.GET("/intelligence/forecast");
+});
+
+export const getHealth = cache(async () => {
+  const client = await getServerApiClient();
+  return client.GET("/intelligence/health");
+});
+
+export const getGoals = cache(async () => {
+  const client = await getServerApiClient();
+  return client.GET("/goals", { params: { query: { limit: 100 } } });
+});
+
 /** Display currency, falling back to INR when the profile can't be read. */
 export async function getCurrency() {
   const { data } = await getProfile();

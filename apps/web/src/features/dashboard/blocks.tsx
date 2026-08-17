@@ -2,11 +2,16 @@ import Link from "next/link";
 import {
   ArrowDownRight,
   ArrowUpRight,
+  Flag,
   Flame,
   Gauge,
+  Lightbulb,
+  PiggyBank,
   Receipt,
   Repeat,
   TrendingDown,
+  TrendingUp,
+  type LucideIcon,
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -28,16 +33,29 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { GetStartedChecklist } from "@/features/onboarding/get-started-checklist";
 import { WelcomeDialog } from "@/features/onboarding/welcome-dialog";
+import { ScenarioDialog } from "@/features/intelligence/scenario-dialog";
 import {
   getAccounts,
   getBudgets,
   getConnections,
   getCurrency,
+  getForecast,
+  getGoals,
+  getHealth,
   getInsights,
   getOverview,
   getProfile,
   getRecentTransactions,
+  getSafeToSpend,
 } from "./data";
+
+/** One line per band, so the score always arrives with a reading of it. */
+const HEALTH_BAND_COPY = {
+  strong: "Comfortable, with room to spare.",
+  steady: "Holding together, with a couple of soft spots.",
+  fragile: "Working, but there's not much slack.",
+  strained: "Under pressure — worth a look at the components below.",
+} as const;
 
 /**
  * Each block is an independent async Server Component behind its own
@@ -79,32 +97,312 @@ export async function BalanceCard() {
   const overview = overviewRes.data?.data;
   const balanceUnavailable = Boolean(accountsRes.error);
 
+  // Plain card styling since safe-to-spend took the hero slot: two
+  // full-bleed primary cards on one page compete rather than rank.
   return (
-    <Card className="overflow-hidden border-none bg-primary text-primary-foreground py-0">
-      <CardContent className="flex flex-col gap-6 p-8">
-        <span className="text-sm tracking-wide text-primary-foreground/70 uppercase">
-          Total balance
-        </span>
-        <span className="font-heading text-5xl tabular-nums sm:text-6xl">
+    <Card>
+      <CardHeader>
+        <CardTitle>Total balance</CardTitle>
+        <CardDescription>Across every account</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <span className="font-heading text-3xl tabular-nums">
           {balanceUnavailable ? "—" : formatCurrency(totalBalance, currency)}
         </span>
         {balanceUnavailable ? (
-          <p className="border-t border-primary-foreground/15 pt-4 text-sm text-primary-foreground/70">
+          <p className="text-sm text-muted-foreground">
             We couldn&apos;t load your balances just now. Refresh to try again.
           </p>
         ) : (
-          <div className="flex flex-wrap gap-x-6 gap-y-2 border-t border-primary-foreground/15 pt-4 font-mono text-sm">
+          <div className="flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-4 font-mono text-sm">
             <span className="flex items-center gap-1.5">
-              <ArrowUpRight className="size-4" />
+              <ArrowUpRight className="size-4 text-positive" />
               Income {formatCurrency(overview?.income ?? 0, currency)}
             </span>
             <span className="flex items-center gap-1.5">
-              <ArrowDownRight className="size-4" />
+              <ArrowDownRight className="size-4 text-negative" />
               Expenses {formatCurrency(overview?.expense ?? 0, currency)}
             </span>
             <span>Net {formatCurrency(overview?.net ?? 0, currency)}</span>
           </div>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+/** True for the one deduction reserveIsDerived actually explains. */
+function isDerivedReserve(
+  deduction: { key: string },
+  reserveIsDerived: boolean,
+): boolean {
+  return reserveIsDerived && deduction.key === 'minimum_reserve';
+}
+
+/**
+ * The number the product now leads with.
+ *
+ * A balance says what you have; safe-to-spend says what you can actually use
+ * once the bills, budgets and goals already committed are taken off. It sits
+ * inside the balance card rather than beside it because the two are one
+ * thought -- and the deductions are itemised because a figure the user
+ * can't reconstruct is a figure they won't trust.
+ *
+ * Deliberately not presented as an absolute: it's a number *after* netting
+ * off commitments the user made elsewhere (budgets, goals), which is a
+ * product decision, not a fact about the account -- so the caption says so,
+ * and each deduction is a link back to where that commitment came from.
+ */
+export async function SafeToSpendCard() {
+  const [safeRes, currency] = await Promise.all([
+    getSafeToSpend(),
+    getCurrency(),
+  ]);
+  const safe = safeRes.data?.data;
+
+  if (safeRes.error || !safe) return null;
+
+  return (
+    <Card className="overflow-hidden border-none bg-primary text-primary-foreground py-0">
+      <CardContent className="flex flex-col gap-6 p-8">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-col gap-1">
+            <span className="text-sm tracking-wide text-primary-foreground/70 uppercase">
+              Safe to spend
+            </span>
+            <span className="text-xs text-primary-foreground/60">
+              Your balance, after bills, budgets and goals still to come.
+            </span>
+          </div>
+          <ScenarioDialog currency={currency} />
+        </div>
+
+        <span className="font-heading text-5xl tabular-nums sm:text-6xl">
+          {formatCurrency(safe.amount, currency)}
+        </span>
+
+        {safe.shortfall > 0 && (
+          <p className="-mt-3 text-sm text-primary-foreground/80">
+            You&apos;re {formatCurrency(safe.shortfall, currency)} short of what
+            you&apos;ve committed this month.
+          </p>
+        )}
+
+        <dl className="flex flex-col gap-1 border-t border-primary-foreground/15 pt-4 font-mono text-sm">
+          <div className="flex justify-between gap-4">
+            <dt className="font-sans text-primary-foreground/70">Balance</dt>
+            <dd className="tabular-nums">
+              {formatCurrency(safe.totalBalance, currency)}
+            </dd>
+          </div>
+          {safe.expectedIncome > 0 && (
+            <div className="flex justify-between gap-4">
+              <dt className="font-sans text-primary-foreground/70">
+                Still coming in
+              </dt>
+              <dd className="tabular-nums">
+                +{formatCurrency(safe.expectedIncome, currency)}
+              </dd>
+            </div>
+          )}
+          {safe.deductions.map((deduction) => (
+            <div key={deduction.key} className="flex justify-between gap-4">
+              <dt className="font-sans text-primary-foreground/70">
+                {deduction.label}
+              </dt>
+              <dd className="tabular-nums">
+                -{formatCurrency(deduction.amount, currency)}
+              </dd>
+            </div>
+          ))}
+        </dl>
+
+        {/* Only the reserve line is a Pocketly guess rather than a figure
+            the user committed to elsewhere -- says so, so a lower-than-
+            expected number doesn't read as a mistake. */}
+        {safe.deductions.some((d) => isDerivedReserve(d, safe.reserveIsDerived)) && (
+          <p className="-mt-3 text-xs text-primary-foreground/60">
+            The reserve is estimated from your recent spending, not a number
+            you&apos;ve set.
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+/**
+ * Where the month ends up, and the first day it goes wrong.
+ *
+ * The closing figure alone hides the fortnight in the middle where the
+ * account is actually empty, so the dip gets its own line whenever there is
+ * one.
+ */
+export async function ForecastCard() {
+  const [forecastRes, currency] = await Promise.all([
+    getForecast(),
+    getCurrency(),
+  ]);
+  const forecast = forecastRes.data?.data;
+
+  if (forecastRes.error || !forecast) return null;
+
+  const direction =
+    forecast.projectedBalance >= forecast.openingBalance ? "up" : "down";
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Where this month ends</CardTitle>
+        <CardDescription>
+          Your repeats on their own dates, plus your average daily spend held
+          flat for the rest of the month.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex items-baseline gap-2">
+          <span className="font-heading text-3xl tabular-nums">
+            {formatCurrency(forecast.projectedBalance, currency)}
+          </span>
+          {direction === "up" ? (
+            <TrendingUp className="size-4 text-positive" />
+          ) : (
+            <TrendingDown className="size-4 text-negative" />
+          )}
+        </div>
+
+        {forecast.shortfallDate && (
+          <p className="text-sm text-negative">
+            You dip below zero around {formatDate(forecast.shortfallDate)},
+            bottoming out at {formatCurrency(forecast.lowestBalance, currency)}.
+          </p>
+        )}
+
+        <dl className="flex flex-col gap-1 text-xs text-muted-foreground">
+          <div className="flex justify-between gap-2">
+            <dt>Coming in</dt>
+            <dd className="tabular-nums">
+              {formatCurrency(forecast.projectedIncome, currency)}
+            </dd>
+          </div>
+          <div className="flex justify-between gap-2">
+            <dt>Repeats going out</dt>
+            <dd className="tabular-nums">
+              {formatCurrency(forecast.projectedExpense, currency)}
+            </dd>
+          </div>
+          <div className="flex justify-between gap-2">
+            <dt>Everything else, at your usual rate</dt>
+            <dd className="tabular-nums">
+              {formatCurrency(forecast.projectedDiscretionary, currency)}
+            </dd>
+          </div>
+        </dl>
+      </CardContent>
+    </Card>
+  );
+}
+
+/**
+ * The score, and the six statements behind it.
+ *
+ * Every component carries its own reason, so the number is never the whole
+ * message -- the point of a score people trust is that they can see what
+ * moved it. Titled and captioned as Pocketly's own read rather than "your
+ * financial health": the thresholds behind it (a 30% savings rate as the
+ * ceiling, six months of expenses as a full reserve) are product choices,
+ * not a standardised metric like a credit score, and presenting it as one
+ * would claim more authority than six weighted heuristics can back up.
+ */
+export async function HealthCard() {
+  const healthRes = await getHealth();
+  const health = healthRes.data?.data;
+
+  // Nothing to judge yet: a "0 out of 100" for a new account is a worse
+  // welcome than no card at all.
+  if (healthRes.error || !health || health.components.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Pocketly health score</CardTitle>
+        <CardDescription>{HEALTH_BAND_COPY[health.band]}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex items-baseline gap-1.5">
+          <span className="font-heading text-3xl tabular-nums">
+            {health.score}
+          </span>
+          <span className="text-sm text-muted-foreground">out of 100</span>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          {health.components.map((component) => (
+            <div key={component.key} className="flex flex-col gap-1">
+              <div className="flex items-center justify-between text-sm">
+                <span>{component.label}</span>
+                <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                  {component.score}
+                </span>
+              </div>
+              <Progress value={component.score} />
+              <span className="text-xs text-muted-foreground">
+                {component.reason}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          Pocketly&apos;s own read on six factors above -- not a credit score
+          or a standardised measure.
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
+/**
+ * Renders nothing without goals -- the /goals empty state already makes the
+ * case, and a second empty card on the dashboard only teaches people to skip
+ * past this spot.
+ */
+export async function GoalsCard() {
+  const [goalsRes, currency] = await Promise.all([getGoals(), getCurrency()]);
+  const goals = goalsRes.data?.data.items ?? [];
+
+  if (goalsRes.error || goals.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Goals</CardTitle>
+        <CardDescription>
+          {goals.filter((goal) => goal.onTrack).length} of {goals.length} on
+          track
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        {goals.slice(0, 4).map((goal) => (
+          <div key={goal._id} className="flex flex-col gap-1.5">
+            <div className="flex items-center justify-between text-sm">
+              <span className="truncate">{goal.name}</span>
+              <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                {formatCurrency(goal.progress, currency)} of{" "}
+                {formatCurrency(goal.targetAmount, currency)}
+              </span>
+            </div>
+            <Progress value={goal.percentComplete} />
+          </div>
+        ))}
+        <Button
+          render={<Link href="/goals" />}
+          variant="outline"
+          size="sm"
+          className="self-start"
+        >
+          All goals
+        </Button>
       </CardContent>
     </Card>
   );
@@ -286,13 +584,18 @@ export async function RecentRecords() {
   );
 }
 
-const INSIGHT_ICONS = {
+const INSIGHT_ICONS: Record<string, LucideIcon> = {
   budget_pace: Gauge,
   category_spike: Flame,
   net_negative: TrendingDown,
   recurring_load: Repeat,
   largest_expense: Receipt,
-} as const;
+  forecast_shortfall: TrendingDown,
+  goal_delay: Flag,
+  recurring_growth: Repeat,
+  savings_opportunity: PiggyBank,
+  positive_trend: TrendingUp,
+};
 
 /**
  * Arithmetic over the user's own data -- no model, no inference cost, and
@@ -317,7 +620,9 @@ export async function InsightsCard() {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {insights.map((insight) => {
-          const Icon = INSIGHT_ICONS[insight.kind];
+          // The server's list of kinds can grow ahead of this deploy, so an
+          // unrecognised kind falls back rather than blanking the card.
+          const Icon = INSIGHT_ICONS[insight.kind] ?? Lightbulb;
           return (
             <div key={insight.kind + insight.title} className="flex gap-3">
               <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
@@ -326,6 +631,13 @@ export async function InsightsCard() {
                 <span className="text-xs text-muted-foreground">
                   {insight.detail}
                 </span>
+                {/* What to do about it, when there is something to do --
+                    the difference between a dashboard and a decision. */}
+                {insight.action && (
+                  <span className="mt-1 text-xs text-foreground/80">
+                    {insight.action}
+                  </span>
+                )}
               </div>
             </div>
           );
@@ -348,14 +660,21 @@ export async function InsightsCard() {
  * Rendered with no Suspense fallback on purpose -- see the note in page.tsx.
  */
 export async function GetStartedCard() {
-  const [profileRes, accountsRes, transactionsRes, budgetsRes, connectionsRes] =
-    await Promise.all([
-      getProfile(),
-      getAccounts(),
-      getRecentTransactions(),
-      getBudgets(),
-      getConnections(),
-    ]);
+  const [
+    profileRes,
+    accountsRes,
+    transactionsRes,
+    budgetsRes,
+    goalsRes,
+    connectionsRes,
+  ] = await Promise.all([
+    getProfile(),
+    getAccounts(),
+    getRecentTransactions(),
+    getBudgets(),
+    getGoals(),
+    getConnections(),
+  ]);
 
   // A failed request is not a completed step, but it is also not a reason to
   // tell someone to redo work they may already have done -- so if anything
@@ -365,6 +684,7 @@ export async function GetStartedCard() {
     accountsRes.error ||
     transactionsRes.error ||
     budgetsRes.error ||
+    goalsRes.error ||
     connectionsRes.error
   ) {
     return null;
@@ -390,6 +710,12 @@ export async function GetStartedCard() {
       detail: "A monthly limit for a category you want to watch.",
       href: "/planning",
       done: (budgetsRes.data?.data.items.length ?? 0) > 0,
+    },
+    {
+      title: "Set a goal",
+      detail: "What you're saving for — Pocketly holds it back from what's spendable.",
+      href: "/goals",
+      done: (goalsRes.data?.data.items.length ?? 0) > 0,
     },
     {
       title: "Connect an AI client",

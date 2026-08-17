@@ -356,6 +356,118 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/intelligence/forecast": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["IntelligenceController_getForecast"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/intelligence/safe-to-spend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["IntelligenceController_getSafeToSpend"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/intelligence/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["IntelligenceController_getHealth"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/intelligence/scenario": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["IntelligenceController_simulate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/goals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GoalsController_findAll"];
+        put?: never;
+        post: operations["GoalsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/goals/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["GoalsController_findOne"];
+        put?: never;
+        post?: never;
+        delete: operations["GoalsController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["GoalsController_update"];
+        trace?: never;
+    };
+    "/goals/{id}/contributions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["GoalsController_contribute"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/exports/pdf": {
         parameters: {
             query?: never;
@@ -484,6 +596,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/money-rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MoneyRulesController_findAll"];
+        put?: never;
+        post: operations["MoneyRulesController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/money-rules/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["MoneyRulesController_findOne"];
+        put?: never;
+        post?: never;
+        delete: operations["MoneyRulesController_remove"];
+        options?: never;
+        head?: never;
+        patch: operations["MoneyRulesController_update"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -497,6 +641,7 @@ export interface components {
                 phone?: string;
                 currency: string;
                 timezone: string;
+                minimumReserve?: number | null;
                 onboardedAt?: string | null;
                 checklistDismissedAt?: string | null;
                 createdAt: string;
@@ -509,6 +654,7 @@ export interface components {
             phone?: string;
             currency?: string;
             timezone?: string;
+            minimumReserve?: number | null;
             /** @constant */
             onboarded?: true;
             /** @constant */
@@ -732,7 +878,7 @@ export interface components {
                     title: string;
                     body: string;
                     /** @enum {string} */
-                    type: "BUDGET_ALERT" | "DAILY_REMINDER" | "MONTHLY_REPORT" | "SECURITY" | "SYSTEM";
+                    type: "BUDGET_ALERT" | "DAILY_REMINDER" | "MONTHLY_REPORT" | "SECURITY" | "SYSTEM" | "MONEY_RULE" | "GOAL_PROGRESS";
                     read: boolean;
                     actionUrl?: string;
                     createdAt: string;
@@ -749,7 +895,7 @@ export interface components {
                 title: string;
                 body: string;
                 /** @enum {string} */
-                type: "BUDGET_ALERT" | "DAILY_REMINDER" | "MONTHLY_REPORT" | "SECURITY" | "SYSTEM";
+                type: "BUDGET_ALERT" | "DAILY_REMINDER" | "MONTHLY_REPORT" | "SECURITY" | "SYSTEM" | "MONEY_RULE" | "GOAL_PROGRESS";
                 read: boolean;
                 actionUrl?: string;
                 createdAt: string;
@@ -842,10 +988,11 @@ export interface components {
                 };
                 insights: {
                     /** @enum {string} */
-                    kind: "budget_pace" | "category_spike" | "net_negative" | "recurring_load" | "largest_expense";
+                    kind: "budget_pace" | "category_spike" | "net_negative" | "recurring_load" | "largest_expense" | "forecast_shortfall" | "goal_delay" | "recurring_growth" | "savings_opportunity" | "positive_trend";
                     weight: number;
                     title: string;
                     detail: string;
+                    action?: string;
                 }[];
             };
         };
@@ -900,6 +1047,247 @@ export interface components {
                     income: number;
                     expense: number;
                 }[];
+            };
+        };
+        ForecastDto: {
+            data: {
+                /** @enum {string} */
+                horizon: "month" | "30d" | "90d";
+                currency: string;
+                window: {
+                    start: string;
+                    end: string;
+                };
+                openingBalance: number;
+                projectedBalance: number;
+                projectedIncome: number;
+                projectedExpense: number;
+                projectedDiscretionary: number;
+                lowestBalance: number;
+                shortfallDate: string | null;
+                days: {
+                    date: string;
+                    balance: number;
+                    income: number;
+                    expense: number;
+                }[];
+            };
+        };
+        SafeToSpendDto: {
+            data: {
+                currency: string;
+                window: {
+                    start: string;
+                    end: string;
+                };
+                amount: number;
+                totalBalance: number;
+                expectedIncome: number;
+                totalDeductions: number;
+                shortfall: number;
+                reserveIsDerived: boolean;
+                deductions: {
+                    /** @enum {string} */
+                    key: "upcoming_recurring" | "budget_commitments" | "goal_commitments" | "minimum_reserve";
+                    label: string;
+                    amount: number;
+                }[];
+            };
+        };
+        HealthDto: {
+            data: {
+                currency: string;
+                score: number;
+                /** @enum {string} */
+                band: "strong" | "steady" | "fragile" | "strained";
+                components: {
+                    /** @enum {string} */
+                    key: "savings_rate" | "reserve_level" | "cash_flow_stability" | "budget_control" | "goal_progress" | "spending_consistency";
+                    label: string;
+                    score: number;
+                    weight: number;
+                    reason: string;
+                }[];
+                unavailable: {
+                    /** @enum {string} */
+                    key: "savings_rate" | "reserve_level" | "cash_flow_stability" | "budget_control" | "goal_progress" | "spending_consistency";
+                    reason: string;
+                }[];
+            };
+        };
+        ScenarioDto: {
+            /** @enum {string} */
+            kind: "one_off" | "recurring" | "spending_change";
+            amount?: number;
+            /** @enum {string} */
+            type?: "income" | "expense";
+            /** Format: date-time */
+            date?: string;
+            /** @enum {string} */
+            frequency?: "daily" | "weekly" | "monthly" | "yearly";
+            interval?: number;
+            percentChange?: number;
+            label?: string;
+        };
+        ScenarioResultDto: {
+            data: {
+                currency: string;
+                window: {
+                    start: string;
+                    end: string;
+                };
+                scenario: {
+                    /** @enum {string} */
+                    kind: "one_off" | "recurring" | "spending_change";
+                    amount?: number;
+                    /** @enum {string} */
+                    type?: "income" | "expense";
+                    date?: string;
+                    frequency?: string;
+                    interval?: number;
+                    percentChange?: number;
+                    label?: string;
+                };
+                baseline: {
+                    projectedBalance: number;
+                    lowestBalance: number;
+                    shortfallDate: string | null;
+                    safeToSpend: number;
+                    goals: {
+                        id: string;
+                        name: string;
+                        /** @enum {string} */
+                        status: "complete" | "on_track" | "at_risk" | "overdue" | "stalled";
+                        projectedCompletion: string | null;
+                        monthsRemaining: number | null;
+                    }[];
+                };
+                projected: {
+                    projectedBalance: number;
+                    lowestBalance: number;
+                    shortfallDate: string | null;
+                    safeToSpend: number;
+                    goals: {
+                        id: string;
+                        name: string;
+                        /** @enum {string} */
+                        status: "complete" | "on_track" | "at_risk" | "overdue" | "stalled";
+                        projectedCompletion: string | null;
+                        monthsRemaining: number | null;
+                    }[];
+                };
+                delta: {
+                    projectedBalance: number;
+                    safeToSpend: number;
+                    monthlyCommitment: number;
+                };
+                goalsDelayed: {
+                    id: string;
+                    name: string;
+                    monthsLater: number;
+                }[];
+                affordable: boolean;
+                verdict: string;
+            };
+        };
+        CreateGoalDto: {
+            name: string;
+            /** @enum {string} */
+            kind?: "emergency_fund" | "purchase" | "travel" | "education" | "debt_payoff" | "savings" | "other";
+            targetAmount: number;
+            savedAmount?: number;
+            accountId?: string | null;
+            monthlyContribution?: number;
+            targetDate?: string | null;
+        };
+        GoalWithProjectionDto: {
+            data: {
+                _id: string;
+                userId: string;
+                name: string;
+                /** @enum {string} */
+                kind: "emergency_fund" | "purchase" | "travel" | "education" | "debt_payoff" | "savings" | "other";
+                targetAmount: number;
+                savedAmount: number;
+                accountId: string | null;
+                monthlyContribution: number;
+                targetDate: string | null;
+                deletedAt: string | null;
+                syncVersion: number;
+                createdAt: string;
+                updatedAt: string;
+                progress: number;
+                remaining: number;
+                percentComplete: number;
+                projectedCompletion: string | null;
+                monthsRemaining: number | null;
+                requiredMonthly: number | null;
+                monthlyShortfall: number;
+                onTrack: boolean;
+                /** @enum {string} */
+                status: "complete" | "on_track" | "at_risk" | "overdue" | "stalled";
+            };
+        };
+        GoalListDto: {
+            data: {
+                items: {
+                    _id: string;
+                    userId: string;
+                    name: string;
+                    /** @enum {string} */
+                    kind: "emergency_fund" | "purchase" | "travel" | "education" | "debt_payoff" | "savings" | "other";
+                    targetAmount: number;
+                    savedAmount: number;
+                    accountId: string | null;
+                    monthlyContribution: number;
+                    targetDate: string | null;
+                    deletedAt: string | null;
+                    syncVersion: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    progress: number;
+                    remaining: number;
+                    percentComplete: number;
+                    projectedCompletion: string | null;
+                    monthsRemaining: number | null;
+                    requiredMonthly: number | null;
+                    monthlyShortfall: number;
+                    onTrack: boolean;
+                    /** @enum {string} */
+                    status: "complete" | "on_track" | "at_risk" | "overdue" | "stalled";
+                }[];
+                nextCursor: string | null;
+            };
+        };
+        UpdateGoalDto: {
+            name?: string;
+            /** @enum {string} */
+            kind?: "emergency_fund" | "purchase" | "travel" | "education" | "debt_payoff" | "savings" | "other";
+            targetAmount?: number;
+            savedAmount?: number;
+            accountId?: string | null;
+            monthlyContribution?: number;
+            targetDate?: string | null;
+        };
+        ContributeGoalDto: {
+            amount: number;
+        };
+        GoalDto: {
+            data: {
+                _id: string;
+                userId: string;
+                name: string;
+                /** @enum {string} */
+                kind: "emergency_fund" | "purchase" | "travel" | "education" | "debt_payoff" | "savings" | "other";
+                targetAmount: number;
+                savedAmount: number;
+                accountId: string | null;
+                monthlyContribution: number;
+                targetDate: string | null;
+                deletedAt: string | null;
+                syncVersion: number;
+                createdAt: string;
+                updatedAt: string;
             };
         };
         ExportQueryDto: {
@@ -1027,6 +1415,61 @@ export interface components {
             /** Format: date-time */
             startDate?: string;
             endDate?: string | null;
+        };
+        CreateMoneyRuleDto: {
+            /** @enum {string} */
+            kind: "category_over" | "balance_under" | "large_transaction" | "weekly_summary" | "goal_progress";
+            threshold?: number | null;
+            categoryId?: string | null;
+            enabled?: boolean;
+            cadenceDays?: number;
+        };
+        MoneyRuleDto: {
+            data: {
+                _id: string;
+                userId: string;
+                /** @enum {string} */
+                kind: "category_over" | "balance_under" | "large_transaction" | "weekly_summary" | "goal_progress";
+                threshold: number | null;
+                categoryId: string | null;
+                enabled: boolean;
+                cadenceDays: number;
+                armed: boolean;
+                lastFiredAt: string | null;
+                deletedAt: string | null;
+                syncVersion: number;
+                createdAt: string;
+                updatedAt: string;
+            };
+        };
+        MoneyRuleListDto: {
+            data: {
+                items: {
+                    _id: string;
+                    userId: string;
+                    /** @enum {string} */
+                    kind: "category_over" | "balance_under" | "large_transaction" | "weekly_summary" | "goal_progress";
+                    threshold: number | null;
+                    categoryId: string | null;
+                    enabled: boolean;
+                    cadenceDays: number;
+                    armed: boolean;
+                    lastFiredAt: string | null;
+                    deletedAt: string | null;
+                    syncVersion: number;
+                    createdAt: string;
+                    updatedAt: string;
+                }[];
+                nextCursor: string | null;
+            };
+        };
+        UpdateMoneyRuleDto: {
+            /** @enum {string} */
+            kind?: "category_over" | "balance_under" | "large_transaction" | "weekly_summary" | "goal_progress";
+            threshold?: number | null;
+            categoryId?: string | null;
+            enabled?: boolean;
+            cadenceDays?: number;
         };
     };
     responses: never;
@@ -1855,6 +2298,226 @@ export interface operations {
             };
         };
     };
+    IntelligenceController_getForecast: {
+        parameters: {
+            query?: {
+                horizon?: "month" | "30d" | "90d";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ForecastDto"];
+                };
+            };
+        };
+    };
+    IntelligenceController_getSafeToSpend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SafeToSpendDto"];
+                };
+            };
+        };
+    };
+    IntelligenceController_getHealth: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthDto"];
+                };
+            };
+        };
+    };
+    IntelligenceController_simulate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScenarioDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioResultDto"];
+                };
+            };
+        };
+    };
+    GoalsController_findAll: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalListDto"];
+                };
+            };
+        };
+    };
+    GoalsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateGoalDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalWithProjectionDto"];
+                };
+            };
+        };
+    };
+    GoalsController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalWithProjectionDto"];
+                };
+            };
+        };
+    };
+    GoalsController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The archived (soft-deleted) goal */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalDto"];
+                };
+            };
+        };
+    };
+    GoalsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateGoalDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalWithProjectionDto"];
+                };
+            };
+        };
+    };
+    GoalsController_contribute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContributeGoalDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoalWithProjectionDto"];
+                };
+            };
+        };
+    };
     ExportsController_requestPdfExport: {
         parameters: {
             query?: never;
@@ -2094,6 +2757,119 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RecurrenceDto"];
+                };
+            };
+        };
+    };
+    MoneyRulesController_findAll: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MoneyRuleListDto"];
+                };
+            };
+        };
+    };
+    MoneyRulesController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateMoneyRuleDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MoneyRuleDto"];
+                };
+            };
+        };
+    };
+    MoneyRulesController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MoneyRuleDto"];
+                };
+            };
+        };
+    };
+    MoneyRulesController_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The archived (soft-deleted) rule */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MoneyRuleDto"];
+                };
+            };
+        };
+    };
+    MoneyRulesController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMoneyRuleDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MoneyRuleDto"];
                 };
             };
         };

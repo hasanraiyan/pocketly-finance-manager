@@ -22,6 +22,9 @@ export const updateProfileSchema = z
         message: 'Must be a valid IANA timezone (e.g. "Asia/Kolkata")',
       })
       .optional(),
+    // Null clears the setting and hands safe-to-spend back to its derived
+    // default, which is why this is nullable rather than merely optional.
+    minimumReserve: z.number().int().min(0).nullish(),
     // A flag, not a timestamp: the server stamps the time, so a client
     // can't backdate or forge when onboarding happened.
     onboarded: z.literal(true).optional(),
