@@ -20,14 +20,18 @@ import {
 } from "@/features/categories/hooks";
 import { ChangePasswordModal } from "@/features/settings/ChangePasswordModal";
 import {
+  SCOPE_LABELS,
   SUPPORTED_CURRENCIES,
   useActiveSessions,
   useDeleteMyAccount,
+  useDisconnectOAuthClient,
+  useOAuthConnections,
   useRevokeOtherSessions,
   useRevokeSession,
   useUpdateProfile,
   useUserProfile,
   type ActiveSession,
+  type OAuthConnection,
 } from "@/features/settings/hooks";
 import { SettingsSkeleton } from "@/features/settings/SettingsSkeleton";
 import { ExportModal } from "@/features/transactions/ExportModal";
@@ -59,10 +63,18 @@ export default function SettingsScreen() {
     isRefetching: sessionsRefetching,
   } = useActiveSessions();
 
+  const {
+    data: connections = [],
+    isLoading: connectionsLoading,
+    refetch: refetchConnections,
+    isRefetching: connectionsRefetching,
+  } = useOAuthConnections();
+
   const updateProfile = useUpdateProfile();
   const deleteCategory = useDeleteCategory();
   const revokeSession = useRevokeSession();
   const revokeOthers = useRevokeOtherSessions();
+  const disconnectClient = useDisconnectOAuthClient();
   const deleteAccount = useDeleteMyAccount();
 
   const [name, setName] = useState("");
@@ -87,9 +99,17 @@ export default function SettingsScreen() {
   }, [profile, authUser]);
 
   const isRefetching =
-    profileRefetching || categoriesRefetching || sessionsRefetching;
+    profileRefetching ||
+    categoriesRefetching ||
+    sessionsRefetching ||
+    connectionsRefetching;
+
   const isLoading =
-    (profileLoading || categoriesLoading || sessionsLoading) && !isRefetching;
+    (profileLoading ||
+      categoriesLoading ||
+      sessionsLoading ||
+      connectionsLoading) &&
+    !isRefetching;
 
   const expenseCategories = useMemo(
     () => categories.filter((c) => c.type === "expense"),
@@ -150,6 +170,29 @@ export default function SettingsScreen() {
               await deleteCategory.mutateAsync(cat._id);
             } catch {
               Alert.alert("Error", "Could not delete category.");
+            }
+          },
+        },
+      ],
+    );
+  }
+
+  function handleDisconnectApp(connection: OAuthConnection) {
+    Alert.alert(
+      `Disconnect ${connection.clientName}?`,
+      "It will immediately lose access to your Pocketly financial data via MCP.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Disconnect",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await disconnectClient.mutateAsync({
+                clientId: connection.clientId,
+              });
+            } catch {
+              Alert.alert("Error", "Could not disconnect client.");
             }
           },
         },
@@ -239,6 +282,7 @@ export default function SettingsScreen() {
       refetchProfile(),
       refetchCategories(),
       refetchSessions(),
+      refetchConnections(),
     ]);
   }
 
@@ -255,12 +299,12 @@ export default function SettingsScreen() {
       <View className="px-6 pt-16 pb-4 border-b border-border bg-background">
         <Text className="font-heading text-2xl text-foreground">Settings</Text>
         <Text className="text-xs text-muted-foreground mt-0.5">
-          Profile preferences, categories, security & data export
+          Profile, categories, MCP connections & security
         </Text>
       </View>
 
       <ScrollView
-        contentContainerClassName="px-6 py-5 pb-28 gap-5"
+        contentContainerClassName="px-5 py-5 pb-32 gap-4"
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
@@ -272,13 +316,13 @@ export default function SettingsScreen() {
         {isLoading ? (
           <SettingsSkeleton />
         ) : (
-          <View className="gap-5">
+          <View className="gap-4">
             {/* 1. Profile Preferences Card */}
-            <Card className="bg-card border border-border/80">
-              <CardContent className="p-5 gap-4">
+            <Card>
+              <CardContent className="gap-4">
                 <View className="flex-row items-center gap-3.5">
-                  <View className="h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
-                    <Text className="font-heading text-xl text-primary">
+                  <View className="h-13 w-13 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
+                    <Text className="font-heading text-lg text-primary">
                       {initials}
                     </Text>
                   </View>
@@ -335,7 +379,7 @@ export default function SettingsScreen() {
                           <Pressable
                             key={c.code}
                             onPress={() => setCurrency(c.code)}
-                            className={`rounded-xl px-3.5 py-2.5 border ${
+                            className={`rounded-xl px-3.5 py-2 border ${
                               isSelected
                                 ? "bg-primary border-primary"
                                 : "bg-card border-border"
@@ -388,8 +432,8 @@ export default function SettingsScreen() {
             </Card>
 
             {/* 2. Categories Management Card */}
-            <Card className="bg-card border border-border/80">
-              <CardContent className="p-5 gap-4">
+            <Card>
+              <CardContent className="gap-4">
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-2">
                     <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
@@ -486,18 +530,79 @@ export default function SettingsScreen() {
               </CardContent>
             </Card>
 
-            {/* 3. Export Reports Card */}
-            <Card className="bg-card border border-border/80">
-              <CardContent className="p-5 gap-3">
+            {/* 3. Connected Apps & MCP Connections Card */}
+            <Card>
+              <CardContent className="gap-3">
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-2">
                     <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                      <Feather name="download" size={14} color={theme.primary} />
+                      <Feather name="cpu" size={14} color={theme.primary} />
                     </View>
                     <Text className="text-sm font-semibold text-foreground">
-                      Export Ledger Reports
+                      Connected Apps & MCP
                     </Text>
                   </View>
+
+                  <Text className="font-mono text-xs font-semibold text-muted-foreground">
+                    {connections.length} connected
+                  </Text>
+                </View>
+
+                <Text className="text-xs text-muted-foreground leading-relaxed">
+                  AI tools and assistants (Claude, Cursor, Antigravity) authorized to interact with your Pocketly financial ledger via MCP.
+                </Text>
+
+                {connections.length === 0 ? (
+                  <View className="items-center justify-center py-4 rounded-xl bg-muted/20 border border-border/40">
+                    <Text className="text-xs text-muted-foreground text-center">
+                      No external MCP clients connected yet.
+                    </Text>
+                  </View>
+                ) : (
+                  <View className="gap-2.5 mt-1">
+                    {connections.map((conn) => (
+                      <View
+                        key={conn.id}
+                        className="flex-row items-center justify-between rounded-xl bg-card border border-border p-3"
+                      >
+                        <View className="flex-1 pr-2">
+                          <Text className="text-xs font-semibold text-foreground">
+                            {conn.clientName}
+                          </Text>
+                          <Text className="text-[11px] text-muted-foreground mt-0.5">
+                            {conn.scopes
+                              .map((s) => SCOPE_LABELS[s] || s)
+                              .slice(0, 2)
+                              .join(" • ")}
+                          </Text>
+                        </View>
+
+                        <Pressable
+                          onPress={() => handleDisconnectApp(conn)}
+                          hitSlop={6}
+                          className="rounded-md bg-negative/10 px-2.5 py-1"
+                        >
+                          <Text className="text-xs font-medium text-negative">
+                            Disconnect
+                          </Text>
+                        </Pressable>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* 4. Export Reports Card */}
+            <Card>
+              <CardContent className="gap-3">
+                <View className="flex-row items-center gap-2">
+                  <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                    <Feather name="download" size={14} color={theme.primary} />
+                  </View>
+                  <Text className="text-sm font-semibold text-foreground">
+                    Export Ledger Reports
+                  </Text>
                 </View>
 
                 <Text className="text-xs text-muted-foreground leading-relaxed">
@@ -517,9 +622,9 @@ export default function SettingsScreen() {
               </CardContent>
             </Card>
 
-            {/* 4. Security Card */}
-            <Card className="bg-card border border-border/80">
-              <CardContent className="p-5 gap-3">
+            {/* 5. Security Card */}
+            <Card>
+              <CardContent className="gap-3">
                 <View className="flex-row items-center gap-2">
                   <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
                     <Feather name="lock" size={14} color={theme.primary} />
@@ -543,9 +648,9 @@ export default function SettingsScreen() {
               </CardContent>
             </Card>
 
-            {/* 5. Active Sessions Card */}
-            <Card className="bg-card border border-border/80">
-              <CardContent className="p-5 gap-4">
+            {/* 6. Active Sessions Card */}
+            <Card>
+              <CardContent className="gap-4">
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-2">
                     <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
@@ -630,9 +735,9 @@ export default function SettingsScreen() {
               </CardContent>
             </Card>
 
-            {/* 6. Account Actions / Danger Zone */}
-            <Card className="bg-card border border-border/80">
-              <CardContent className="p-5 gap-3">
+            {/* 7. Account Actions / Danger Zone */}
+            <Card>
+              <CardContent className="gap-3">
                 <Button variant="outline" onPress={handleSignOut}>
                   Sign Out of Pocketly
                 </Button>

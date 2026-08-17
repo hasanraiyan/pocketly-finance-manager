@@ -13,8 +13,17 @@ export interface ActiveSession {
   isCurrent: boolean;
 }
 
+export interface OAuthConnection {
+  id: string;
+  clientId: string;
+  clientName: string;
+  scopes: string[];
+  createdAt: string;
+}
+
 export const USER_PROFILE_KEY = ["user-profile"] as const;
 export const SESSIONS_QUERY_KEY = ["active-sessions"] as const;
+export const CONNECTIONS_QUERY_KEY = ["oauth-connections"] as const;
 
 export const SUPPORTED_CURRENCIES = [
   { code: "USD", symbol: "$", label: "USD ($) - US Dollar" },
@@ -27,6 +36,15 @@ export const SUPPORTED_CURRENCIES = [
   { code: "SGD", symbol: "S$", label: "SGD ($) - Singapore Dollar" },
   { code: "CHF", symbol: "CHF", label: "CHF - Swiss Franc" },
 ];
+
+export const SCOPE_LABELS: Record<string, string> = {
+  "pocketly:read": "View your financial data",
+  "pocketly:write": "Create, edit, and delete records",
+  openid: "Confirm identity",
+  profile: "Read profile name",
+  email: "Read email address",
+  offline_access: "Stay connected between sessions",
+};
 
 export function useUserProfile() {
   const client = usePocketlyClient();
@@ -117,6 +135,40 @@ export function useRevokeOtherSessions() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SESSIONS_QUERY_KEY });
+    },
+  });
+}
+
+export function useOAuthConnections() {
+  const client = usePocketlyClient();
+
+  return useQuery({
+    queryKey: CONNECTIONS_QUERY_KEY,
+    queryFn: async (): Promise<OAuthConnection[]> => {
+      const { data, error } = await client.GET("/mcp-connections");
+      if (error || !data) {
+        return [];
+      }
+      return data.data?.items ?? [];
+    },
+  });
+}
+
+export function useDisconnectOAuthClient() {
+  const client = usePocketlyClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ clientId }: { clientId: string }) => {
+      const { error } = await client.DELETE("/mcp-connections/{clientId}", {
+        params: { path: { clientId } },
+      });
+      if (error) {
+        throw new Error("Failed to disconnect client");
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CONNECTIONS_QUERY_KEY });
     },
   });
 }

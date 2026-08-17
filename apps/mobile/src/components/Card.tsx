@@ -1,9 +1,10 @@
+import React from "react";
 import { Text, View, type ViewProps } from "react-native";
 
 export function Card({ className, ...props }: ViewProps & { className?: string }) {
   return (
     <View
-      className={`rounded-xl border border-border bg-card ${className ?? ""}`}
+      className={`rounded-2xl border border-border/80 bg-card overflow-hidden ${className ?? ""}`}
       {...props}
     />
   );
@@ -13,7 +14,7 @@ export function CardHeader({
   className,
   ...props
 }: ViewProps & { className?: string }) {
-  return <View className={`gap-1 p-4 pb-2 ${className ?? ""}`} {...props} />;
+  return <View className={`gap-1 p-5 pb-2 ${className ?? ""}`} {...props} />;
 }
 
 export function CardTitle({ children }: { children: React.ReactNode }) {
@@ -28,5 +29,5 @@ export function CardContent({
   className,
   ...props
 }: ViewProps & { className?: string }) {
-  return <View className={`p-4 pt-2 ${className ?? ""}`} {...props} />;
+  return <View className={`p-5 ${className ?? ""}`} {...props} />;
 }
