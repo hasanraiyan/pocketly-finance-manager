@@ -37,7 +37,8 @@ export default function CopilotPage() {
   const firstName = user?.name?.split(" ")[0] ?? "there";
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] w-full p-4 md:p-6">
+    // Fill the entire app shell content area — no padding, no card
+    <div className="h-[calc(100svh-3.5rem)] w-full">
       <PersonaChatView
         agentId={AGENT_ID}
         title="Financial Copilot"
