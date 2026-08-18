@@ -1,7 +1,27 @@
 import { getServerApiClient } from "@/lib/api-client";
+import { getServerSession } from "@/lib/get-session";
 import { PlanningView } from "@/features/budgets/planning-view";
 
 export default async function PlanningPage() {
+  const session = await getServerSession();
+  const isGuest = Boolean(session?.isGuest);
+
+  if (isGuest) {
+    return (
+      <PlanningView
+        initialData={[]}
+        initialLoadFailed={false}
+        categories={[]}
+        accounts={[]}
+        recurrences={[]}
+        recurrencesLoadFailed={false}
+        moneyRules={[]}
+        moneyRulesLoadFailed={false}
+        currency="USD"
+      />
+    );
+  }
+
   const client = await getServerApiClient();
   const [
     profileRes,

@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import { getServerSession } from "@/lib/get-session";
+import { GuestDashboardView } from "@/features/dashboard/guest-dashboard-view";
 import { NotificationPromptBanner } from "@/features/notifications/notification-prompt-banner";
 import {
   AccountsCard,
@@ -24,17 +26,12 @@ import {
   SafeToSpendCardSkeleton,
 } from "@/features/dashboard/skeletons";
 
-/**
- * Deliberately not `async`: nothing is awaited at this level, so the page
- * frame and every skeleton belong to the static shell and paint at once.
- * Each block resolves its own data behind its own boundary and streams in
- * when ready, rather than all of them waiting on the slowest one.
- *
- * The order is the argument the product makes: what you can spend, where the
- * month lands, how you're doing, what you're saving for, then the ledger.
- * Totals and pie charts are the last thing you see, not the first.
- */
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await getServerSession();
+  if (session?.isGuest) {
+    return <GuestDashboardView />;
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <NotificationPromptBanner />

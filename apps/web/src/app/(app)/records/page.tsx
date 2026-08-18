@@ -1,7 +1,26 @@
 import { getServerApiClient } from "@/lib/api-client";
+import { getServerSession } from "@/lib/get-session";
 import { RecordsView } from "@/features/transactions/records-view";
 
 export default async function RecordsPage() {
+  const session = await getServerSession();
+  const isGuest = Boolean(session?.isGuest);
+
+  if (isGuest) {
+    return (
+      <RecordsView
+        initialData={{
+          items: [],
+          nextCursor: null,
+        }}
+        initialLoadFailed={false}
+        accounts={[]}
+        categories={[]}
+        currency="USD"
+      />
+    );
+  }
+
   const client = await getServerApiClient();
   const [profileRes, transactionsRes, accountsRes, categoriesRes] =
     await Promise.all([
