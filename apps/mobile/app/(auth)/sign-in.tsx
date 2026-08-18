@@ -12,6 +12,8 @@ import {
 import { Button } from "@/components/Button";
 import { PasswordInput } from "@/components/PasswordInput";
 import { TextField } from "@/components/TextField";
+import { DataMigrationModal } from "@/components/DataMigrationModal";
+import { getLocalDataSummary, type MigrationSummary } from "@/lib/migration-service";
 import { useAuth } from "@/lib/auth-provider";
 import { theme } from "@/lib/theme";
 
@@ -24,6 +26,15 @@ export default function SignInScreen() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Migration modal state
+  const [migrationVisible, setMigrationVisible] = useState(false);
+  const [migrationSummary, setMigrationSummary] = useState<MigrationSummary>({
+    hasData: false,
+    transactionCount: 0,
+    accountCount: 0,
+    categoryCount: 0,
+  });
+
   async function handleSignIn() {
     if (!email.trim() || !password) {
       setError("Please fill in both email and password.");
@@ -34,7 +45,15 @@ export default function SignInScreen() {
       setLoading(true);
       setError(null);
       await login(email.trim(), password);
-      router.replace("/(app)/dashboard");
+
+      // Check if user had local guest records before logging in
+      const summary = await getLocalDataSummary();
+      if (summary.hasData) {
+        setMigrationSummary(summary);
+        setMigrationVisible(true);
+      } else {
+        router.replace("/(app)/dashboard");
+      }
     } catch (err) {
       setError(
         err instanceof Error
@@ -150,6 +169,16 @@ export default function SignInScreen() {
           </Text>
         </View>
       </ScrollView>
+
+      {/* Migration Modal */}
+      <DataMigrationModal
+        visible={migrationVisible}
+        summary={migrationSummary}
+        onComplete={() => {
+          setMigrationVisible(false);
+          router.replace("/(app)/dashboard");
+        }}
+      />
     </KeyboardAvoidingView>
   );
 }

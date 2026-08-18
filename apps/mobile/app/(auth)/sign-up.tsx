@@ -12,6 +12,8 @@ import {
 import { Button } from "@/components/Button";
 import { PasswordInput } from "@/components/PasswordInput";
 import { TextField } from "@/components/TextField";
+import { DataMigrationModal } from "@/components/DataMigrationModal";
+import { getLocalDataSummary, type MigrationSummary } from "@/lib/migration-service";
 import { useAuth } from "@/lib/auth-provider";
 import { theme } from "@/lib/theme";
 
@@ -24,6 +26,15 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Migration modal state
+  const [migrationVisible, setMigrationVisible] = useState(false);
+  const [migrationSummary, setMigrationSummary] = useState<MigrationSummary>({
+    hasData: false,
+    transactionCount: 0,
+    accountCount: 0,
+    categoryCount: 0,
+  });
 
   async function handleSignUp() {
     if (!name.trim() || !email.trim() || !password) {
@@ -39,7 +50,15 @@ export default function SignUpScreen() {
       setLoading(true);
       setError(null);
       await register(email.trim(), password, name.trim());
-      router.replace("/(app)/dashboard");
+
+      // Check if user had local guest records before registering
+      const summary = await getLocalDataSummary();
+      if (summary.hasData) {
+        setMigrationSummary(summary);
+        setMigrationVisible(true);
+      } else {
+        router.replace("/(app)/dashboard");
+      }
     } catch (err) {
       setError(
         err instanceof Error
@@ -160,10 +179,20 @@ export default function SignUpScreen() {
         <View className="mt-10 flex-row items-center justify-center gap-2 border-t border-border pt-6">
           <Feather name="shield" size={14} color={theme.primary} />
           <Text className="text-xs text-muted-foreground">
-            Free ledger • AI financial analysis • No hidden fees
+            Local-first & private • Cloud backup optional
           </Text>
         </View>
       </ScrollView>
+
+      {/* Migration Modal */}
+      <DataMigrationModal
+        visible={migrationVisible}
+        summary={migrationSummary}
+        onComplete={() => {
+          setMigrationVisible(false);
+          router.replace("/(app)/dashboard");
+        }}
+      />
     </KeyboardAvoidingView>
   );
 }
