@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { components } from "@pocketly/sdk";
 import { usePocketlyClient } from "@/lib/api-client";
+import { useAuth } from "@/lib/auth-provider";
+import {
+  deleteLocalCategory,
+  getLocalCategories,
+  saveLocalCategory,
+} from "@/lib/local-storage-adapter";
 
 export type Category =
   components["schemas"]["CategoryListDto"]["data"]["items"][number];
@@ -10,10 +16,17 @@ export type UpdateCategoryInput = components["schemas"]["UpdateCategoryDto"];
 export const CATEGORIES_KEY = ["categories"] as const;
 
 export function useCategories() {
+  const { isGuest } = useAuth();
   const client = usePocketlyClient();
+
   return useQuery({
     queryKey: CATEGORIES_KEY,
     queryFn: async () => {
+      if (isGuest) {
+        const local = await getLocalCategories();
+        return local as unknown as Category[];
+      }
+
       const { data, error } = await client.GET("/categories", {
         params: { query: { limit: 100 } },
       });
@@ -26,11 +39,22 @@ export function useCategories() {
 }
 
 export function useCreateCategory() {
+  const { isGuest } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (input: CreateCategoryInput) => {
+      if (isGuest) {
+        const saved = await saveLocalCategory({
+          name: input.name,
+          type: input.type as "expense" | "income",
+          color: input.color,
+          icon: input.icon,
+        });
+        return saved as unknown as Category;
+      }
+
       const { data, error } = await client.POST("/categories", {
         body: input,
       });
@@ -49,6 +73,7 @@ export function useCreateCategory() {
 }
 
 export function useUpdateCategory() {
+  const { isGuest } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
 
@@ -60,6 +85,17 @@ export function useUpdateCategory() {
       id: string;
       input: UpdateCategoryInput;
     }) => {
+      if (isGuest) {
+        const saved = await saveLocalCategory({
+          _id: id,
+          name: input.name || "Category",
+          type: (input.type as "expense" | "income") || "expense",
+          color: input.color,
+          icon: input.icon,
+        });
+        return saved as unknown as Category;
+      }
+
       const { data, error } = await client.PATCH("/categories/{id}", {
         params: { path: { id } },
         body: input,
@@ -81,11 +117,17 @@ export function useUpdateCategory() {
 }
 
 export function useDeleteCategory() {
+  const { isGuest } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (id: string) => {
+      if (isGuest) {
+        await deleteLocalCategory(id);
+        return id;
+      }
+
       const { error } = await client.DELETE("/categories/{id}", {
         params: { path: { id } },
       });

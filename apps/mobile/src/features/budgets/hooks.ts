@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { components } from "@pocketly/sdk";
 import { usePocketlyClient } from "@/lib/api-client";
+import { useAuth } from "@/lib/auth-provider";
+import {
+  deleteLocalBudget,
+  getLocalBudgets,
+  saveLocalBudget,
+} from "@/lib/local-storage-adapter";
 
 export type Budget =
   components["schemas"]["BudgetListDto"]["data"]["items"][number];
@@ -10,10 +16,17 @@ export type UpdateBudgetInput = components["schemas"]["UpdateBudgetDto"];
 export const BUDGETS_KEY = ["budgets"] as const;
 
 export function useBudgets() {
+  const { isGuest } = useAuth();
   const client = usePocketlyClient();
+
   return useQuery({
     queryKey: BUDGETS_KEY,
     queryFn: async () => {
+      if (isGuest) {
+        const local = await getLocalBudgets();
+        return local as unknown as Budget[];
+      }
+
       const { data, error } = await client.GET("/budgets", {
         params: { query: { limit: 100 } },
       });
@@ -26,11 +39,21 @@ export function useBudgets() {
 }
 
 export function useCreateBudget() {
+  const { isGuest } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (input: CreateBudgetInput) => {
+      if (isGuest) {
+        const saved = await saveLocalBudget({
+          categoryId: input.categoryId,
+          amount: Number(input.amount) || 0,
+          period: (input.period as "monthly" | "weekly" | "yearly") || "monthly",
+        });
+        return saved as unknown as Budget;
+      }
+
       const { data, error } = await client.POST("/budgets", { body: input });
       if (error || !data) {
         throw new Error("Failed to create budget");
@@ -48,6 +71,7 @@ export function useCreateBudget() {
 }
 
 export function useUpdateBudget() {
+  const { isGuest } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
 
@@ -59,6 +83,16 @@ export function useUpdateBudget() {
       id: string;
       input: UpdateBudgetInput;
     }) => {
+      if (isGuest) {
+        const saved = await saveLocalBudget({
+          _id: id,
+          categoryId: input.categoryId || "",
+          amount: Number(input.amount) || 0,
+          period: (input.period as "monthly" | "weekly" | "yearly") || "monthly",
+        });
+        return saved as unknown as Budget;
+      }
+
       const { data, error } = await client.PATCH("/budgets/{id}", {
         params: { path: { id } },
         body: input,
@@ -79,11 +113,17 @@ export function useUpdateBudget() {
 }
 
 export function useDeleteBudget() {
+  const { isGuest } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (id: string) => {
+      if (isGuest) {
+        await deleteLocalBudget(id);
+        return id;
+      }
+
       const { error } = await client.DELETE("/budgets/{id}", {
         params: { path: { id } },
       });

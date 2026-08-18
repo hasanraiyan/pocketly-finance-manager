@@ -1,6 +1,12 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { components } from "@pocketly/sdk";
 import { usePocketlyClient } from "@/lib/api-client";
+import { useAuth } from "@/lib/auth-provider";
+import {
+  getLocalAccounts,
+  getLocalCategories,
+  getLocalTransactions,
+} from "@/lib/local-storage-adapter";
 
 export type AnalysisPeriod =
   | "7d"
@@ -27,10 +33,29 @@ export const PERIOD_OPTIONS: Array<{ value: AnalysisPeriod; label: string }> = [
 ];
 
 export function useAnalysisOverview(period: AnalysisPeriod) {
+  const { isGuest } = useAuth();
   const client = usePocketlyClient();
+
   return useQuery({
-    queryKey: ["analysis", "overview", period],
-    queryFn: async () => {
+    queryKey: ["analysis", "overview", period, isGuest],
+    queryFn: async (): Promise<Overview> => {
+      if (isGuest) {
+        const txs = await getLocalTransactions();
+        let income = 0;
+        let expense = 0;
+        txs.forEach((t) => {
+          if (t.type === "income") income += t.amount;
+          if (t.type === "expense") expense += t.amount;
+        });
+        const net = income - expense;
+        return {
+          period: { start: new Date().toISOString(), end: new Date().toISOString() },
+          income,
+          expense,
+          net,
+        } as unknown as Overview;
+      }
+
       const { data, error } = await client.GET("/analysis", {
         params: { query: { period } },
       });
@@ -44,10 +69,44 @@ export function useAnalysisOverview(period: AnalysisPeriod) {
 }
 
 export function useCategoryBreakdown(period: AnalysisPeriod) {
+  const { isGuest } = useAuth();
   const client = usePocketlyClient();
+
   return useQuery({
-    queryKey: ["analysis", "categories", period],
-    queryFn: async () => {
+    queryKey: ["analysis", "categories", period, isGuest],
+    queryFn: async (): Promise<CategoryBreakdown> => {
+      if (isGuest) {
+        const [txs, cats] = await Promise.all([
+          getLocalTransactions(),
+          getLocalCategories(),
+        ]);
+        const map = new Map<string, { total: number; count: number; name: string; type: "income" | "expense"; color?: string }>();
+        cats.forEach((c) => {
+          map.set(c._id, { total: 0, count: 0, name: c.name, type: c.type, color: c.color });
+        });
+        txs.forEach((t) => {
+          const entry = map.get(t.categoryId);
+          if (entry) {
+            entry.total += t.amount;
+            entry.count += 1;
+          }
+        });
+        const categories = Array.from(map.entries())
+          .filter(([_, v]) => v.total > 0)
+          .map(([id, v]) => ({
+            categoryId: id,
+            categoryName: v.name,
+            total: v.total,
+            count: v.count,
+            type: v.type,
+            color: v.color,
+          }));
+        return {
+          period: { start: new Date().toISOString(), end: new Date().toISOString() },
+          categories,
+        } as unknown as CategoryBreakdown;
+      }
+
       const { data, error } = await client.GET("/analysis/categories", {
         params: { query: { period } },
       });
@@ -61,10 +120,19 @@ export function useCategoryBreakdown(period: AnalysisPeriod) {
 }
 
 export function useCashFlow(period: AnalysisPeriod) {
+  const { isGuest } = useAuth();
   const client = usePocketlyClient();
+
   return useQuery({
-    queryKey: ["analysis", "cash-flow", period],
-    queryFn: async () => {
+    queryKey: ["analysis", "cash-flow", period, isGuest],
+    queryFn: async (): Promise<CashFlow> => {
+      if (isGuest) {
+        return {
+          period: { start: new Date().toISOString(), end: new Date().toISOString() },
+          days: [],
+        } as unknown as CashFlow;
+      }
+
       const { data, error } = await client.GET("/analysis/cash-flow", {
         params: { query: { period } },
       });
@@ -78,10 +146,24 @@ export function useCashFlow(period: AnalysisPeriod) {
 }
 
 export function useAccountBreakdown(period: AnalysisPeriod) {
+  const { isGuest } = useAuth();
   const client = usePocketlyClient();
+
   return useQuery({
-    queryKey: ["analysis", "accounts", period],
-    queryFn: async () => {
+    queryKey: ["analysis", "accounts", period, isGuest],
+    queryFn: async (): Promise<AccountBreakdown> => {
+      if (isGuest) {
+        const accs = await getLocalAccounts();
+        return {
+          accounts: accs.map((a) => ({
+            accountId: a._id,
+            name: a.name,
+            income: 0,
+            expense: 0,
+          })),
+        } as unknown as AccountBreakdown;
+      }
+
       const { data, error } = await client.GET("/analysis/accounts", {
         params: { query: { period } },
       });

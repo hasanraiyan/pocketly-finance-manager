@@ -33,11 +33,21 @@ import {
 } from "@/features/transactions/hooks";
 import { TransactionModal } from "@/features/transactions/TransactionModal";
 import { usePocketlyClient } from "@/lib/api-client";
+import { useAuth } from "@/lib/auth-provider";
 import { formatCurrency, formatDate } from "@/lib/format";
+import {
+  getLocalAccounts,
+  getLocalBudgets,
+  getLocalCategories,
+  getLocalGoals,
+  getLocalOverview,
+  getLocalTransactions,
+} from "@/lib/local-storage-adapter";
 import { theme } from "@/lib/theme";
 
 export default function DashboardScreen() {
   const router = useRouter();
+  const { isGuest } = useAuth();
   const client = usePocketlyClient();
 
   const [checklistDismissed, setChecklistDismissed] = useState(false);
@@ -49,8 +59,51 @@ export default function DashboardScreen() {
   const [goalModalVisible, setGoalModalVisible] = useState(false);
 
   const { data, isLoading, isError, refetch, isRefetching } = useQuery({
-    queryKey: ["dashboard"],
+    queryKey: ["dashboard", isGuest],
     queryFn: async () => {
+      if (isGuest) {
+        const [
+          accounts,
+          budgets,
+          transactions,
+          goals,
+          categories,
+          overview,
+        ] = await Promise.all([
+          getLocalAccounts(),
+          getLocalBudgets(),
+          getLocalTransactions(),
+          getLocalGoals(),
+          getLocalCategories(),
+          getLocalOverview(),
+        ]);
+
+        const totalBalance = accounts.reduce((sum, a) => sum + (a.balance || 0), 0);
+        const totalBudgeted = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
+        const totalSpent = budgets.reduce((sum, b) => sum + (b.spent || 0), 0);
+
+        return {
+          currency: "USD",
+          name: "Guest User",
+          firstName: "Guest",
+          overview: {
+            income: overview.income,
+            expense: overview.expense,
+            net: overview.net,
+            savingsRate: overview.income > 0 ? ((overview.income - overview.expense) / overview.income) * 100 : 0,
+          },
+          accounts: accounts as unknown as Account[],
+          budgets: budgets as unknown as Budget[],
+          transactions: transactions as unknown as Transaction[],
+          goals: goals as unknown as Goal[],
+          categories,
+          forecast: null,
+          totalBalance,
+          totalBudgeted,
+          totalSpent,
+        };
+      }
+
       const [
         profileRes,
         overviewRes,
