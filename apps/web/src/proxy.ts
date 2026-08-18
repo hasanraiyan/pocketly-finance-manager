@@ -8,6 +8,7 @@ import { ACCESS_TOKEN_COOKIE_NAME, decodeAccessToken, isExpired } from "@/lib/au
  */
 const PROTECTED_PREFIXES = [
   "/dashboard",
+  "/copilot",
   "/accounts",
   "/records",
   "/planning",
