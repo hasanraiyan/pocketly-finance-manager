@@ -29,7 +29,7 @@ export function SpeedDialFab() {
 
   return (
     <>
-      {/* Floating Action Button (Visible when menu is closed) */}
+      {/* 1. Closed State: Main Floating Action Button (+) */}
       {!isOpen && (
         <View
           pointerEvents="box-none"
@@ -43,32 +43,23 @@ export function SpeedDialFab() {
         >
           <Pressable
             onPress={() => setIsOpen(true)}
-            hitSlop={16}
+            hitSlop={14}
             style={({ pressed }) => [
-              styles.fabButtonOuter,
+              styles.mainFab,
               {
-                backgroundColor: "#10b981",
-                borderColor: "#059669",
-                opacity: pressed ? 0.9 : 1,
+                opacity: pressed ? 0.88 : 1,
                 transform: [{ scale: pressed ? 0.94 : 1 }],
               },
             ]}
           >
-            <View
-              style={[
-                styles.fabInnerCircle,
-                {
-                  backgroundColor: "#047857",
-                },
-              ]}
-            >
+            <View style={styles.mainFabInner}>
               <Feather name="plus" size={28} color="#ffffff" />
             </View>
           </Pressable>
         </View>
       )}
 
-      {/* Expanded SpeedDial Overlay (Contains the SpeedDial stack & exactly 1 close button) */}
+      {/* 2. Open State: Speed-Dial Overlay (Decreased sub-buttons & fixed circular X) */}
       <Modal
         visible={isOpen}
         transparent
@@ -86,7 +77,7 @@ export function SpeedDialFab() {
                 },
               ]}
             >
-              {/* 1. Quick Expense */}
+              {/* Quick Expense */}
               <Pressable
                 onPress={() => handleOpenAction("expense")}
                 style={styles.speedDialItem}
@@ -94,17 +85,12 @@ export function SpeedDialFab() {
                 <View style={styles.labelBadge}>
                   <Text style={styles.labelText}>Log Expense</Text>
                 </View>
-                <View
-                  style={[
-                    styles.miniFab,
-                    { backgroundColor: "#e11d48", borderColor: "#f43f5e" },
-                  ]}
-                >
-                  <Feather name="arrow-down-right" size={24} color="#ffffff" />
+                <View style={[styles.subFab, { backgroundColor: "#f43f5e" }]}>
+                  <Feather name="arrow-down-right" size={20} color="#ffffff" />
                 </View>
               </Pressable>
 
-              {/* 2. Quick Income */}
+              {/* Quick Income */}
               <Pressable
                 onPress={() => handleOpenAction("income")}
                 style={styles.speedDialItem}
@@ -112,17 +98,12 @@ export function SpeedDialFab() {
                 <View style={styles.labelBadge}>
                   <Text style={styles.labelText}>Add Income</Text>
                 </View>
-                <View
-                  style={[
-                    styles.miniFab,
-                    { backgroundColor: "#059669", borderColor: "#10b981" },
-                  ]}
-                >
-                  <Feather name="arrow-up-right" size={24} color="#ffffff" />
+                <View style={[styles.subFab, { backgroundColor: "#10b981" }]}>
+                  <Feather name="arrow-up-right" size={20} color="#ffffff" />
                 </View>
               </Pressable>
 
-              {/* 3. Transfer */}
+              {/* Transfer */}
               <Pressable
                 onPress={() => handleOpenAction("transfer")}
                 style={styles.speedDialItem}
@@ -130,34 +111,24 @@ export function SpeedDialFab() {
                 <View style={styles.labelBadge}>
                   <Text style={styles.labelText}>Transfer Money</Text>
                 </View>
-                <View
-                  style={[
-                    styles.miniFab,
-                    { backgroundColor: "#2563eb", borderColor: "#3b82f6" },
-                  ]}
-                >
-                  <Feather name="repeat" size={22} color="#ffffff" />
+                <View style={[styles.subFab, { backgroundColor: "#3b82f6" }]}>
+                  <Feather name="repeat" size={18} color="#ffffff" />
                 </View>
               </Pressable>
 
-              {/* Single Close Button Anchor in Modal */}
+              {/* Single Perfectly-Round Close Button (X) */}
               <Pressable
                 onPress={() => setIsOpen(false)}
-                hitSlop={16}
+                hitSlop={14}
                 style={({ pressed }) => [
-                  styles.fabButtonOuter,
+                  styles.closeFab,
                   {
-                    backgroundColor: "#1e293b",
-                    borderColor: "#475569",
-                    marginTop: 4,
-                    opacity: pressed ? 0.9 : 1,
+                    opacity: pressed ? 0.88 : 1,
                     transform: [{ scale: pressed ? 0.94 : 1 }],
                   },
                 ]}
               >
-                <View style={[styles.fabInnerCircle, { backgroundColor: "#0f172a" }]}>
-                  <Feather name="x" size={28} color="#ffffff" />
-                </View>
+                <Feather name="x" size={26} color="#ffffff" />
               </Pressable>
             </View>
           </View>
@@ -180,72 +151,102 @@ const styles = StyleSheet.create({
     zIndex: 99999,
     elevation: 30,
   },
-  fabButtonOuter: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
+  // Main FAB (+) in closed state
+  mainFab: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: "#10b981",
+    borderWidth: 2.5,
+    borderColor: "#059669",
     alignItems: "center",
     justifyContent: "center",
+    padding: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.45,
-    shadowRadius: 10,
-    elevation: 20,
-    borderWidth: 2.5,
-    padding: 4,
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 16,
+    overflow: "hidden",
   },
-  fabInnerCircle: {
+  mainFabInner: {
     width: "100%",
     height: "100%",
-    borderRadius: 30,
+    borderRadius: 28,
+    backgroundColor: "#047857",
     alignItems: "center",
     justifyContent: "center",
   },
   backdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.65)",
+    backgroundColor: "rgba(0,0,0,0.6)",
     justifyContent: "flex-end",
   },
   speedDialMenu: {
     position: "absolute",
     alignItems: "flex-end",
-    gap: 16,
+    gap: 12,
     zIndex: 100000,
   },
   speedDialItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 14,
+    gap: 12,
+    alignSelf: "flex-end",
+    flexShrink: 0,
   },
   labelBadge: {
     backgroundColor: "#ffffff",
-    paddingHorizontal: 16,
-    paddingVertical: 9,
-    borderRadius: 14,
-    borderWidth: 1.5,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
+    borderWidth: 1,
     borderColor: "#e2e8f0",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 6,
   },
   labelText: {
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: 13,
+    fontWeight: "600",
     color: "#0f172a",
   },
-  miniFab: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+  // Sub-action buttons (decreased to 48px)
+  subFab: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.4)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    elevation: 8,
+    flexShrink: 0,
+  },
+  // Close Button (Fixed 56px circle - will NOT stretch)
+  closeFab: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#0f172a",
+    borderWidth: 2,
+    borderColor: "#334155",
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "flex-end",
+    flexShrink: 0,
+    marginTop: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
-    shadowRadius: 7,
-    elevation: 10,
-    borderWidth: 2,
+    shadowRadius: 6,
+    elevation: 12,
+    overflow: "hidden",
   },
 });
