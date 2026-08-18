@@ -32,6 +32,7 @@ interface TransactionModalProps {
   onClose: () => void;
   transaction?: Transaction | null;
   filters?: TransactionFilters;
+  defaultType?: Transaction["type"];
 }
 
 const TYPE_OPTIONS: Array<{
@@ -54,6 +55,7 @@ export function TransactionModal({
   onClose,
   transaction,
   filters = {},
+  defaultType = "expense",
 }: TransactionModalProps) {
   const isEditing = Boolean(transaction);
   const { data: accounts = [] } = useAccounts();
@@ -62,7 +64,7 @@ export function TransactionModal({
   const createTransaction = useCreateTransaction(filters);
   const updateTransaction = useUpdateTransaction(filters);
 
-  const [type, setType] = useState<Transaction["type"]>("expense");
+  const [type, setType] = useState<Transaction["type"]>(defaultType);
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [note, setNote] = useState("");
@@ -92,7 +94,7 @@ export function TransactionModal({
         setCategoryId(transaction.categoryId ?? "");
         setDate(toDateInputValue(transaction.date));
       } else {
-        setType("expense");
+        setType(defaultType);
         setAmount("");
         setDescription("");
         setNote("");
