@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/get-session";
+import { AppContent } from "@/components/app-content";
 import { AppSidebar } from "@/components/app-sidebar";
 import { PageHeaderTitle } from "@/components/page-header-title";
 import {
@@ -34,7 +35,7 @@ export default async function AppLayout({
           </div>
           <NotificationCenter />
         </header>
-        <div className="flex flex-1 flex-col gap-6 p-4 md:p-8">{children}</div>
+        <AppContent>{children}</AppContent>
       </SidebarInset>
     </SidebarProvider>
   );
