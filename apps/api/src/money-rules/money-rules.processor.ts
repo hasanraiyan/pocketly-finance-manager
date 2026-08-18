@@ -17,6 +17,7 @@ import { getPeriodWindow } from '../common/finance/get-period-window';
 import { projectGoal } from '../common/finance/goal-projection';
 import { GoalsService } from '../goals/goals.service';
 import { NotificationDispatcherService } from '../notifications/notification-dispatcher.service';
+import { BACKGROUND_WORKER_OPTIONS } from '../common/queue/background-worker-options';
 import {
   Transaction,
   TransactionDocument,
@@ -40,7 +41,7 @@ const LARGE_TRANSACTION_LOOKBACK_HOURS = 6;
  * Whether a rule actually fires is decided by the pure evaluator, so this
  * class only does I/O.
  */
-@Processor(MONEY_RULES_QUEUE)
+@Processor(MONEY_RULES_QUEUE, BACKGROUND_WORKER_OPTIONS)
 export class MoneyRulesProcessor extends WorkerHost {
   private readonly logger = new Logger(MoneyRulesProcessor.name);
 

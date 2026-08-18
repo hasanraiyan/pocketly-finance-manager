@@ -8,6 +8,7 @@ import {
   Transaction,
   TransactionDocument,
 } from '../transactions/schemas/transaction.schema';
+import { BACKGROUND_WORKER_OPTIONS } from '../common/queue/background-worker-options';
 import { FcmService, SendPushOptions } from './fcm.service';
 
 export const NOTIFICATIONS_QUEUE = 'notifications';
@@ -24,7 +25,7 @@ export interface BulkNotificationJob {
   }>;
 }
 
-@Processor(NOTIFICATIONS_QUEUE)
+@Processor(NOTIFICATIONS_QUEUE, BACKGROUND_WORKER_OPTIONS)
 export class NotificationsProcessor extends WorkerHost {
   private readonly logger = new Logger(NotificationsProcessor.name);
 

@@ -17,6 +17,7 @@ import {
   TransactionDocument,
 } from '../transactions/schemas/transaction.schema';
 import { NotificationDispatcherService } from '../notifications/notification-dispatcher.service';
+import { BACKGROUND_WORKER_OPTIONS } from '../common/queue/background-worker-options';
 import { MailerService } from './mail/mailer.service';
 import {
   renderPocketlyReport,
@@ -45,7 +46,7 @@ export interface ExportJobPayload {
 // ---------------------------------------------------------------------------
 // BullMQ worker
 // ---------------------------------------------------------------------------
-@Processor(EXPORTS_QUEUE)
+@Processor(EXPORTS_QUEUE, BACKGROUND_WORKER_OPTIONS)
 export class ExportProcessor extends WorkerHost {
   private readonly logger = new Logger(ExportProcessor.name);
 

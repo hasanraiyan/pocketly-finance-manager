@@ -6,6 +6,7 @@ import {
   nextOccurrenceAfter,
   occurrencesBetween,
 } from '../common/finance/next-occurrence';
+import { BACKGROUND_WORKER_OPTIONS } from '../common/queue/background-worker-options';
 import { TransactionsService } from '../transactions/transactions.service';
 import { Recurrence, RecurrenceDocument } from './schemas/recurrence.schema';
 
@@ -22,7 +23,7 @@ const CATCH_UP_LIMIT = 30;
  * occurrenceDate) index on transactions, so a duplicate is a caught error
  * rather than a duplicated payment.
  */
-@Processor(RECURRENCES_QUEUE)
+@Processor(RECURRENCES_QUEUE, BACKGROUND_WORKER_OPTIONS)
 export class RecurrencesProcessor extends WorkerHost {
   private readonly logger = new Logger(RecurrencesProcessor.name);
 
