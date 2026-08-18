@@ -1,8 +1,6 @@
 import { useMemo } from "react";
 import { createPocketlyClient } from "@pocketly/sdk";
-import { useAuth } from "@/lib/auth-provider";
-
-const baseUrl =  "https://api.pocketly.hasanraiyan.me/api/v1";
+import { getBaseUrl, useAuth } from "@/lib/auth-provider";
 
 /**
  * Mirrors apps/web/src/lib/use-pocketly-client.ts -- same SDK, same
@@ -11,5 +9,8 @@ const baseUrl =  "https://api.pocketly.hasanraiyan.me/api/v1";
  */
 export function usePocketlyClient() {
   const { getToken } = useAuth();
-  return useMemo(() => createPocketlyClient({ baseUrl, getToken }), [getToken]);
+  return useMemo(
+    () => createPocketlyClient({ baseUrl: getBaseUrl(), getToken }),
+    [getToken],
+  );
 }

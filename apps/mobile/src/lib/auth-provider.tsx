@@ -20,9 +20,9 @@ export type SessionUser =
   components["schemas"]["AuthSessionDto"]["data"]["user"];
 type Session = components["schemas"]["AuthSessionDto"]["data"];
 
-function getBaseUrl(): string {
+export function getBaseUrl(): string {
   return (
-    process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:4000/api/v1"
+    process.env.EXPO_PUBLIC_API_URL ?? "https://api.pocketly.hasanraiyan.me/api/v1"
   );
 }
 
