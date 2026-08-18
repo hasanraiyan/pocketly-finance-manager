@@ -17,7 +17,7 @@ import { theme } from "@/lib/theme";
 
 export default function SignUpScreen() {
   const router = useRouter();
-  const { register } = useAuth();
+  const { register, continueAsGuest } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -122,6 +122,29 @@ export default function SignUpScreen() {
 
           <Button loading={loading} onPress={handleSignUp} className="mt-2">
             Create account
+          </Button>
+
+          {/* Guest / Local-First Mode */}
+          <View className="flex-row items-center my-1">
+            <View className="flex-1 h-[1px] bg-border" />
+            <Text className="mx-3 text-xs text-muted-foreground uppercase font-medium">
+              or
+            </Text>
+            <View className="flex-1 h-[1px] bg-border" />
+          </View>
+
+          <Button
+            variant="outline"
+            onPress={async () => {
+              await continueAsGuest();
+              router.replace("/(app)/dashboard");
+            }}
+            className="flex-row items-center gap-2"
+          >
+            <Feather name="user-check" size={15} color={theme.foreground} />
+            <Text className="text-sm font-medium text-foreground">
+              Continue as Guest (No Sign Up)
+            </Text>
           </Button>
         </View>
 

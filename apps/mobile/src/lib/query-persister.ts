@@ -1,8 +1,8 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { onlineManager, QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
+import { safeStorage } from "./safe-storage";
 
 // 1. Connect React Native NetInfo to TanStack Query Online Manager safely
 try {
@@ -19,45 +19,7 @@ try {
   // Safe ignore if native NetInfo is unavailable
 }
 
-// In-memory fallback map for environments where AsyncStorage native module is null
-const memoryFallback = new Map<string, string>();
-
-const safeStorage = {
-  getItem: async (key: string): Promise<string | null> => {
-    try {
-      if (typeof AsyncStorage?.getItem === "function") {
-        return await AsyncStorage.getItem(key);
-      }
-    } catch {
-      // ignore
-    }
-    return memoryFallback.get(key) ?? null;
-  },
-  setItem: async (key: string, value: string): Promise<void> => {
-    try {
-      if (typeof AsyncStorage?.setItem === "function") {
-        await AsyncStorage.setItem(key, value);
-        return;
-      }
-    } catch {
-      // ignore
-    }
-    memoryFallback.set(key, value);
-  },
-  removeItem: async (key: string): Promise<void> => {
-    try {
-      if (typeof AsyncStorage?.removeItem === "function") {
-        await AsyncStorage.removeItem(key);
-        return;
-      }
-    } catch {
-      // ignore
-    }
-    memoryFallback.delete(key);
-  },
-};
-
-// 2. Create the persister with safe storage for offline data retention
+// 2. Create the persister using safe Expo SecureStore storage
 export const asyncStoragePersister = createAsyncStoragePersister({
   storage: safeStorage,
   key: "POCKETLY_QUERY_OFFLINE_CACHE",

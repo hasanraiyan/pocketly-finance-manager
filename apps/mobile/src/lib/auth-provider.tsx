@@ -8,6 +8,8 @@ import React, {
   useState,
 } from "react";
 import { createPocketlyClient, type components } from "@pocketly/sdk";
+import { ensureLocalSeedData } from "./local-storage-adapter";
+import { safeStorage } from "./safe-storage";
 import {
   decodeAccessToken,
   deleteRefreshToken,
@@ -19,6 +21,19 @@ import {
 export type SessionUser =
   components["schemas"]["AuthSessionDto"]["data"]["user"];
 type Session = components["schemas"]["AuthSessionDto"]["data"];
+
+const GUEST_STORAGE_KEY = "POCKETLY_GUEST_MODE";
+
+export const GUEST_USER: SessionUser = {
+  _id: "local_guest_user",
+  name: "Guest User",
+  email: "guest@pocketly.local",
+  currency: "USD",
+  timezone: "UTC",
+  role: "user",
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+};
 
 export function getBaseUrl(): string {
   return (
@@ -34,10 +49,13 @@ export interface AuthContextValue {
   isLoading: boolean;
   isLoaded: boolean;
   isSignedIn: boolean;
-  /** Returns a live access token, silently refreshing first if the cached one has expired. Null means signed out. */
+  isGuest: boolean;
+  /** Returns a live access token, silently refreshing first if the cached one has expired. Null means signed out or guest. */
   getToken: () => Promise<string | null>;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
+  continueAsGuest: () => Promise<void>;
+  exitGuestMode: () => Promise<void>;
   logout: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -47,31 +65,44 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [isGuest, setIsGuest] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const refreshInFlight = useRef<Promise<string | null> | null>(null);
 
   const persist = useCallback(async (session: Session) => {
+    setIsGuest(false);
     setUser(session.user);
     setAccessToken(session.accessToken);
+    await safeStorage.removeItem(GUEST_STORAGE_KEY);
     await saveRefreshToken(session.refreshToken);
   }, []);
 
   const clear = useCallback(async () => {
+    setIsGuest(false);
     setUser(null);
     setAccessToken(null);
+    await safeStorage.removeItem(GUEST_STORAGE_KEY);
     await deleteRefreshToken();
   }, []);
 
   /**
    * Refresh tokens rotate on every use, so two concurrent refresh calls
-   * would race -- the second would present a token the first already
-   * invalidated. Caching the in-flight promise means every caller within
-   * the same tick shares one rotation instead of fighting over it.
+   * would race. Caching the in-flight promise means callers share one rotation.
    */
   const refresh = useCallback(async (): Promise<string | null> => {
     if (refreshInFlight.current) return refreshInFlight.current;
 
     const run = (async () => {
+      // 1. Check if user is in local guest mode
+      const savedGuest = await safeStorage.getItem(GUEST_STORAGE_KEY).catch(() => null);
+      if (savedGuest === "true") {
+        await ensureLocalSeedData();
+        setIsGuest(true);
+        setUser(GUEST_USER);
+        return null;
+      }
+
+      // 2. Check cloud refresh token
       const raw = await getRefreshToken();
       if (!raw) {
         await clear();
@@ -101,10 +132,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [refresh]);
 
   const getToken = useCallback(async (): Promise<string | null> => {
+    if (isGuest) return null;
     const decoded = accessToken ? decodeAccessToken(accessToken) : null;
     if (decoded && !isExpired(decoded.exp)) return accessToken;
     return refresh();
-  }, [accessToken, refresh]);
+  }, [accessToken, isGuest, refresh]);
+
+  const continueAsGuest = useCallback(async () => {
+    await ensureLocalSeedData();
+    await safeStorage.setItem(GUEST_STORAGE_KEY, "true");
+    setIsGuest(true);
+    setUser(GUEST_USER);
+    setAccessToken(null);
+  }, []);
+
+  const exitGuestMode = useCallback(async () => {
+    await clear();
+  }, [clear]);
 
   const login = useCallback(
     async (email: string, password: string) => {
@@ -139,14 +183,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(async () => {
-    const raw = await getRefreshToken();
-    if (raw) {
-      await authClient
-        .POST("/auth/logout", { body: { refreshToken: raw } })
-        .catch(() => undefined);
+    if (!isGuest) {
+      const raw = await getRefreshToken();
+      if (raw) {
+        await authClient
+          .POST("/auth/logout", { body: { refreshToken: raw } })
+          .catch(() => undefined);
+      }
     }
     await clear();
-  }, [clear]);
+  }, [clear, isGuest]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -154,13 +200,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isLoading,
       isLoaded: !isLoading,
       isSignedIn: Boolean(user),
+      isGuest,
       getToken,
       login,
       register,
+      continueAsGuest,
+      exitGuestMode,
       logout,
       signOut: logout,
     }),
-    [user, isLoading, getToken, login, register, logout],
+    [user, isLoading, isGuest, getToken, login, register, continueAsGuest, exitGuestMode, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -178,7 +227,8 @@ export function useUser(): {
   user: SessionUser | null;
   isLoaded: boolean;
   isSignedIn: boolean;
+  isGuest: boolean;
 } {
-  const { user, isLoaded, isSignedIn } = useAuth();
-  return { user, isLoaded, isSignedIn };
+  const { user, isLoaded, isSignedIn, isGuest } = useAuth();
+  return { user, isLoaded, isSignedIn, isGuest };
 }

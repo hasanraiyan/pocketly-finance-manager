@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { Button } from "@/components/Button";
 import { Card, CardContent } from "@/components/Card";
+import { GuestUpgradeCard } from "@/components/GuestUpgradeCard";
 import { TextField } from "@/components/TextField";
 import { CategoryModal } from "@/features/categories/CategoryModal";
 import {
@@ -330,6 +331,8 @@ export default function SettingsScreen() {
         }
       >
         <View className="w-full max-w-5xl gap-5">
+          <GuestUpgradeCard />
+
           {isLoading ? (
             <SettingsSkeleton />
           ) : (

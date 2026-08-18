@@ -17,7 +17,7 @@ import { theme } from "@/lib/theme";
 
 export default function SignInScreen() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, continueAsGuest } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -107,6 +107,29 @@ export default function SignInScreen() {
           <Button loading={loading} onPress={handleSignIn} className="mt-2">
             Sign in
           </Button>
+
+          {/* Guest / Local-First Mode */}
+          <View className="flex-row items-center my-1">
+            <View className="flex-1 h-[1px] bg-border" />
+            <Text className="mx-3 text-xs text-muted-foreground uppercase font-medium">
+              or
+            </Text>
+            <View className="flex-1 h-[1px] bg-border" />
+          </View>
+
+          <Button
+            variant="outline"
+            onPress={async () => {
+              await continueAsGuest();
+              router.replace("/(app)/dashboard");
+            }}
+            className="flex-row items-center gap-2"
+          >
+            <Feather name="user-check" size={15} color={theme.foreground} />
+            <Text className="text-sm font-medium text-foreground">
+              Continue as Guest (No Sign Up)
+            </Text>
+          </Button>
         </View>
 
         <View className="mt-8 flex-row justify-center gap-1.5">
@@ -123,7 +146,7 @@ export default function SignInScreen() {
         <View className="mt-10 flex-row items-center justify-center gap-2 border-t border-border pt-6">
           <Feather name="shield" size={14} color={theme.primary} />
           <Text className="text-xs text-muted-foreground">
-            Encrypted financial ledger • 100% private
+            Local-first & private • Cloud backup optional
           </Text>
         </View>
       </ScrollView>

@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { Button } from "@/components/Button";
 import { Card, CardContent } from "@/components/Card";
+import { GuestUpgradeCard } from "@/components/GuestUpgradeCard";
 import { ProgressBar } from "@/components/ProgressBar";
 import { AccountModal } from "@/features/accounts/AccountModal";
 import {
@@ -287,6 +288,9 @@ export default function DashboardScreen() {
                   </CardContent>
                 </Card>
               )}
+
+              {/* Guest / Local Mode Upgrade Banner */}
+              <GuestUpgradeCard />
 
               {/* Responsive 2-Column Grid on Tablet / Landscape */}
               <View className="flex-col md:flex-row gap-5">
