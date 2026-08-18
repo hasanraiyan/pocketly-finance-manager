@@ -16,9 +16,9 @@ import {
  */
 export function CopilotLauncher() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, isGuest } = useAuth();
 
-  if (pathname?.startsWith("/copilot")) return null;
+  if (isGuest || pathname?.startsWith("/copilot")) return null;
 
   const firstName = user?.name?.split(" ")[0] ?? "there";
 
