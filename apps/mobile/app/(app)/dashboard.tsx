@@ -43,6 +43,7 @@ import {
   getLocalOverview,
   getLocalTransactions,
 } from "@/lib/local-storage-adapter";
+import { safeStorage } from "@/lib/safe-storage";
 import { theme } from "@/lib/theme";
 
 export default function DashboardScreen() {
@@ -82,10 +83,15 @@ export default function DashboardScreen() {
         const totalBudgeted = budgets.reduce((sum, b) => sum + (b.amount || 0), 0);
         const totalSpent = budgets.reduce((sum, b) => sum + (b.spent || 0), 0);
 
+        const savedProfileRaw = await safeStorage.getItem("POCKETLY_GUEST_PROFILE");
+        const savedProfile = savedProfileRaw ? JSON.parse(savedProfileRaw) : null;
+        const currency = savedProfile?.currency || "USD";
+        const name = savedProfile?.name || "Guest User";
+
         return {
-          currency: "USD",
-          name: "Guest User",
-          firstName: "Guest",
+          currency,
+          name,
+          firstName: name.split(" ")[0],
           overview: {
             income: overview.income,
             expense: overview.expense,

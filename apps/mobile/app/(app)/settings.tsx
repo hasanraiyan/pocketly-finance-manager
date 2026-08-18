@@ -42,7 +42,7 @@ import { formatDate } from "@/lib/format";
 import { theme } from "@/lib/theme";
 
 export default function SettingsScreen() {
-  const { user: authUser, logout } = useAuth();
+  const { user: authUser, logout, isGuest } = useAuth();
 
   const {
     data: profile,
@@ -260,31 +260,38 @@ export default function SettingsScreen() {
   }
 
   function handleSignOut() {
-    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Sign Out",
-        style: "destructive",
-        onPress: () => logout(),
-      },
-    ]);
+    Alert.alert(
+      isGuest ? "Exit Guest Mode" : "Sign Out",
+      isGuest
+        ? "Are you sure you want to exit guest mode?"
+        : "Are you sure you want to sign out?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: isGuest ? "Exit Guest Mode" : "Sign Out",
+          style: "destructive",
+          onPress: () => logout(),
+        },
+      ],
+    );
   }
 
   function handleDeleteAccount() {
     Alert.alert(
-      "Delete Account Permanently?",
-      "All your accounts, transactions, budgets, goals, and records will be permanently erased. This action CANNOT be undone.",
+      isGuest ? "Reset All Local Data?" : "Delete Account Permanently?",
+      isGuest
+        ? "This will permanently erase all locally stored accounts, transactions, and categories on this device. This cannot be undone."
+        : "All your accounts, transactions, budgets, goals, and records will be permanently erased. This action CANNOT be undone.",
       [
         { text: "Cancel", style: "cancel" },
         {
-          text: "Delete Account",
+          text: isGuest ? "Reset Local Data" : "Delete Account",
           style: "destructive",
           onPress: async () => {
             try {
               await deleteAccount.mutateAsync();
-              await logout();
             } catch {
-              Alert.alert("Error", "Could not delete account.");
+              Alert.alert("Error", "Could not delete data.");
             }
           },
         },
@@ -865,7 +872,7 @@ export default function SettingsScreen() {
                 <Card>
                   <CardContent className="gap-3">
                     <Button variant="outline" onPress={handleSignOut}>
-                      Sign Out of Pocketly
+                      {isGuest ? "Exit Guest Mode" : "Sign Out of Pocketly"}
                     </Button>
 
                     <Pressable
@@ -873,7 +880,7 @@ export default function SettingsScreen() {
                       className="items-center justify-center py-2"
                     >
                       <Text className="text-xs font-medium text-negative">
-                        Delete Account Permanently
+                        {isGuest ? "Reset All Local Ledger Data" : "Delete Account Permanently"}
                       </Text>
                     </Pressable>
                   </CardContent>
