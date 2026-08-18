@@ -37,7 +37,7 @@
     "@nestjs/swagger": "^11.4.6",
     "@nestjs/throttler": "^6.5.0",
     "@node-rs/argon2": "^2.1.0",
-    "@personaai/nestjs": "^0.1.0",
+    "@personaai/nestjs": "^0.1.1",
     "@personaai/runtime": "^0.5.2",
     "@personaai/sdk": "^0.4.3",
     "@react-pdf/renderer": "^4.6.1",

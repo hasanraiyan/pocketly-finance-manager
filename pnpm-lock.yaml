@@ -55,8 +55,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       '@personaai/nestjs':
-        specifier: ^0.1.0
-        version: 0.1.0(@nestjs/common@11.2.1(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+        specifier: ^0.1.1
+        version: 0.1.1(@nestjs/common@11.2.1(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@personaai/runtime':
         specifier: ^0.5.2
         version: 0.5.2
@@ -2450,8 +2450,8 @@ packages:
   '@paralleldrive/cuid2@2.3.1':
     resolution: {integrity: sha512-XO7cAxhnTZl0Yggq6jOgjiOHhbgcO4NqFqwSmQpjK3b6TEE6Uj/jfSk6wzYyemh3+I0sHirKSetjQwn5cZktFw==}
 
-  '@personaai/nestjs@0.1.0':
-    resolution: {integrity: sha512-eUWjeW4kSmM/HRjTKYjD+SwXZ8AYDt2cmwcZ8Qo42amTH8re0WvMzzPW44XCTYWLZogVGsyL8ivAAV4WHCkYag==}
+  '@personaai/nestjs@0.1.1':
+    resolution: {integrity: sha512-l/5gAbFzQUTonbVWarCvxvXN0VsSN2x0HxKiZh1ZEzBnuhG/NQvL9csROUt69caw55A6cG59Cf9cVpBpBIRUQw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@nestjs/common': ^10.0.0 || ^11.0.0
@@ -12318,7 +12318,7 @@ snapshots:
     dependencies:
       '@noble/hashes': 1.8.0
 
-  '@personaai/nestjs@0.1.0(@nestjs/common@11.2.1(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)':
+  '@personaai/nestjs@0.1.1(@nestjs/common@11.2.1(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)':
     dependencies:
       '@nestjs/common': 11.2.1(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/core': 11.2.1(@nestjs/common@11.2.1(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.2.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
