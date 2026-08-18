@@ -14,6 +14,7 @@ import {
   Gauge,
   ChevronsUpDown,
   LogOut,
+  Sparkles,
 } from "lucide-react";
 import {
   Sidebar,
@@ -40,6 +41,7 @@ import { useUserProfile } from "@/features/settings/hooks";
 
 export const NAV_ITEMS = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "AI Copilot", url: "/copilot", icon: Sparkles },
   { title: "Accounts", url: "/accounts", icon: Wallet },
   { title: "Records", url: "/records", icon: Receipt },
   { title: "Analysis", url: "/analysis", icon: LineChart },
