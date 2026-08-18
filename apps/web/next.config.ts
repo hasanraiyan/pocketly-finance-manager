@@ -4,7 +4,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
-  transpilePackages: ["@personaai/react", "@pocketly/sdk"],
+  transpilePackages: ["@personaai/react", "@personaai/ui", "@pocketly/sdk"],
 };
 
 const withMDX = createMDX({
