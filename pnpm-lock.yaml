@@ -50,6 +50,15 @@ importers:
       '@node-rs/argon2':
         specifier: ^2.1.0
         version: 2.1.0
+      '@personaai/nestjs':
+        specifier: link:../../../agent-marketplace/sdk/adapters/nestjs
+        version: link:../../../agent-marketplace/sdk/adapters/nestjs
+      '@personaai/runtime':
+        specifier: ^0.5.1
+        version: 0.5.1
+      '@personaai/sdk':
+        specifier: ^0.4.1
+        version: 0.4.1
       '@react-pdf/renderer':
         specifier: ^4.6.1
         version: 4.6.1(react@19.2.8)
@@ -419,6 +428,9 @@ packages:
 
   '@adobe/css-tools@4.5.0':
     resolution: {integrity: sha512-6OzddxPio9UiWTCemp4N8cYLV2ZN1ncRnV1cVGtve7dhPOtRkleRyx32GQCYSwDYgaHU3USMm84tNsvKzRCa1Q==}
+
+  '@ag-ui/core@0.0.57':
+    resolution: {integrity: sha512-gho1OWjNE6E3Rl7ZEZ1wr2CEpUHjLFU0FqzCZZk439TicLu+BfLCMkMokB07bMGlRmbJ60hM6LW60iOVauCx+Q==}
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -2427,6 +2439,14 @@ packages:
 
   '@paralleldrive/cuid2@2.3.1':
     resolution: {integrity: sha512-XO7cAxhnTZl0Yggq6jOgjiOHhbgcO4NqFqwSmQpjK3b6TEE6Uj/jfSk6wzYyemh3+I0sHirKSetjQwn5cZktFw==}
+
+  '@personaai/runtime@0.5.1':
+    resolution: {integrity: sha512-D3lGOhZkwbSC/qBuINp3r9ISynyZTrS4DZ90+GLYxwdNXRSMdmiLtUcxwQum9ZL5N+izye3ZSgU88hdo04zz7A==}
+    engines: {node: '>=18'}
+
+  '@personaai/sdk@0.4.1':
+    resolution: {integrity: sha512-WAGDxX5d8swWikEytcV87uqIE+7ZBGmDDfY2LuLTgyrd6Hi9DhoMG/z/kxDmdMNb4V7aMz6Lf06dT/u8uKkLqQ==}
+    engines: {node: '>=18'}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -9664,6 +9684,10 @@ snapshots:
 
   '@adobe/css-tools@4.5.0': {}
 
+  '@ag-ui/core@0.0.57':
+    dependencies:
+      zod: 3.25.76
+
   '@alloc/quick-lru@5.2.0': {}
 
   '@angular-devkit/core@19.2.24(chokidar@4.0.3)':
@@ -12180,6 +12204,15 @@ snapshots:
   '@paralleldrive/cuid2@2.3.1':
     dependencies:
       '@noble/hashes': 1.8.0
+
+  '@personaai/runtime@0.5.1':
+    dependencies:
+      '@ag-ui/core': 0.0.57
+      '@personaai/sdk': 0.4.1
+
+  '@personaai/sdk@0.4.1':
+    dependencies:
+      '@ag-ui/core': 0.0.57
 
   '@pkgjs/parseargs@0.11.0':
     optional: true

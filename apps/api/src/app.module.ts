@@ -16,6 +16,7 @@ import { DatabaseModule } from './common/database/database.module';
 import { TransformInterceptor } from './common/http/transform.interceptor';
 import { LoggingInterceptor } from './common/logging/logging.interceptor';
 import { AdminModule } from './admin/admin.module';
+import { AiModule } from './ai/ai.module';
 import { ExportsModule } from './exports/exports.module';
 import { FeedbackModule } from './feedback/feedback.module';
 import { GoalsModule } from './goals/goals.module';
@@ -63,6 +64,7 @@ import { UsersModule } from './users/users.module';
     RecurrencesModule,
     FeedbackModule,
     AdminModule,
+    AiModule,
   ],
   controllers: [AppController],
   providers: [
