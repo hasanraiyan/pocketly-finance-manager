@@ -35,6 +35,7 @@ import { extractBearerToken } from '../common/auth/bearer-token';
           }
         },
         routePrefix: '/api/persona',
+        mountPath: '/api/persona',
         capabilities: {
           skills: true,
           mcps: true,
