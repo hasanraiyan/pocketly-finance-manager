@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -25,22 +26,18 @@ export default function SignUpScreen() {
   const [loading, setLoading] = useState(false);
 
   async function handleSignUp() {
-    if (!name.trim()) {
-      setError("Please enter your full name.");
-      return;
-    }
-    if (!email.trim()) {
-      setError("Please enter a valid email address.");
+    if (!name.trim() || !email.trim() || !password) {
+      setError("Please fill in all fields.");
       return;
     }
     if (password.length < 8) {
-      setError("Password must be at least 8 characters long.");
+      setError("Password must be at least 8 characters.");
       return;
     }
 
-    setError(null);
-    setLoading(true);
     try {
+      setLoading(true);
+      setError(null);
       await register(email.trim(), password, name.trim());
       router.replace("/(app)/dashboard");
     } catch (err) {
@@ -64,8 +61,12 @@ export default function SignUpScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View className="mb-8 items-center">
-          <View className="mb-4 h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
-            <Feather name="pocket" size={28} color={theme.primary} />
+          <View className="mb-4 h-16 w-16 items-center justify-center rounded-2xl bg-card border border-border shadow-sm overflow-hidden p-2">
+            <Image
+              source={require("../../../assets/pocketly-icon.png")}
+              style={{ width: "100%", height: "100%" }}
+              resizeMode="contain"
+            />
           </View>
           <Text className="font-heading text-3xl text-foreground text-center">
             Pocketly
