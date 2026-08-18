@@ -59,7 +59,7 @@ export function SpeedDialFab() {
         </View>
       )}
 
-      {/* 2. Open State: Speed-Dial Overlay (Decreased sub-buttons & fixed circular X) */}
+      {/* 2. Open State: Speed-Dial Overlay (Aligned with identical 48px sub-buttons) */}
       <Modal
         visible={isOpen}
         transparent
@@ -116,7 +116,7 @@ export function SpeedDialFab() {
                 </View>
               </Pressable>
 
-              {/* Single Perfectly-Round Close Button (X) */}
+              {/* Perfectly-Aligned Close Button (X) with exact 48px size and no border */}
               <Pressable
                 onPress={() => setIsOpen(false)}
                 hitSlop={14}
@@ -128,7 +128,7 @@ export function SpeedDialFab() {
                   },
                 ]}
               >
-                <Feather name="x" size={28} color="#ffffff" />
+                <Feather name="x" size={22} color="#ffffff" />
               </Pressable>
             </View>
           </View>
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#0f172a",
   },
-  // Sub-action buttons (compact 48px)
+  // Sub-action buttons (48px circle)
   subFab: {
     width: 48,
     height: 48,
@@ -229,24 +229,23 @@ const styles = StyleSheet.create({
     elevation: 8,
     flexShrink: 0,
   },
-  // Close Button (Fixed 60px circle)
+  // Close Button: Identical 48px size to subFab, solid dark bg, NO border, 100% aligned
   closeFab: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: "#0f172a",
-    borderWidth: 2,
-    borderColor: "#334155",
+    borderWidth: 0,
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "flex-end",
     flexShrink: 0,
     marginTop: 2,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.35,
-    shadowRadius: 6,
-    elevation: 12,
+    shadowRadius: 5,
+    elevation: 10,
     overflow: "hidden",
   },
 });
