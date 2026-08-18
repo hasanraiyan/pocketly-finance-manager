@@ -33,6 +33,7 @@ interface AccountModalProps {
   onClose: () => void;
   account?: Account | null;
   defaultCurrency?: string;
+  onSuccess?: (account: Account) => void;
 }
 
 export function AccountModal({
@@ -40,6 +41,7 @@ export function AccountModal({
   onClose,
   account,
   defaultCurrency = "USD",
+  onSuccess,
 }: AccountModalProps) {
   const isEditing = Boolean(account);
   const createAccount = useCreateAccount();
@@ -107,12 +109,14 @@ export function AccountModal({
     setError(null);
     try {
       if (isEditing && account) {
-        await updateAccount.mutateAsync({
+        const updated = await updateAccount.mutateAsync({
           id: account._id,
           input: payload,
         });
+        onSuccess?.(updated as unknown as Account);
       } else {
-        await createAccount.mutateAsync(payload);
+        const created = await createAccount.mutateAsync(payload);
+        onSuccess?.(created as unknown as Account);
       }
       onClose();
     } catch (err) {
