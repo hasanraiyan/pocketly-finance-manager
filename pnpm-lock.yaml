@@ -321,11 +321,11 @@ importers:
         specifier: ^16.3.1
         version: 16.3.1(@mdx-js/loader@3.1.1(webpack@5.106.2))(@mdx-js/react@3.1.1(@types/react@19.2.18)(react@19.2.8))
       '@personaai/react':
-        specifier: ^0.3.3
-        version: 0.3.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: ^0.3.4
+        version: 0.3.4(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@personaai/ui':
-        specifier: ^0.7.6
-        version: 0.7.6(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: ^0.7.7
+        version: 0.7.7(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@pocketly/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
@@ -2464,8 +2464,8 @@ packages:
       rxjs:
         optional: true
 
-  '@personaai/react@0.3.3':
-    resolution: {integrity: sha512-LDhtIFbbRxYzO23GB0KbI3IxHkw32Ef2XycfyWIU3kvJ0Viq9rzrhs/xUCtCERB5R4VVq1qokcv/YGWmNenbdA==}
+  '@personaai/react@0.3.4':
+    resolution: {integrity: sha512-8YawVwUc4kYzs0UW6v6Ms+xPGeM6OugL4WJg3N8n1Tr3oD6oBscPRy0yWVV3P0gF24xFymhk1uxrYHfS0tq/DQ==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=18.0.0'
@@ -2479,8 +2479,8 @@ packages:
     resolution: {integrity: sha512-jqtJGrY/uSCL+wUiTzNEZFRuE9e3hK10ai5AnekUQxGb4R0P/MAAO5hNAaM0qGDT5nQZUaeMpduA2OVIkSAqXg==}
     engines: {node: '>=18'}
 
-  '@personaai/ui@0.7.6':
-    resolution: {integrity: sha512-3pS9DSYaKps9H1FTIRtOHgeOjdq+lnqo1lzB8XxyKifNNFUHBmRLzrpT4JfUfMYHdeRt2CqsPFoTNLKc8bg+CA==}
+  '@personaai/ui@0.7.7':
+    resolution: {integrity: sha512-wYcTqcQxPEA/U3GuyuhevaB5y6Jiq/Zad3EPOsUipBIdBjyueuMNsrz0Oq84+J9G7kaWGztKdcG1BOAz80YTHg==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=18.0.0'
@@ -12328,7 +12328,7 @@ snapshots:
       reflect-metadata: 0.2.2
       rxjs: 7.8.2
 
-  '@personaai/react@0.3.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@personaai/react@0.3.4(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
@@ -12342,9 +12342,9 @@ snapshots:
     dependencies:
       '@ag-ui/core': 0.0.57
 
-  '@personaai/ui@0.7.6(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@personaai/ui@0.7.7(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
-      '@personaai/react': 0.3.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@personaai/react': 0.3.4(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       clsx: 2.1.1
       katex: 0.16.47
       lucide-react: 1.31.0(react@19.2.8)
