@@ -29,48 +29,46 @@ export function SpeedDialFab() {
 
   return (
     <>
-      {/* Floating Action Button (Always Visible in Bottom Corner) */}
-      <View
-        pointerEvents="box-none"
-        style={[
-          styles.fabWrapper,
-          {
-            bottom: bottomPosition,
-            right: 20,
-          },
-        ]}
-      >
-        <Pressable
-          onPress={() => setIsOpen((prev) => !prev)}
-          hitSlop={16}
-          style={({ pressed }) => [
-            styles.fabButtonOuter,
+      {/* Floating Action Button (Visible when menu is closed) */}
+      {!isOpen && (
+        <View
+          pointerEvents="box-none"
+          style={[
+            styles.fabWrapper,
             {
-              backgroundColor: isOpen ? "#1e293b" : "#10b981",
-              borderColor: isOpen ? "#475569" : "#059669",
-              opacity: pressed ? 0.9 : 1,
-              transform: [{ scale: pressed ? 0.94 : 1 }],
+              bottom: bottomPosition,
+              right: 20,
             },
           ]}
         >
-          <View
-            style={[
-              styles.fabInnerCircle,
+          <Pressable
+            onPress={() => setIsOpen(true)}
+            hitSlop={16}
+            style={({ pressed }) => [
+              styles.fabButtonOuter,
               {
-                backgroundColor: isOpen ? "#0f172a" : "#047857",
+                backgroundColor: "#10b981",
+                borderColor: "#059669",
+                opacity: pressed ? 0.9 : 1,
+                transform: [{ scale: pressed ? 0.94 : 1 }],
               },
             ]}
           >
-            <Feather
-              name={isOpen ? "x" : "plus"}
-              size={28}
-              color="#ffffff"
-            />
-          </View>
-        </Pressable>
-      </View>
+            <View
+              style={[
+                styles.fabInnerCircle,
+                {
+                  backgroundColor: "#047857",
+                },
+              ]}
+            >
+              <Feather name="plus" size={28} color="#ffffff" />
+            </View>
+          </Pressable>
+        </View>
+      )}
 
-      {/* Expanded SpeedDial Overlay */}
+      {/* Expanded SpeedDial Overlay (Contains the SpeedDial stack & exactly 1 close button) */}
       <Modal
         visible={isOpen}
         transparent
@@ -142,12 +140,19 @@ export function SpeedDialFab() {
                 </View>
               </Pressable>
 
-              {/* Close Anchor in Modal */}
+              {/* Single Close Button Anchor in Modal */}
               <Pressable
                 onPress={() => setIsOpen(false)}
-                style={[
+                hitSlop={16}
+                style={({ pressed }) => [
                   styles.fabButtonOuter,
-                  { backgroundColor: "#1e293b", borderColor: "#475569", marginTop: 4 },
+                  {
+                    backgroundColor: "#1e293b",
+                    borderColor: "#475569",
+                    marginTop: 4,
+                    opacity: pressed ? 0.9 : 1,
+                    transform: [{ scale: pressed ? 0.94 : 1 }],
+                  },
                 ]}
               >
                 <View style={[styles.fabInnerCircle, { backgroundColor: "#0f172a" }]}>
