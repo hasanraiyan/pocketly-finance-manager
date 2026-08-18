@@ -10,7 +10,6 @@ import {
   getLocalAccounts,
   saveLocalAccount,
   deleteLocalAccount,
-  type LocalAccount,
 } from "@/lib/local-storage-adapter";
 
 export type Account =
@@ -52,7 +51,7 @@ export function useCreateAccount() {
         const created = await saveLocalAccount({
           name: input.name,
           type: input.type,
-          balance: (input as any).initialBalance ?? (input as any).balance ?? 0,
+          balance: (input as { initialBalance?: number; balance?: number }).initialBalance ?? (input as { initialBalance?: number; balance?: number }).balance ?? 0,
           currency: input.currency ?? "USD",
           icon: input.icon,
         });
@@ -99,7 +98,7 @@ export function useUpdateAccount() {
           _id: id,
           name: input.name ?? "Account",
           type: input.type ?? "bank",
-          balance: (input as any).initialBalance ?? (input as any).balance ?? 0,
+          balance: (input as { initialBalance?: number; balance?: number }).initialBalance ?? (input as { initialBalance?: number; balance?: number }).balance ?? 0,
           currency: input.currency ?? "USD",
           icon: input.icon,
         });

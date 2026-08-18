@@ -58,7 +58,7 @@ export function useTransactions(
         }
         if (filters.accountId) {
           items = items.filter(
-            (t) => t.accountId === filters.accountId || (t as any).toAccountId === filters.accountId,
+            (t) => t.accountId === filters.accountId || (t as { toAccountId?: string }).toAccountId === filters.accountId,
           );
         }
         if (filters.categoryId) {

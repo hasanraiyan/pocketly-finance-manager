@@ -53,7 +53,9 @@ function mcpAudience(): string {
 function extractBasicAuthSecret(req: Request): string | undefined {
   const header = req.headers.authorization;
   if (!header?.startsWith('Basic ')) return undefined;
-  const decoded = Buffer.from(header.slice('Basic '.length), 'base64').toString('utf8');
+  const decoded = Buffer.from(header.slice('Basic '.length), 'base64').toString(
+    'utf8',
+  );
   const separatorIndex = decoded.indexOf(':');
   if (separatorIndex === -1) return undefined;
   return decoded.slice(separatorIndex + 1);

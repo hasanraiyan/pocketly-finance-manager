@@ -10,7 +10,6 @@ import { formatCurrency, formatDate } from "@/lib/format";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
-import { cn } from "@/lib/utils";
 
 const CHART_CONFIG: ChartConfig = {
   income: { label: "Income", color: "var(--color-positive)" },
@@ -23,7 +22,7 @@ export function GuestAnalysisView() {
   const { data: accounts = [] } = useAccounts();
   const { data: categories = [] } = useCategories();
   const { data: txPage } = useTransactions({});
-  const transactions = txPage?.items ?? [];
+  const transactions = useMemo(() => txPage?.items ?? [], [txPage?.items]);
 
   const [period, setPeriod] = useState<"this_month" | "all">("this_month");
 

@@ -22,7 +22,7 @@ import { PasswordInput } from "@/components/password-input";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/lib/auth-provider";
-import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 import { usePocketlyClient } from "@/lib/use-pocketly-client";
 import { getLocalDataSummary, migrateLocalDataToCloud } from "@/lib/migration-service";

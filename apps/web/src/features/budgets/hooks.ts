@@ -51,7 +51,7 @@ export function useCreateBudget() {
         const created = await saveLocalBudget({
           categoryId: input.categoryId,
           amount: input.amount,
-          period: (input.period as any) ?? "monthly",
+          period: (input.period as "monthly" | "weekly" | "yearly") ?? "monthly",
         });
         return created as unknown as Budget;
       }
@@ -94,7 +94,7 @@ export function useUpdateBudget() {
           _id: id,
           categoryId: input.categoryId ?? "",
           amount: input.amount ?? 0,
-          period: (input.period as any) ?? "monthly",
+          period: (input.period as "monthly" | "weekly" | "yearly") ?? "monthly",
         });
         return updated as unknown as Budget;
       }

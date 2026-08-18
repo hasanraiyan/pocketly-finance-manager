@@ -131,7 +131,7 @@ export async function migrateLocalDataToCloud(
         const created = await client.POST("/accounts", {
           body: {
             name: acc.name,
-            type: acc.type as any,
+            type: acc.type as "bank" | "cash" | "savings" | "upi" | "credit_card" | "wallet",
             initialBalance: acc.balance,
             currency: acc.currency,
             icon: acc.icon,
