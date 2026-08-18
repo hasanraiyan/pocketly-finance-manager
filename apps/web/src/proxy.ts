@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ACCESS_TOKEN_COOKIE_NAME, decodeAccessToken, isExpired } from "@/lib/auth-tokens";
+import { ACCESS_TOKEN_COOKIE_NAME, GUEST_COOKIE_NAME, decodeAccessToken, isExpired } from "@/lib/auth-tokens";
 
 /**
  * Everything under (app) requires a session. Marketing pages, blog, tools and
@@ -34,6 +34,11 @@ function isProtectedRoute(pathname: string): boolean {
  */
 export default function proxy(request: NextRequest) {
   if (!isProtectedRoute(request.nextUrl.pathname)) {
+    return NextResponse.next();
+  }
+
+  const isGuest = request.cookies.get(GUEST_COOKIE_NAME)?.value === "1";
+  if (isGuest) {
     return NextResponse.next();
   }
 

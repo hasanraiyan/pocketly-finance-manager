@@ -5,6 +5,8 @@ import type { components } from "@pocketly/sdk";
 import { usePocketlyClient } from "@/lib/use-pocketly-client";
 import { toast } from "@/components/ui/toast";
 
+import { useAuth, GUEST_USER } from "@/lib/auth-provider";
+
 export type UpdateProfileInput = components["schemas"]["UpdateProfileDto"];
 export type UserProfile = components["schemas"]["UserDto"]["data"];
 
@@ -12,9 +14,14 @@ export const USER_PROFILE_KEY = ["user-profile"] as const;
 
 export function useUserProfile() {
   const client = usePocketlyClient();
+  const { isGuest } = useAuth();
+
   return useQuery({
     queryKey: USER_PROFILE_KEY,
     queryFn: async () => {
+      if (isGuest) {
+        return GUEST_USER as UserProfile;
+      }
       const { data, error } = await client.GET("/users/me");
       if (error) throw error;
       return data.data;

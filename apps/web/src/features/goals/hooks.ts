@@ -5,6 +5,14 @@ import type { components } from "@pocketly/sdk";
 import { usePocketlyClient } from "@/lib/use-pocketly-client";
 import { toast } from "@/components/ui/toast";
 
+import { useAuth } from "@/lib/auth-provider";
+import {
+  getLocalGoals,
+  saveLocalGoal,
+  contributeLocalGoal,
+  deleteLocalGoal,
+} from "@/lib/local-storage-adapter";
+
 export type Goal =
   components["schemas"]["GoalListDto"]["data"]["items"][number];
 export type CreateGoalInput = components["schemas"]["CreateGoalDto"];
@@ -14,9 +22,15 @@ export const GOALS_KEY = ["goals"] as const;
 
 export function useGoals(initialData: Goal[] = []) {
   const client = usePocketlyClient();
+  const { isGuest } = useAuth();
+
   return useQuery({
     queryKey: GOALS_KEY,
     queryFn: async () => {
+      if (isGuest) {
+        const local = await getLocalGoals();
+        return local as unknown as Goal[];
+      }
       const { data, error } = await client.GET("/goals", {
         params: { query: { limit: 100 } },
       });
@@ -30,8 +44,18 @@ export function useGoals(initialData: Goal[] = []) {
 export function useCreateGoal() {
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const { isGuest } = useAuth();
+
   return useMutation({
     mutationFn: async (input: CreateGoalInput) => {
+      if (isGuest) {
+        const created = await saveLocalGoal({
+          name: input.name,
+          targetAmount: input.targetAmount,
+          targetDate: input.targetDate ?? undefined,
+        });
+        return created as unknown as Goal;
+      }
       const { data, error } = await client.POST("/goals", { body: input });
       if (error) throw error;
       return data.data;
@@ -56,8 +80,19 @@ export function useCreateGoal() {
 export function useUpdateGoal() {
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const { isGuest } = useAuth();
+
   return useMutation({
     mutationFn: async ({ id, input }: { id: string; input: UpdateGoalInput }) => {
+      if (isGuest) {
+        const updated = await saveLocalGoal({
+          _id: id,
+          name: input.name ?? "Goal",
+          targetAmount: input.targetAmount ?? 0,
+          targetDate: input.targetDate ?? undefined,
+        });
+        return updated as unknown as Goal;
+      }
       const { data, error } = await client.PATCH("/goals/{id}", {
         params: { path: { id } },
         body: input,
@@ -82,15 +117,17 @@ export function useUpdateGoal() {
   });
 }
 
-/**
- * Adding to and taking from a goal share a hook: the API takes a signed
- * amount, and the optimistic update would be identical either way.
- */
 export function useContributeToGoal() {
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const { isGuest } = useAuth();
+
   return useMutation({
     mutationFn: async ({ id, amount }: { id: string; amount: number }) => {
+      if (isGuest) {
+        const updated = await contributeLocalGoal(id, amount);
+        return updated as unknown as Goal;
+      }
       const { data, error } = await client.POST("/goals/{id}/contributions", {
         params: { path: { id } },
         body: { amount },
@@ -122,8 +159,14 @@ export function useContributeToGoal() {
 export function useDeleteGoal() {
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const { isGuest } = useAuth();
+
   return useMutation({
     mutationFn: async (id: string) => {
+      if (isGuest) {
+        await deleteLocalGoal(id);
+        return;
+      }
       const { error } = await client.DELETE("/goals/{id}", {
         params: { path: { id } },
       });

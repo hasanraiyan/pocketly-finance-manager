@@ -10,6 +10,14 @@ import type { components } from "@pocketly/sdk";
 import { usePocketlyClient } from "@/lib/use-pocketly-client";
 import { toast } from "@/components/ui/toast";
 
+import { useAuth } from "@/lib/auth-provider";
+import {
+  getLocalTransactions,
+  saveLocalTransaction,
+  deleteLocalTransaction,
+} from "@/lib/local-storage-adapter";
+import { ACCOUNTS_KEY } from "../accounts/hooks";
+
 export type Transaction =
   components["schemas"]["TransactionListDto"]["data"]["items"][number];
 export type CreateTransactionInput =
@@ -33,24 +41,35 @@ function transactionsKey(filters: TransactionFilters) {
   return ["transactions", filters] as const;
 }
 
-/**
- * `initialData` is genuinely optional. It used to default to an empty
- * page, which made react-query believe it already had results for a filter
- * it had never fetched -- so typing a search or changing a filter flashed
- * "No records found" before the real rows arrived.
- *
- * `keepPreviousData` covers the gap instead: the previous result set stays
- * on screen, dimmed by the caller via `isPlaceholderData`, until the new
- * one lands.
- */
 export function useTransactions(
   filters: TransactionFilters,
   initialData?: TransactionsPage,
 ) {
   const client = usePocketlyClient();
+  const { isGuest } = useAuth();
+
   return useQuery({
     queryKey: transactionsKey(filters),
     queryFn: async (): Promise<TransactionsPage> => {
+      if (isGuest) {
+        let items = (await getLocalTransactions()) as unknown as Transaction[];
+        if (filters.type) {
+          items = items.filter((t) => t.type === filters.type);
+        }
+        if (filters.accountId) {
+          items = items.filter(
+            (t) => t.accountId === filters.accountId || (t as any).toAccountId === filters.accountId,
+          );
+        }
+        if (filters.categoryId) {
+          items = items.filter((t) => t.categoryId === filters.categoryId);
+        }
+        if (filters.q) {
+          const q = filters.q.toLowerCase();
+          items = items.filter((t) => t.note?.toLowerCase().includes(q));
+        }
+        return { items, nextCursor: null };
+      }
       const { data, error } = await client.GET("/transactions", {
         params: { query: { ...filters, limit: 20 } },
       });
@@ -65,9 +84,14 @@ export function useTransactions(
 export function useLoadMoreTransactions(filters: TransactionFilters) {
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const { isGuest } = useAuth();
   const key = transactionsKey(filters);
+
   return useMutation({
     mutationFn: async (cursor: string) => {
+      if (isGuest) {
+        return { items: [], nextCursor: null };
+      }
       const { data, error } = await client.GET("/transactions", {
         params: { query: { ...filters, cursor, limit: 20 } },
       });
@@ -93,9 +117,23 @@ export function useLoadMoreTransactions(filters: TransactionFilters) {
 export function useCreateTransaction(filters: TransactionFilters) {
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const { isGuest } = useAuth();
   const key = transactionsKey(filters);
+
   return useMutation({
     mutationFn: async (input: CreateTransactionInput) => {
+      if (isGuest) {
+        const created = await saveLocalTransaction({
+          type: input.type,
+          amount: input.amount,
+          date: input.date,
+          categoryId: input.categoryId,
+          accountId: input.accountId,
+          toAccountId: input.toAccountId ?? undefined,
+          note: input.note ?? undefined,
+        });
+        return created as unknown as Transaction;
+      }
       const { data, error } = await client.POST("/transactions", {
         body: input,
       });
@@ -107,6 +145,9 @@ export function useCreateTransaction(filters: TransactionFilters) {
         items: [transaction, ...(old?.items ?? [])],
         nextCursor: old?.nextCursor ?? null,
       }));
+      // Invalidate accounts to reflect new balance
+      queryClient.invalidateQueries({ queryKey: ACCOUNTS_KEY });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
       toast.add({ title: "Record added", type: "success", timeout: 3000 });
     },
     onError: () => {
@@ -122,7 +163,9 @@ export function useCreateTransaction(filters: TransactionFilters) {
 export function useUpdateTransaction(filters: TransactionFilters) {
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const { isGuest } = useAuth();
   const key = transactionsKey(filters);
+
   return useMutation({
     mutationFn: async ({
       id,
@@ -131,6 +174,19 @@ export function useUpdateTransaction(filters: TransactionFilters) {
       id: string;
       input: UpdateTransactionInput;
     }) => {
+      if (isGuest) {
+        const updated = await saveLocalTransaction({
+          _id: id,
+          type: input.type ?? "expense",
+          amount: input.amount ?? 0,
+          date: input.date ?? new Date().toISOString(),
+          categoryId: input.categoryId ?? "",
+          accountId: input.accountId ?? "",
+          toAccountId: input.toAccountId ?? undefined,
+          note: input.note ?? undefined,
+        });
+        return updated as unknown as Transaction;
+      }
       const { data, error } = await client.PATCH("/transactions/{id}", {
         params: { path: { id } },
         body: input,
@@ -146,6 +202,8 @@ export function useUpdateTransaction(filters: TransactionFilters) {
           ) ?? [],
         nextCursor: old?.nextCursor ?? null,
       }));
+      queryClient.invalidateQueries({ queryKey: ACCOUNTS_KEY });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
       toast.add({ title: "Record updated", type: "success", timeout: 3000 });
     },
     onError: () => {
@@ -161,9 +219,15 @@ export function useUpdateTransaction(filters: TransactionFilters) {
 export function useDeleteTransaction(filters: TransactionFilters) {
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const { isGuest } = useAuth();
   const key = transactionsKey(filters);
+
   return useMutation({
     mutationFn: async (id: string) => {
+      if (isGuest) {
+        await deleteLocalTransaction(id);
+        return;
+      }
       const { error } = await client.DELETE("/transactions/{id}", {
         params: { path: { id } },
       });
@@ -179,6 +243,8 @@ export function useDeleteTransaction(filters: TransactionFilters) {
       return { previous };
     },
     onSuccess: (_void, id) => {
+      queryClient.invalidateQueries({ queryKey: ACCOUNTS_KEY });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
       toast.add({
         title: "Record deleted",
         type: "success",
@@ -186,6 +252,7 @@ export function useDeleteTransaction(filters: TransactionFilters) {
         actionProps: {
           children: "Undo",
           onClick: async () => {
+            if (isGuest) return;
             const { data, error } = await client.PATCH(
               "/transactions/{id}/restore",
               { params: { path: { id } } },

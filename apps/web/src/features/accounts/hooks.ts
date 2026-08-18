@@ -5,6 +5,14 @@ import type { components } from "@pocketly/sdk";
 import { usePocketlyClient } from "@/lib/use-pocketly-client";
 import { toast } from "@/components/ui/toast";
 
+import { useAuth } from "@/lib/auth-provider";
+import {
+  getLocalAccounts,
+  saveLocalAccount,
+  deleteLocalAccount,
+  type LocalAccount,
+} from "@/lib/local-storage-adapter";
+
 export type Account =
   components["schemas"]["AccountListDto"]["data"]["items"][number];
 export type CreateAccountInput = components["schemas"]["CreateAccountDto"];
@@ -14,9 +22,15 @@ export const ACCOUNTS_KEY = ["accounts"] as const;
 
 export function useAccounts(initialData: Account[] = []) {
   const client = usePocketlyClient();
+  const { isGuest } = useAuth();
+
   return useQuery({
     queryKey: ACCOUNTS_KEY,
     queryFn: async () => {
+      if (isGuest) {
+        const local = await getLocalAccounts();
+        return local as unknown as Account[];
+      }
       const { data, error } = await client.GET("/accounts", {
         params: { query: { limit: 100 } },
       });
@@ -30,8 +44,20 @@ export function useAccounts(initialData: Account[] = []) {
 export function useCreateAccount() {
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const { isGuest } = useAuth();
+
   return useMutation({
     mutationFn: async (input: CreateAccountInput) => {
+      if (isGuest) {
+        const created = await saveLocalAccount({
+          name: input.name,
+          type: input.type,
+          balance: (input as any).initialBalance ?? (input as any).balance ?? 0,
+          currency: input.currency ?? "USD",
+          icon: input.icon,
+        });
+        return created as unknown as Account;
+      }
       const { data, error } = await client.POST("/accounts", {
         body: input,
       });
@@ -58,6 +84,8 @@ export function useCreateAccount() {
 export function useUpdateAccount() {
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const { isGuest } = useAuth();
+
   return useMutation({
     mutationFn: async ({
       id,
@@ -66,6 +94,17 @@ export function useUpdateAccount() {
       id: string;
       input: UpdateAccountInput;
     }) => {
+      if (isGuest) {
+        const updated = await saveLocalAccount({
+          _id: id,
+          name: input.name ?? "Account",
+          type: input.type ?? "bank",
+          balance: (input as any).initialBalance ?? (input as any).balance ?? 0,
+          currency: input.currency ?? "USD",
+          icon: input.icon,
+        });
+        return updated as unknown as Account;
+      }
       const { data, error } = await client.PATCH("/accounts/{id}", {
         params: { path: { id } },
         body: input,
@@ -93,8 +132,14 @@ export function useUpdateAccount() {
 export function useDeleteAccount() {
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const { isGuest } = useAuth();
+
   return useMutation({
     mutationFn: async (id: string) => {
+      if (isGuest) {
+        await deleteLocalAccount(id);
+        return;
+      }
       const { error } = await client.DELETE("/accounts/{id}", {
         params: { path: { id } },
       });

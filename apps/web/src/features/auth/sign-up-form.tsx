@@ -24,9 +24,13 @@ import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/lib/auth-provider";
 import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
 
+import { usePocketlyClient } from "@/lib/use-pocketly-client";
+import { getLocalDataSummary, migrateLocalDataToCloud } from "@/lib/migration-service";
+
 export function SignUpForm() {
   const router = useRouter();
-  const { register } = useAuth();
+  const client = usePocketlyClient();
+  const { register, continueAsGuest } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -40,10 +44,19 @@ export function SignUpForm() {
     setPending(true);
     try {
       await register(email, password, name);
+      // Check if local guest data exists to migrate
+      try {
+        const summary = await getLocalDataSummary();
+        if (summary.hasData) {
+          await migrateLocalDataToCloud(client);
+        }
+      } catch {
+        // migration is best effort
+      }
       router.push("/dashboard");
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Couldn't create your account."
+        err instanceof Error ? err.message : "Couldn't create your account"
       );
     } finally {
       setPending(false);
@@ -136,6 +149,33 @@ export function SignUpForm() {
                 <ArrowRight className="ml-1.5 size-4" />
               </>
             )}
+          </Button>
+
+          <div className="relative my-2">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">Or</span>
+            </div>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            disabled={pending}
+            onClick={async () => {
+              setPending(true);
+              try {
+                await continueAsGuest();
+                router.push("/dashboard");
+              } finally {
+                setPending(false);
+              }
+            }}
+            className="h-10 w-full font-medium"
+          >
+            Continue as Guest (Try Offline)
           </Button>
         </form>
 

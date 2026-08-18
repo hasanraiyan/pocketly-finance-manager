@@ -1,7 +1,6 @@
-"use client";
-
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { GuestBanner } from "@/components/guest-banner";
 
 // Routes that manage their own height/scrolling and must not get the
 // default page padding (e.g. full-height chat UIs).
@@ -22,6 +21,7 @@ export function AppContent({ children }: { children: React.ReactNode }) {
           : "gap-6 overflow-y-auto p-4 md:p-8"
       )}
     >
+      {!isFullBleed && <GuestBanner />}
       {children}
     </div>
   );

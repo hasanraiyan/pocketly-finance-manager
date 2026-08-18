@@ -22,7 +22,7 @@ import { ArrowRight, ShieldCheck } from "lucide-react";
 export function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login, user, isLoading } = useAuth();
+  const { login, continueAsGuest, user, isLoading } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -132,6 +132,33 @@ export function SignInForm() {
                 <ArrowRight className="ml-1.5 size-4" />
               </>
             )}
+          </Button>
+
+          <div className="relative my-2">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">Or</span>
+            </div>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            disabled={pending}
+            onClick={async () => {
+              setPending(true);
+              try {
+                await continueAsGuest();
+                router.push("/dashboard");
+              } finally {
+                setPending(false);
+              }
+            }}
+            className="h-10 w-full font-medium"
+          >
+            Continue as Guest (No Login)
           </Button>
         </form>
 

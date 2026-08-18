@@ -10,7 +10,19 @@
  * can't carry a custom `Authorization` header.
  */
 export const ACCESS_TOKEN_COOKIE_NAME = "pocketly_access_token";
+export const GUEST_COOKIE_NAME = "pocketly_guest_mode";
 export const REFRESH_TOKEN_STORAGE_KEY = "pocketly_refresh_token";
+
+export function writeGuestCookie(): void {
+  if (typeof document === "undefined") return;
+  const secure = window.location.protocol === "https:" ? "; Secure" : "";
+  document.cookie = `${GUEST_COOKIE_NAME}=1; Path=/; Max-Age=31536000; SameSite=Lax${secure}`;
+}
+
+export function clearGuestCookie(): void {
+  if (typeof document === "undefined") return;
+  document.cookie = `${GUEST_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax`;
+}
 
 /** Seconds of slack before the real expiry -- refresh a little early rather than racing a request against it. */
 const EXPIRY_SKEW_SECONDS = 30;
