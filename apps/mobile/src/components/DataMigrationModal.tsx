@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import { ActivityIndicator, Modal, Text, View } from "react-native";
 import { Button } from "./Button";
-import {
-  clearAllLocalGuestData,
-  type LocalAccount,
-  type LocalTransaction,
-} from "@/lib/local-storage-adapter";
+import { clearAllLocalGuestData } from "@/lib/local-storage-adapter";
 import {
   migrateLocalDataToCloud,
   type MigrationSummary,
@@ -28,6 +24,20 @@ export function DataMigrationModal({
   const client = usePocketlyClient();
   const [loading, setLoading] = useState(false);
   const [progressMsg, setProgressMsg] = useState("");
+
+  const details = [
+    summary.transactionCount > 0
+      ? `${summary.transactionCount} transaction${summary.transactionCount === 1 ? "" : "s"}`
+      : null,
+    summary.accountCount > 0
+      ? `${summary.accountCount} account${summary.accountCount === 1 ? "" : "s"}`
+      : null,
+    summary.goalCount > 0
+      ? `${summary.goalCount} goal${summary.goalCount === 1 ? "" : "s"}`
+      : null,
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   async function handleMerge() {
     try {
@@ -64,14 +74,14 @@ export function DataMigrationModal({
 
           <View className="items-center text-center">
             <Text className="font-heading text-xl text-foreground text-center">
-              Local Records Found
+              Offline Records Found
             </Text>
             <Text className="text-xs text-muted-foreground text-center mt-1.5 px-2 leading-relaxed">
-              You logged{" "}
+              You created{" "}
               <Text className="font-semibold text-foreground">
-                {summary.transactionCount} transaction{summary.transactionCount === 1 ? "" : "s"}
+                {details || "offline financial records"}
               </Text>{" "}
-              while using Pocketly offline. What would you like to do?
+              on this device. How would you like to proceed?
             </Text>
           </View>
 

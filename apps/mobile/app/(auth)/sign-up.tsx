@@ -34,6 +34,8 @@ export default function SignUpScreen() {
     transactionCount: 0,
     accountCount: 0,
     categoryCount: 0,
+    budgetCount: 0,
+    goalCount: 0,
   });
 
   async function handleSignUp() {

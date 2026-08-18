@@ -3,9 +3,12 @@ import {
   clearAllLocalGuestData,
   exportAllLocalGuestData,
   getLocalAccounts,
+  getLocalBudgets,
   getLocalCategories,
+  getLocalGoals,
   getLocalTransactions,
 } from "./local-storage-adapter";
+import { safeStorage } from "./safe-storage";
 
 type PocketlyClient = ReturnType<typeof createPocketlyClient>;
 
@@ -14,40 +17,73 @@ export interface MigrationSummary {
   transactionCount: number;
   accountCount: number;
   categoryCount: number;
+  budgetCount: number;
+  goalCount: number;
 }
 
 /**
  * Check if the user has meaningful local data created during guest mode
  */
 export async function getLocalDataSummary(): Promise<MigrationSummary> {
-  const [txs, accounts, cats] = await Promise.all([
+  const [txs, accounts, cats, budgets, goals] = await Promise.all([
     getLocalTransactions(),
     getLocalAccounts(),
     getLocalCategories(),
+    getLocalBudgets(),
+    getLocalGoals(),
   ]);
 
-  const hasData = txs.length > 0;
+  const hasData = txs.length > 0 || accounts.length > 2 || goals.length > 0;
   return {
     hasData,
     transactionCount: txs.length,
     accountCount: accounts.length,
     categoryCount: cats.length,
+    budgetCount: budgets.length,
+    goalCount: goals.length,
   };
 }
 
 /**
- * Migrates local guest categories, accounts, and transactions to the authenticated cloud account
+ * Migrates local guest categories, accounts, budgets, goals, and transactions to the cloud
  */
 export async function migrateLocalDataToCloud(
   client: PocketlyClient,
   onProgress?: (step: string) => void,
-): Promise<{ migratedTransactions: number }> {
-  const { accounts: localAccounts, transactions: localTxs, categories: localCats } =
-    await exportAllLocalGuestData();
+): Promise<{
+  migratedTransactions: number;
+  migratedAccounts: number;
+  migratedBudgets: number;
+  migratedGoals: number;
+}> {
+  const [
+    { accounts: localAccounts, transactions: localTxs, categories: localCats },
+    localBudgets,
+    localGoals,
+    guestProfileRaw,
+  ] = await Promise.all([
+    exportAllLocalGuestData(),
+    getLocalBudgets(),
+    getLocalGoals(),
+    safeStorage.getItem("POCKETLY_GUEST_PROFILE"),
+  ]);
 
-  if (localTxs.length === 0 && localAccounts.length === 0) {
-    await clearAllLocalGuestData();
-    return { migratedTransactions: 0 };
+  // 0. Update Profile Preferences (e.g. INR Currency, Name) if set locally
+  if (guestProfileRaw) {
+    try {
+      const guestProfile = JSON.parse(guestProfileRaw);
+      if (guestProfile.currency || guestProfile.name) {
+        onProgress?.("Syncing currency & profile...");
+        await client.PATCH("/users/me", {
+          body: {
+            currency: guestProfile.currency || undefined,
+            name: guestProfile.name !== "Guest User" ? guestProfile.name : undefined,
+          },
+        });
+      }
+    } catch {
+      // Continue if profile update fails
+    }
   }
 
   onProgress?.("Mapping categories...");
@@ -80,7 +116,6 @@ export async function migrateLocalDataToCloud(
           categoryMap.set(localCat._id, created.data.data._id);
         }
       } catch {
-        // Fallback to first available category of same type
         const fallback = cloudCats.find((c) => c.type === localCat.type) || cloudCats[0];
         if (fallback) categoryMap.set(localCat._id, fallback._id);
       }
@@ -95,6 +130,7 @@ export async function migrateLocalDataToCloud(
   });
   const cloudAccs = cloudAccsRes.data?.data?.items ?? [];
   const accountMap = new Map<string, string>(); // localAccId -> cloudAccId
+  let migratedAccounts = 0;
 
   // Map or create accounts in cloud
   for (const localAcc of localAccounts) {
@@ -116,6 +152,7 @@ export async function migrateLocalDataToCloud(
         });
         if (created.data?.data?._id) {
           accountMap.set(localAcc._id, created.data.data._id);
+          migratedAccounts++;
         }
       } catch {
         const fallback = cloudAccs[0];
@@ -124,10 +161,49 @@ export async function migrateLocalDataToCloud(
     }
   }
 
+  onProgress?.("Syncing budgets & goals...");
+
+  // 3. Migrate Budgets
+  let migratedBudgets = 0;
+  for (const budget of localBudgets) {
+    const cloudCatId = categoryMap.get(budget.categoryId);
+    if (cloudCatId) {
+      try {
+        await client.POST("/budgets", {
+          body: {
+            categoryId: cloudCatId,
+            amount: budget.amount,
+            period: (budget.period as "monthly" | "weekly" | "yearly") || "monthly",
+          },
+        });
+        migratedBudgets++;
+      } catch {
+        // Skip duplicate budgets
+      }
+    }
+  }
+
+  // 4. Migrate Goals
+  let migratedGoals = 0;
+  for (const goal of localGoals) {
+    try {
+      await client.POST("/goals", {
+        body: {
+          name: goal.name,
+          targetAmount: goal.targetAmount,
+          targetDate: goal.targetDate,
+        },
+      });
+      migratedGoals++;
+    } catch {
+      // Continue
+    }
+  }
+
   onProgress?.("Uploading transactions...");
 
-  // 3. Upload transactions
-  let migratedCount = 0;
+  // 5. Upload Transactions
+  let migratedTransactions = 0;
   for (const tx of localTxs) {
     const cloudAccId = accountMap.get(tx.accountId) || cloudAccs[0]?._id;
     const cloudCatId = categoryMap.get(tx.categoryId) || cloudCats[0]?._id;
@@ -146,15 +222,20 @@ export async function migrateLocalDataToCloud(
             note: tx.note,
           },
         });
-        migratedCount++;
+        migratedTransactions++;
       } catch {
-        // Continue uploading remaining records
+        // Continue
       }
     }
   }
 
-  // 4. Clean up local guest data once successfully migrated
+  // 6. Clean up local guest data once successfully migrated
   await clearAllLocalGuestData();
 
-  return { migratedTransactions: migratedCount };
+  return {
+    migratedTransactions,
+    migratedAccounts,
+    migratedBudgets,
+    migratedGoals,
+  };
 }
