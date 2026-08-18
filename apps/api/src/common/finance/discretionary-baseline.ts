@@ -43,11 +43,7 @@ export function calculateDiscretionaryBaseline({
   spendingDays,
   now,
 }: DiscretionaryBaselineInputs): DiscretionaryBaseline {
-  if (
-    totalSpend <= 0 ||
-    !firstSpendDate ||
-    spendingDays < MIN_SPENDING_DAYS
-  ) {
+  if (totalSpend <= 0 || !firstSpendDate || spendingDays < MIN_SPENDING_DAYS) {
     return {
       dailyRate: 0,
       lookbackDays: 0,

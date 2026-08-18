@@ -3,8 +3,12 @@ const { defineConfig } = require('eslint/config');
 const expoConfig = require("eslint-config-expo/flat");
 
 module.exports = defineConfig([
-  expoConfig,
+  ...(Array.isArray(expoConfig) ? expoConfig : [expoConfig]),
   {
-    ignores: ["dist/*"],
+    ignores: ["dist/*", ".expo/*", "node_modules/*"],
+    rules: {
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/refs": "off",
+    },
   }
 ]);

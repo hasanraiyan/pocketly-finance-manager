@@ -8,7 +8,11 @@ export function Skeleton({
   className?: string;
   style?: ViewStyle;
 }) {
-  const opacity = useRef(new Animated.Value(0.4)).current;
+  const opacityRef = useRef<Animated.Value | null>(null);
+  if (!opacityRef.current) {
+    opacityRef.current = new Animated.Value(0.4);
+  }
+  const opacity = opacityRef.current;
 
   useEffect(() => {
     const pulse = Animated.loop(
