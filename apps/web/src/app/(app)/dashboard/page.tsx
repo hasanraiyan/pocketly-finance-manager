@@ -72,7 +72,17 @@ export default function DashboardPage() {
         <InsightsCard />
       </Suspense>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      {/* auto-fit (not a fixed grid-cols-2): ForecastCard and HealthCard can
+          each independently render nothing, and a fixed 2-column track would
+          still reserve the empty one's column -- leaving a blank half-width
+          gap next to whichever card did render. auto-fit collapses to
+          however many actually render, so a lone card fills the row.
+          empty:hidden covers the case where BOTH render nothing: React's
+          Suspense-null markers are HTML comments, not elements, so the div
+          is genuinely :empty then -- without this it stays in the flex
+          layout as an invisible box with the parent's gap-8 still applied
+          on both sides of it, i.e. a double gap with nothing in it. */}
+      <div className="grid gap-6 empty:hidden lg:grid-cols-[repeat(auto-fit,minmax(0,1fr))]">
         <Suspense fallback={<ForecastCardSkeleton />}>
           <ForecastCard />
         </Suspense>
