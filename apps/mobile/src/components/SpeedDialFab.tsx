@@ -2,20 +2,26 @@ import React, { useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import {
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TransactionModal } from "@/features/transactions/TransactionModal";
 import type { Transaction } from "@/features/transactions/hooks";
 import { theme } from "@/lib/theme";
 
 export function SpeedDialFab() {
+  const insets = useSafeAreaInsets();
   const [isOpen, setIsOpen] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState<Transaction["type"]>("expense");
+
+  // Dynamic bottom calculation to ensure FAB is above bottom navigation bar
+  const bottomPosition = Math.max(insets.bottom + 65, 75);
 
   function handleOpenAction(type: Transaction["type"]) {
     setIsOpen(false);
@@ -28,23 +34,30 @@ export function SpeedDialFab() {
       {/* Floating Action Button (Always Visible in Bottom Corner) */}
       <View
         pointerEvents="box-none"
-        style={styles.fabContainer}
+        style={[
+          styles.fabWrapper,
+          {
+            bottom: bottomPosition,
+            right: 20,
+          },
+        ]}
       >
         <Pressable
           onPress={() => setIsOpen((prev) => !prev)}
-          hitSlop={8}
+          hitSlop={12}
           style={({ pressed }) => [
             styles.fabButton,
             {
               backgroundColor: isOpen ? theme.card : theme.primary,
               borderColor: isOpen ? theme.border : theme.primary,
               opacity: pressed ? 0.85 : 1,
+              transform: [{ scale: pressed ? 0.95 : 1 }],
             },
           ]}
         >
           <Feather
             name={isOpen ? "x" : "plus"}
-            size={24}
+            size={26}
             color={isOpen ? theme.foreground : theme.primaryForeground}
           />
         </Pressable>
@@ -59,7 +72,15 @@ export function SpeedDialFab() {
       >
         <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
           <View style={styles.backdrop}>
-            <View style={styles.speedDialMenu}>
+            <View
+              style={[
+                styles.speedDialMenu,
+                {
+                  bottom: bottomPosition,
+                  right: 20,
+                },
+              ]}
+            >
               {/* 1. Quick Expense */}
               <Pressable
                 onPress={() => handleOpenAction("expense")}
@@ -74,7 +95,7 @@ export function SpeedDialFab() {
                     { backgroundColor: "#f43f5e", borderColor: "#e11d48" },
                   ]}
                 >
-                  <Feather name="arrow-down-right" size={18} color="#ffffff" />
+                  <Feather name="arrow-down-right" size={20} color="#ffffff" />
                 </View>
               </Pressable>
 
@@ -92,7 +113,7 @@ export function SpeedDialFab() {
                     { backgroundColor: "#10b981", borderColor: "#059669" },
                   ]}
                 >
-                  <Feather name="arrow-up-right" size={18} color="#ffffff" />
+                  <Feather name="arrow-up-right" size={20} color="#ffffff" />
                 </View>
               </Pressable>
 
@@ -110,19 +131,19 @@ export function SpeedDialFab() {
                     { backgroundColor: "#3b82f6", borderColor: "#2563eb" },
                   ]}
                 >
-                  <Feather name="repeat" size={17} color="#ffffff" />
+                  <Feather name="repeat" size={18} color="#ffffff" />
                 </View>
               </Pressable>
 
-              {/* Close / Main Action Anchor in Modal */}
+              {/* Close Anchor in Modal */}
               <Pressable
                 onPress={() => setIsOpen(false)}
                 style={[
-                  styles.fabButtonInModal,
-                  { backgroundColor: theme.card, borderColor: theme.border },
+                  styles.fabButton,
+                  { backgroundColor: theme.card, borderColor: theme.border, marginTop: 4 },
                 ]}
               >
-                <Feather name="x" size={24} color={theme.foreground} />
+                <Feather name="x" size={26} color={theme.foreground} />
               </Pressable>
             </View>
           </View>
@@ -140,36 +161,34 @@ export function SpeedDialFab() {
 }
 
 const styles = StyleSheet.create({
-  fabContainer: {
+  fabWrapper: {
     position: "absolute",
-    right: 20,
-    bottom: 80, // Above bottom tab bar
-    zIndex: 999,
+    zIndex: 99999,
+    elevation: 20,
   },
   fabButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 58,
+    height: 58,
+    borderRadius: 29,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.35,
     shadowRadius: 8,
-    elevation: 8,
-    borderWidth: 1,
+    elevation: 12,
+    borderWidth: 1.5,
   },
   backdrop: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.55)",
+    backgroundColor: "rgba(0,0,0,0.6)",
     justifyContent: "flex-end",
   },
   speedDialMenu: {
     position: "absolute",
-    right: 20,
-    bottom: 80,
     alignItems: "flex-end",
     gap: 14,
+    zIndex: 100000,
   },
   speedDialItem: {
     flexDirection: "row",
@@ -178,47 +197,33 @@ const styles = StyleSheet.create({
   },
   labelBadge: {
     backgroundColor: theme.card,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: theme.border,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  labelText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: theme.foreground,
-  },
-  miniFab: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
     elevation: 6,
-    borderWidth: 1,
   },
-  fabButtonInModal: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+  labelText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: theme.foreground,
+  },
+  miniFab: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
-    shadowRadius: 8,
+    shadowRadius: 6,
     elevation: 8,
-    borderWidth: 1,
-    marginTop: 2,
+    borderWidth: 1.5,
   },
 });
