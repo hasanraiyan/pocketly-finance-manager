@@ -157,14 +157,15 @@ export default function AnalysisScreen() {
                   <Pressable
                     key={opt.value}
                     onPress={() => setPeriod(opt.value)}
-                    className={`rounded-full px-4 py-2 border ${
+                    className={`rounded-full px-4 py-2 border shrink-0 ${
                       isSelected
                         ? "bg-primary border-primary"
                         : "bg-card border-border"
                     }`}
                   >
                     <Text
-                      className={`text-xs font-semibold ${
+                      numberOfLines={1}
+                      className={`text-xs font-semibold shrink-0 ${
                         isSelected
                           ? "text-primary-foreground"
                           : "text-muted-foreground"

@@ -203,14 +203,15 @@ export default function AccountsScreen() {
                         <Pressable
                           key={f.key}
                           onPress={() => setActiveFilter(f.key)}
-                          className={`rounded-full px-3.5 py-1.5 border ${
+                          className={`rounded-full px-3.5 py-1.5 border shrink-0 ${
                             isActive
                               ? "bg-primary border-primary"
                               : "bg-card border-border"
                           }`}
                         >
                           <Text
-                            className={`text-xs font-medium ${
+                            numberOfLines={1}
+                            className={`text-xs font-medium shrink-0 ${
                               isActive
                                 ? "text-primary-foreground"
                                 : "text-muted-foreground"

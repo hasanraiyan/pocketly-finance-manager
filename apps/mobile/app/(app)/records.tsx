@@ -205,14 +205,15 @@ export default function RecordsScreen() {
                 <Pressable
                   key={opt.value || "all"}
                   onPress={() => setTypeFilter(opt.value)}
-                  className={`rounded-full px-3.5 py-1.5 border ${
+                  className={`rounded-full px-3.5 py-1.5 border shrink-0 ${
                     isSelected
                       ? "bg-primary border-primary"
                       : "bg-card border-border"
                   }`}
                 >
                   <Text
-                    className={`text-xs font-medium ${
+                    numberOfLines={1}
+                    className={`text-xs font-medium shrink-0 ${
                       isSelected
                         ? "text-primary-foreground"
                         : "text-muted-foreground"
@@ -235,14 +236,15 @@ export default function RecordsScreen() {
                       prev === acc._id ? "" : acc._id,
                     )
                   }
-                  className={`rounded-full px-3.5 py-1.5 border ${
+                  className={`rounded-full px-3.5 py-1.5 border shrink-0 ${
                     isSelected
                       ? "bg-primary border-primary"
                       : "bg-card border-border"
                   }`}
                 >
                   <Text
-                    className={`text-xs font-medium ${
+                    numberOfLines={1}
+                    className={`text-xs font-medium shrink-0 ${
                       isSelected
                         ? "text-primary-foreground"
                         : "text-muted-foreground"
