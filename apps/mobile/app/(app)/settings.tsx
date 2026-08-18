@@ -581,7 +581,7 @@ export default function SettingsScreen() {
               <View className="flex-1 gap-5">
                 {/* 3. Connected Apps & MCP Connections Card */}
                 <Card>
-                  <CardContent className="gap-3">
+                  <CardContent className="gap-4">
                     <View className="flex-row items-center justify-between">
                       <View className="flex-row items-center gap-2">
                         <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
@@ -593,50 +593,88 @@ export default function SettingsScreen() {
                       </View>
 
                       <Text className="font-mono text-xs font-semibold text-muted-foreground">
-                        {connections.length} connected
+                        {connections.length} active
                       </Text>
                     </View>
 
                     <Text className="text-xs text-muted-foreground leading-relaxed">
-                      AI tools and assistants (Claude, Cursor, Antigravity) authorized to interact with your Pocketly financial ledger via MCP.
+                      External AI agents and IDEs (Cursor, Claude Desktop, Antigravity) authorized to access your financial ledger via MCP.
                     </Text>
 
                     {connections.length === 0 ? (
-                      <View className="items-center justify-center py-4 rounded-xl bg-muted/20 border border-border/40">
-                        <Text className="text-xs text-muted-foreground text-center">
-                          No external MCP clients connected yet.
+                      <View className="items-center justify-center py-6 px-4 rounded-xl bg-muted/20 border border-border/40 text-center">
+                        <View className="h-10 w-10 items-center justify-center rounded-xl bg-muted border border-border mb-2">
+                          <Feather name="cpu" size={18} color={theme.mutedForeground} />
+                        </View>
+                        <Text className="text-xs font-medium text-foreground">
+                          No MCP clients connected
+                        </Text>
+                        <Text className="text-[11px] text-muted-foreground text-center mt-0.5 max-w-[220px]">
+                          Connect Cursor or Claude to analyze your finances with AI.
                         </Text>
                       </View>
                     ) : (
-                      <View className="gap-2.5 mt-1">
-                        {connections.map((conn) => (
-                          <View
-                            key={conn.id}
-                            className="flex-row items-center justify-between rounded-xl bg-card border border-border p-3"
-                          >
-                            <View className="flex-1 pr-2">
-                              <Text className="text-xs font-semibold text-foreground">
-                                {conn.clientName}
-                              </Text>
-                              <Text className="text-[11px] text-muted-foreground mt-0.5">
-                                {conn.scopes
-                                  .map((s) => SCOPE_LABELS[s] || s)
-                                  .slice(0, 2)
-                                  .join(" • ")}
-                              </Text>
-                            </View>
+                      <View className="gap-2.5">
+                        {connections.map((conn) => {
+                          const clientName = conn.clientName || "AI Assistant";
+                          const lower = clientName.toLowerCase();
+                          const iconName: keyof typeof Feather.glyphMap =
+                            lower.includes("cursor") || lower.includes("code") || lower.includes("vscode")
+                              ? "code"
+                              : lower.includes("terminal") || lower.includes("cli")
+                              ? "terminal"
+                              : lower.includes("antigravity")
+                              ? "zap"
+                              : lower.includes("claude") || lower.includes("anthropic") || lower.includes("ai")
+                              ? "cpu"
+                              : lower.includes("web") || lower.includes("browser")
+                              ? "globe"
+                              : "box";
 
-                            <Pressable
-                              onPress={() => handleDisconnectApp(conn)}
-                              hitSlop={6}
-                              className="rounded-md bg-negative/10 px-2.5 py-1"
+                          return (
+                            <View
+                              key={conn.id}
+                              className="flex-row items-center justify-between rounded-xl bg-card border border-border/80 p-3.5 shadow-2xs"
                             >
-                              <Text className="text-xs font-medium text-negative">
-                                Disconnect
-                              </Text>
-                            </Pressable>
-                          </View>
-                        ))}
+                              <View className="flex-row items-center gap-3 flex-1 pr-2">
+                                <View className="h-9 w-9 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 shrink-0">
+                                  <Feather name={iconName} size={16} color={theme.primary} />
+                                </View>
+                                <View className="flex-1">
+                                  <Text
+                                    numberOfLines={1}
+                                    className="text-xs font-semibold text-foreground"
+                                  >
+                                    {clientName}
+                                  </Text>
+                                  <View className="flex-row flex-wrap gap-1 mt-1">
+                                    {conn.scopes.slice(0, 2).map((s) => (
+                                      <View
+                                        key={s}
+                                        className="rounded bg-muted/60 px-1.5 py-0.5 border border-border/50"
+                                      >
+                                        <Text className="text-[9px] font-medium text-muted-foreground">
+                                          {SCOPE_LABELS[s] || s}
+                                        </Text>
+                                      </View>
+                                    ))}
+                                  </View>
+                                </View>
+                              </View>
+
+                              <Pressable
+                                onPress={() => handleDisconnectApp(conn)}
+                                hitSlop={6}
+                                className="flex-row items-center gap-1 rounded-lg bg-negative/10 px-2.5 py-1.5 active:opacity-75"
+                              >
+                                <Feather name="trash-2" size={12} color={theme.negative} />
+                                <Text className="text-xs font-medium text-negative">
+                                  Disconnect
+                                </Text>
+                              </Pressable>
+                            </View>
+                          );
+                        })}
                       </View>
                     )}
                   </CardContent>
