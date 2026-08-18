@@ -1,4 +1,5 @@
 import { getServerApiClient } from "@/lib/api-client";
+import { getServerSession } from "@/lib/get-session";
 import { FeedbackView } from "@/features/feedback/feedback-view";
 
 export const metadata = {
@@ -7,6 +8,13 @@ export const metadata = {
 };
 
 export default async function FeedbackPage() {
+  const session = await getServerSession();
+  const isGuest = Boolean(session?.isGuest);
+
+  if (isGuest) {
+    return <FeedbackView initialData={[]} />;
+  }
+
   const client = await getServerApiClient();
   const feedbackRes = await client.GET("/feedback", {
     params: {

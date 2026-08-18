@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import { getServerSession } from "@/lib/get-session";
+import { GuestAnalysisView } from "@/features/analysis/guest-analysis-view";
 import { AnalysisShell } from "@/features/analysis/analysis-shell";
 import {
   AccountBreakdownSlot,
@@ -13,12 +15,12 @@ import {
   StatCardsSkeleton,
 } from "@/features/analysis/skeletons";
 
-/**
- * Deliberately not `async`: the heading and period selector belong to the
- * static shell, and each card resolves its own aggregate behind its own
- * boundary instead of all six calls blocking the page.
- */
-export default function AnalysisPage() {
+export default async function AnalysisPage() {
+  const session = await getServerSession();
+  if (session?.isGuest) {
+    return <GuestAnalysisView />;
+  }
+
   return (
     <AnalysisShell>
       <Suspense fallback={<StatCardsSkeleton />}>
