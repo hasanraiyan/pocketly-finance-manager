@@ -22,6 +22,10 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "mongodb-memory-server"
-    ]
+    ],
+    "overrides": {
+      "@personaai/runtime": "^0.5.2",
+      "@personaai/sdk": "^0.4.3"
+    }
   }
 }
