@@ -26,7 +26,16 @@ export default async function AppLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      {/* h-svh + overflow-hidden: a real, viewport-relative height ceiling
+          for the whole shell. Without one, everything below here (body is
+          min-h-full, SidebarProvider's own wrapper is min-h-svh — both
+          "at least", not "exactly") has nothing to divide flex-1/overflow
+          against, so long content just grows the whole page instead of
+          scrolling inside AppContent — most visible on /copilot, where a
+          long conversation scrolled the entire tab instead of the message
+          list. AppContent now owns the one real scroll area beneath the
+          fixed header. */}
+      <SidebarInset className="h-svh overflow-hidden">
         <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border bg-background/95 px-4 backdrop-blur-sm">
           <div className="flex items-center gap-2">
             <SidebarTrigger />

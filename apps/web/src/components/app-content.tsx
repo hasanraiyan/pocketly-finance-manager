@@ -16,8 +16,10 @@ export function AppContent({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={cn(
-        "flex flex-1 flex-col",
-        isFullBleed ? "min-h-0 overflow-hidden" : "gap-6 p-4 md:p-8"
+        "flex min-h-0 flex-1 flex-col",
+        isFullBleed
+          ? "overflow-hidden"
+          : "gap-6 overflow-y-auto p-4 md:p-8"
       )}
     >
       {children}
