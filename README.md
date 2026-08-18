@@ -7,24 +7,23 @@ Personal finance app. Monorepo managed with pnpm workspaces + Turborepo.
 ```
 pocketly/
 ├── apps/
-│   ├── web/   # Next.js frontend (port 3000)
-│   └── api/   # NestJS backend  (port 4000)
+│   ├── web/      # Next.js frontend (port 3000)
+│   ├── api/      # NestJS backend  (port 4000)
+│   └── mobile/   # Expo / React Native mobile app
 ├── packages/
-│   └── sdk/   # @pocketly/sdk — shared typed API client (web now, mobile later)
-├── docs/      # architecture, security, API reference
+│   └── sdk/      # @pocketly/sdk — shared typed API client
+├── docs/         # architecture, security, API reference
 ├── requirement.md
 └── turbo.json
 ```
-
-Mobile (Expo/React Native) will be added later as `apps/mobile`. Not part of this phase.
 
 ## Setup
 
 ```bash
 pnpm install
-cp apps/api/.env.example apps/api/.env   # then fill in the values below
-cp apps/web/.env.example apps/web/.env.local
-pnpm dev                                 # runs web + api together
+cp apps/api/.env.example apps/api/.env       # fill in the backend env values
+cp apps/web/.env.example apps/web/.env.local # fill in web frontend env values
+pnpm dev                                     # runs web + api together
 ```
 
 ### Environment variables (`apps/api/.env`)
@@ -59,7 +58,7 @@ pnpm lint          # lint all apps
 pnpm test          # test all apps
 ```
 
-Run a single app: `pnpm --filter web dev` or `pnpm --filter api dev`.
+Run a single app: `pnpm --filter web dev`, `pnpm --filter api dev`, or `pnpm --filter mobile start`.
 
 Regenerate API docs (OpenAPI JSON + Postman collection) after changing routes/DTOs, then the SDK's types from that spec:
 
