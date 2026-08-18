@@ -37,8 +37,8 @@ export default function CopilotPage() {
   const firstName = user?.name?.split(" ")[0] ?? "there";
 
   return (
-    // Fill the entire app shell content area — no padding, no card
-    <div className="h-[calc(100svh-3.5rem)] w-full">
+    // Expand to fill the (app) layout shell completely, with no padding
+    <div className="flex h-full w-full overflow-hidden">
       <PersonaChatView
         agentId={AGENT_ID}
         title="Financial Copilot"
@@ -46,6 +46,7 @@ export default function CopilotPage() {
         starterPrompts={STARTER_PROMPTS}
         showSidebar
         showFilesDrawer
+        className="h-full w-full"
       />
     </div>
   );
