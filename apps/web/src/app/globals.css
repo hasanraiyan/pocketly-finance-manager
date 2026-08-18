@@ -2,6 +2,15 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Tailwind v4's automatic content detection skips node_modules, so without
+   this, @personaai/ui's own Tailwind classes (used inside its pre-built
+   dist/index.js, not anywhere in our own source) never get compiled into
+   this app's CSS at all -- the components render with none of their own
+   styling: no text color, no layout, no spacing, just browser defaults.
+   This is the root cause behind a long string of "text invisible" /
+   "not responsive" / "layout broken" reports against @personaai/ui. */
+@source "../../node_modules/@personaai/ui/dist/**/*.js";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
