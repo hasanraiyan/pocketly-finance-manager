@@ -316,6 +316,9 @@ importers:
       '@next/mdx':
         specifier: ^16.3.1
         version: 16.3.1(@mdx-js/loader@3.1.1(webpack@5.106.2))(@mdx-js/react@3.1.1(@types/react@19.2.18)(react@19.2.8))
+      '@personaai/react':
+        specifier: link:../../../agent-marketplace/sdk/react
+        version: link:../../../agent-marketplace/sdk/react
       '@pocketly/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
