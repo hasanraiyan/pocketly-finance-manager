@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PersonaModule } from '@personaai/nestjs';
-import { AiController } from './ai.controller';
-import { AiService } from './ai.service';
+import { PersonaModule, PersonaService } from '@personaai/nestjs';
 
 @Module({
   imports: [
@@ -20,11 +18,20 @@ import { AiService } from './ai.service';
         resolveUserFrom: (req) =>
           req.user?._id?.toString() ?? req.user?.id ?? null,
         routePrefix: '/api/persona',
+        capabilities: {
+          skills: true,
+          mcps: true,
+          knowledge: true,
+          stores: true,
+          agentsWrite: config.get<string>('PERSONA_ALLOW_AGENTS_WRITE') === 'true',
+          providers: false,
+          auditLogs: true,
+          architect: false,
+        },
       }),
     }),
   ],
-  controllers: [AiController],
-  providers: [AiService],
-  exports: [AiService],
+  providers: [PersonaService],
+  exports: [PersonaService],
 })
 export class AiModule {}
