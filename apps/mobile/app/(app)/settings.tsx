@@ -357,10 +357,10 @@ export default function SettingsScreen() {
                       </View>
                       <View className="flex-1">
                         <Text className="text-base font-semibold text-foreground">
-                          {name || authUser?.name || "Pocketly User"}
+                          {name || authUser?.name || (isGuest ? "Guest User" : "Pocketly User")}
                         </Text>
                         <Text className="text-xs text-muted-foreground mt-0.5">
-                          {profile?.email ?? authUser?.email ?? "user@pocketly.app"}
+                          {isGuest ? "Offline Local Profile" : (profile?.email ?? authUser?.email ?? "")}
                         </Text>
                       </View>
                     </View>
@@ -373,23 +373,25 @@ export default function SettingsScreen() {
                       onChangeText={setName}
                     />
 
-                    {/* Email (Read Only) */}
-                    <View className="gap-1.5">
-                      <Text className="text-sm font-medium text-foreground">
-                        Email Address
-                      </Text>
-                      <View className="flex-row items-center justify-between h-11 rounded-lg border border-border bg-muted/40 px-3">
-                        <Text className="text-sm text-muted-foreground">
-                          {profile?.email ?? authUser?.email ?? ""}
+                    {/* Email (Cloud Accounts Only) */}
+                    {!isGuest && (
+                      <View className="gap-1.5">
+                        <Text className="text-sm font-medium text-foreground">
+                          Email Address
                         </Text>
-                        <View className="flex-row items-center gap-1 rounded bg-positive/10 px-1.5 py-0.5">
-                          <Feather name="check" size={10} color={theme.positive} />
-                          <Text className="text-[10px] font-semibold text-positive">
-                            Verified
+                        <View className="flex-row items-center justify-between h-11 rounded-lg border border-border bg-muted/40 px-3">
+                          <Text className="text-sm text-muted-foreground">
+                            {profile?.email ?? authUser?.email ?? ""}
                           </Text>
+                          <View className="flex-row items-center gap-1 rounded bg-positive/10 px-1.5 py-0.5">
+                            <Feather name="check" size={10} color={theme.positive} />
+                            <Text className="text-[10px] font-semibold text-positive">
+                              Verified
+                            </Text>
+                          </View>
                         </View>
                       </View>
-                    </View>
+                    )}
 
                     {/* Base Currency */}
                     <View className="gap-2">
