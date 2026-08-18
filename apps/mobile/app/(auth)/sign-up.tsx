@@ -63,7 +63,7 @@ export default function SignUpScreen() {
         <View className="mb-8 items-center">
           <View className="mb-4 h-16 w-16 items-center justify-center rounded-2xl bg-card border border-border shadow-sm overflow-hidden p-2">
             <Image
-              source={require("../../../assets/pocketly-icon.png")}
+              source={require("../../assets/pocketly-icon.png")}
               style={{ width: "100%", height: "100%" }}
               resizeMode="contain"
             />
