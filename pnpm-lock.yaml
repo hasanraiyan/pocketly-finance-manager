@@ -324,8 +324,8 @@ importers:
         specifier: ^0.3.5
         version: 0.3.5(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@personaai/ui':
-        specifier: ^0.9.0
-        version: 0.9.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: ^0.9.1
+        version: 0.9.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@pocketly/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
@@ -2479,8 +2479,8 @@ packages:
     resolution: {integrity: sha512-jqtJGrY/uSCL+wUiTzNEZFRuE9e3hK10ai5AnekUQxGb4R0P/MAAO5hNAaM0qGDT5nQZUaeMpduA2OVIkSAqXg==}
     engines: {node: '>=18'}
 
-  '@personaai/ui@0.9.0':
-    resolution: {integrity: sha512-JYomBhLxXJ6vicwX0IXIl66ibBqODeZCMIpJgXNLDKw9lB8klSNkcGuFGURG13BTsXVsPerJ5HFUC5Fthmn0Vw==}
+  '@personaai/ui@0.9.1':
+    resolution: {integrity: sha512-Q4ISYQc80SdDBkKyoHlGhDbfjI9qNu454RGzM37PpO5YIcFAvgOi5k+igjJ2L4TCCt7wAyqGqiJuqjUMx2gqig==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=18.0.0'
@@ -12342,7 +12342,7 @@ snapshots:
     dependencies:
       '@ag-ui/core': 0.0.57
 
-  '@personaai/ui@0.9.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@personaai/ui@0.9.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@personaai/react': 0.3.5(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       clsx: 2.1.1
