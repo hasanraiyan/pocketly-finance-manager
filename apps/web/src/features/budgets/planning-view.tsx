@@ -33,6 +33,7 @@ import { RecurrencesSection } from "@/features/recurrences/recurrences-section";
 import type { Recurrence } from "@/features/recurrences/hooks";
 import { MoneyRulesSection } from "@/features/money-rules/money-rules-section";
 import type { MoneyRule } from "@/features/money-rules/hooks";
+import { useAuth } from "@/lib/auth-provider";
 import { BudgetFormDialog } from "./budget-form-dialog";
 import { useBudgets, useDeleteBudget, type Budget } from "./hooks";
 
@@ -98,6 +99,7 @@ export function PlanningView({
   moneyRulesLoadFailed?: boolean;
   currency: string;
 }) {
+  const { isGuest } = useAuth();
   const { data: budgets, isError, isFetching, refetch } =
     useBudgets(initialData);
   const showError = initialLoadFailed || isError;
@@ -222,24 +224,28 @@ export function PlanningView({
         </div>
       )}
 
-      <div className="mt-2 border-t border-border pt-6">
-        <RecurrencesSection
-          initialData={recurrences}
-          initialLoadFailed={recurrencesLoadFailed}
-          accounts={accounts}
-          categories={categories}
-          currency={currency}
-        />
-      </div>
+      {!isGuest && (
+        <>
+          <div className="mt-2 border-t border-border pt-6">
+            <RecurrencesSection
+              initialData={recurrences}
+              initialLoadFailed={recurrencesLoadFailed}
+              accounts={accounts}
+              categories={categories}
+              currency={currency}
+            />
+          </div>
 
-      <div className="border-t border-border pt-6">
-        <MoneyRulesSection
-          initialData={moneyRules}
-          initialLoadFailed={moneyRulesLoadFailed}
-          categories={categories}
-          currency={currency}
-        />
-      </div>
+          <div className="border-t border-border pt-6">
+            <MoneyRulesSection
+              initialData={moneyRules}
+              initialLoadFailed={moneyRulesLoadFailed}
+              categories={categories}
+              currency={currency}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }
