@@ -18,6 +18,7 @@ import { getPeriodWindow } from '../common/finance/get-period-window';
 import { NOTIFICATIONS_QUEUE } from './notifications.processor';
 import { SendPushOptions } from './fcm.service';
 import { errorMessage } from '../common/errors/error-message';
+import { attachQueueErrorLogger } from '../common/queue/attach-queue-error-logger';
 
 @Injectable()
 export class NotificationDispatcherService implements OnModuleInit {
@@ -34,7 +35,9 @@ export class NotificationDispatcherService implements OnModuleInit {
     private readonly transactionModel: Model<TransactionDocument>,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
-  ) {}
+  ) {
+    attachQueueErrorLogger(this.notificationsQueue, this.logger);
+  }
 
   async onModuleInit() {
     try {
@@ -55,26 +58,38 @@ export class NotificationDispatcherService implements OnModuleInit {
 
   /**
    * Enqueues a single notification to the BullMQ queue for async processing.
+   *
+   * Swallows enqueue failures (e.g. Redis unreachable or over quota) rather
+   * than throwing: a notification is a side effect of the caller's real
+   * work (a budget check, a monthly report), and several callers invoke
+   * this with `void`, where a throw becomes an unhandled promise rejection
+   * that can crash the process instead of just losing one notification.
    */
   async enqueueNotification(
     userId: Types.ObjectId | string,
     payload: SendPushOptions,
   ): Promise<void> {
-    await this.notificationsQueue.add(
-      'send-notification',
-      {
-        userId: userId.toString(),
-        payload,
-      },
-      {
-        attempts: 3,
-        backoff: {
-          type: 'exponential',
-          delay: 2000,
+    try {
+      await this.notificationsQueue.add(
+        'send-notification',
+        {
+          userId: userId.toString(),
+          payload,
         },
-        removeOnComplete: 100,
-      },
-    );
+        {
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 2000,
+          },
+          removeOnComplete: 100,
+        },
+      );
+    } catch (err) {
+      this.logger.warn(
+        `Could not enqueue notification for user ${userId.toString()}: ${errorMessage(err)}`,
+      );
+    }
   }
 
   /**

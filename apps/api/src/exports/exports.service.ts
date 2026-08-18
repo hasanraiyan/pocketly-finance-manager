@@ -1,15 +1,20 @@
 import { InjectQueue } from '@nestjs/bullmq';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Queue } from 'bullmq';
+import { attachQueueErrorLogger } from '../common/queue/attach-queue-error-logger';
 import type { UserDocument } from '../users/schemas/user.schema';
 import type { ExportPeriod } from './dto/export.dto';
 import { EXPORTS_QUEUE, type ExportJobPayload } from './exports.processor';
 
 @Injectable()
 export class ExportsService {
+  private readonly logger = new Logger(ExportsService.name);
+
   constructor(
     @InjectQueue(EXPORTS_QUEUE) private readonly exportsQueue: Queue,
-  ) {}
+  ) {
+    attachQueueErrorLogger(this.exportsQueue, this.logger);
+  }
 
   async queuePdfExport(
     user: UserDocument,

@@ -2,6 +2,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { errorMessage } from '../common/errors/error-message';
+import { attachQueueErrorLogger } from '../common/queue/attach-queue-error-logger';
 import { MONEY_RULES_QUEUE } from './money-rules.processor';
 
 /**
@@ -22,7 +23,9 @@ export class MoneyRulesScheduler implements OnModuleInit {
   constructor(
     @InjectQueue(MONEY_RULES_QUEUE)
     private readonly queue: Queue,
-  ) {}
+  ) {
+    attachQueueErrorLogger(this.queue, this.logger);
+  }
 
   async onModuleInit() {
     try {

@@ -1,4 +1,4 @@
-import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -288,5 +288,18 @@ export class MoneyRulesProcessor extends WorkerHost {
       income: rows.find((row) => row._id === 'income')?.total ?? 0,
       expense: rows.find((row) => row._id === 'expense')?.total ?? 0,
     };
+  }
+
+  /**
+   * BullMQ's `Worker` extends `EventEmitter` and emits `'error'` for
+   * connection-level failures (e.g. Upstash's "max requests limit
+   * exceeded"). `@nestjs/bullmq` only attaches a listener for methods
+   * decorated with `@OnWorkerEvent` -- without this, an unhandled `'error'`
+   * throws and crashes the process, which (on Render) restarts it straight
+   * back into the same outage.
+   */
+  @OnWorkerEvent('error')
+  onError(err: Error): void {
+    this.logger.warn(`Worker error: ${errorMessage(err)}`);
   }
 }

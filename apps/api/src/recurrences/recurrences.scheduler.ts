@@ -2,6 +2,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { errorMessage } from '../common/errors/error-message';
+import { attachQueueErrorLogger } from '../common/queue/attach-queue-error-logger';
 import { RECURRENCES_QUEUE } from './recurrences.processor';
 
 /**
@@ -23,7 +24,9 @@ export class RecurrencesScheduler implements OnModuleInit {
   constructor(
     @InjectQueue(RECURRENCES_QUEUE)
     private readonly recurrencesQueue: Queue,
-  ) {}
+  ) {
+    attachQueueErrorLogger(this.recurrencesQueue, this.logger);
+  }
 
   async onModuleInit() {
     try {
