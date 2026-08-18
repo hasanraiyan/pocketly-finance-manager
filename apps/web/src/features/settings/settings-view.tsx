@@ -1030,13 +1030,16 @@ export function SettingsView({
   categoriesLoadFailed?: boolean;
 }) {
   const router = useRouter();
+  const { isGuest } = useAuth();
 
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="font-heading text-2xl text-foreground">Settings</h1>
         <p className="text-sm text-muted-foreground">
-          Your profile, categories, and account.
+          {isGuest
+            ? "Your local ledger preferences, currency, and categories."
+            : "Your profile, categories, and account."}
         </p>
       </div>
       {profileLoadFailed ? (
@@ -1050,14 +1053,18 @@ export function SettingsView({
       )}
       <CategoriesCard
         initialData={categoriesInitialData}
-        initialLoadFailed={categoriesLoadFailed}
+        initialLoadFailed={!isGuest && categoriesLoadFailed}
       />
-      <SecurityPasswordCard />
-      <ActiveSessionsCard />
-      <ExportDataCard />
-      <NotificationsCard />
-      <ConnectedAppsCard />
-      <DangerZoneCard />
+      {!isGuest && (
+        <>
+          <SecurityPasswordCard />
+          <ActiveSessionsCard />
+          <ExportDataCard />
+          <NotificationsCard />
+          <ConnectedAppsCard />
+          <DangerZoneCard />
+        </>
+      )}
     </div>
   );
 }

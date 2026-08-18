@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { components } from "@pocketly/sdk";
 import { usePocketlyClient } from "@/lib/use-pocketly-client";
 import { toast } from "@/components/ui/toast";
@@ -32,8 +32,23 @@ export function useUserProfile() {
 
 export function useUpdateProfile() {
   const client = usePocketlyClient();
+  const { isGuest, user } = useAuth();
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (input: UpdateProfileInput) => {
+      if (isGuest) {
+        if (typeof window !== "undefined") {
+          const current = user || GUEST_USER;
+          const updated = {
+            ...current,
+            ...input,
+          };
+          window.localStorage.setItem("pocketly_guest_user", JSON.stringify(updated));
+          return updated as UserProfile;
+        }
+        return GUEST_USER as UserProfile;
+      }
       const { data, error } = await client.PATCH("/users/me", {
         body: input,
       });
@@ -41,6 +56,7 @@ export function useUpdateProfile() {
       return data.data;
     },
     onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: USER_PROFILE_KEY });
       toast.add({
         title: "Profile updated",
         type: "success",
