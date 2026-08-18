@@ -1,3 +1,24 @@
+import {
+  sqliteClearAll,
+  sqliteDeleteAccount,
+  sqliteDeleteBudget,
+  sqliteDeleteCategory,
+  sqliteDeleteGoal,
+  sqliteDeleteMoneyRule,
+  sqliteDeleteTransaction,
+  sqliteGetAccounts,
+  sqliteGetBudgets,
+  sqliteGetCategories,
+  sqliteGetGoals,
+  sqliteGetMoneyRules,
+  sqliteGetTransactions,
+  sqliteSaveAccount,
+  sqliteSaveBudget,
+  sqliteSaveCategory,
+  sqliteSaveGoal,
+  sqliteSaveMoneyRule,
+  sqliteSaveTransaction,
+} from "./sqlite-db";
 import { safeStorage } from "./safe-storage";
 
 export interface LocalCategory {
@@ -6,6 +27,8 @@ export interface LocalCategory {
   type: "expense" | "income";
   color?: string;
   icon?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface LocalAccount {
@@ -15,6 +38,8 @@ export interface LocalAccount {
   balance: number;
   currency: string;
   icon?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface LocalTransaction {
@@ -26,6 +51,8 @@ export interface LocalTransaction {
   accountId: string;
   toAccountId?: string;
   note?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface LocalBudget {
@@ -34,6 +61,8 @@ export interface LocalBudget {
   amount: number;
   period: "monthly" | "weekly" | "yearly";
   spent?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface LocalGoal {
@@ -43,6 +72,8 @@ export interface LocalGoal {
   savedAmount: number;
   status: "in_progress" | "reached" | "stalled";
   targetDate?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface LocalMoneyRule {
@@ -53,6 +84,8 @@ export interface LocalMoneyRule {
   categoryId?: string;
   accountId?: string;
   lastFiredAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 const STORAGE_KEYS = {
@@ -66,222 +99,335 @@ const STORAGE_KEYS = {
 };
 
 const DEFAULT_CATEGORIES: LocalCategory[] = [
-  { _id: "cat_food", name: "Food & Dining", type: "expense", color: "#f59e0b", icon: "coffee" },
-  { _id: "cat_groceries", name: "Groceries", type: "expense", color: "#10b981", icon: "shopping-bag" },
-  { _id: "cat_housing", name: "Housing & Rent", type: "expense", color: "#3b82f6", icon: "home" },
-  { _id: "cat_transport", name: "Transport", type: "expense", color: "#8b5cf6", icon: "truck" },
-  { _id: "cat_utilities", name: "Utilities", type: "expense", color: "#ec4899", icon: "zap" },
-  { _id: "cat_entertainment", name: "Entertainment", type: "expense", color: "#06b6d4", icon: "film" },
-  { _id: "cat_shopping", name: "Shopping", type: "expense", color: "#f43f5e", icon: "gift" },
-  { _id: "cat_salary", name: "Salary", type: "income", color: "#10b981", icon: "briefcase" },
-  { _id: "cat_freelance", name: "Freelance", type: "income", color: "#3b82f6", icon: "dollar-sign" },
-  { _id: "cat_investments", name: "Investments", type: "income", color: "#8b5cf6", icon: "trending-up" },
+  { _id: "cat_food", name: "Food & Dining", type: "expense", color: "#f59e0b", icon: "coffee", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { _id: "cat_groceries", name: "Groceries", type: "expense", color: "#10b981", icon: "shopping-bag", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { _id: "cat_housing", name: "Housing & Rent", type: "expense", color: "#3b82f6", icon: "home", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { _id: "cat_transport", name: "Transport", type: "expense", color: "#8b5cf6", icon: "truck", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { _id: "cat_utilities", name: "Utilities", type: "expense", color: "#ec4899", icon: "zap", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { _id: "cat_entertainment", name: "Entertainment", type: "expense", color: "#06b6d4", icon: "film", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { _id: "cat_shopping", name: "Shopping", type: "expense", color: "#f43f5e", icon: "gift", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { _id: "cat_salary", name: "Salary", type: "income", color: "#10b981", icon: "briefcase", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { _id: "cat_freelance", name: "Freelance", type: "income", color: "#3b82f6", icon: "dollar-sign", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { _id: "cat_investments", name: "Investments", type: "income", color: "#8b5cf6", icon: "trending-up", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
 ];
 
 const DEFAULT_ACCOUNTS: LocalAccount[] = [
-  { _id: "acc_cash", name: "Cash Wallet", type: "cash", balance: 0, currency: "USD", icon: "wallet" },
-  { _id: "acc_checking", name: "Main Checking", type: "bank", balance: 0, currency: "USD", icon: "credit-card" },
+  { _id: "acc_cash", name: "Cash Wallet", type: "cash", balance: 0, currency: "USD", icon: "wallet", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { _id: "acc_checking", name: "Main Checking", type: "bank", balance: 0, currency: "USD", icon: "credit-card", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
 ];
 
-// Helper for unique local ID generation
 export function generateLocalId(prefix: string) {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
 }
 
 // 1. Initial Seed Data
 export async function ensureLocalSeedData() {
-  const existingCats = await safeStorage.getItem(STORAGE_KEYS.CATEGORIES);
-  if (!existingCats) {
-    await safeStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(DEFAULT_CATEGORIES));
+  const sqlCats = await sqliteGetCategories();
+  if (sqlCats.length === 0) {
+    for (const c of DEFAULT_CATEGORIES) {
+      await sqliteSaveCategory(c);
+    }
   }
-  const existingAccs = await safeStorage.getItem(STORAGE_KEYS.ACCOUNTS);
-  if (!existingAccs) {
-    await safeStorage.setItem(STORAGE_KEYS.ACCOUNTS, JSON.stringify(DEFAULT_ACCOUNTS));
+
+  const sqlAccs = await sqliteGetAccounts();
+  if (sqlAccs.length === 0) {
+    for (const a of DEFAULT_ACCOUNTS) {
+      await sqliteSaveAccount(a);
+    }
   }
 }
 
-// 2. Categories CRUD
-export async function getLocalCategories(): Promise<LocalCategory[]> {
-  await ensureLocalSeedData();
-  const data = await safeStorage.getItem(STORAGE_KEYS.CATEGORIES);
-  return data ? JSON.parse(data) : DEFAULT_CATEGORIES;
-}
-
-export async function saveLocalCategory(cat: Omit<LocalCategory, "_id"> & { _id?: string }): Promise<LocalCategory> {
-  const list = await getLocalCategories();
-  const id = cat._id || generateLocalId("cat");
-  const newCat: LocalCategory = { ...cat, _id: id };
-  const updated = cat._id ? list.map((c) => (c._id === id ? newCat : c)) : [newCat, ...list];
-  await safeStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(updated));
-  return newCat;
-}
-
-export async function deleteLocalCategory(id: string): Promise<void> {
-  const list = await getLocalCategories();
-  await safeStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(list.filter((c) => c._id !== id)));
-}
-
-// 3. Accounts CRUD
+// ---------------- ACCOUNTS ----------------
 export async function getLocalAccounts(): Promise<LocalAccount[]> {
   await ensureLocalSeedData();
-  const data = await safeStorage.getItem(STORAGE_KEYS.ACCOUNTS);
-  return data ? JSON.parse(data) : DEFAULT_ACCOUNTS;
+  const sql = await sqliteGetAccounts();
+  if (sql.length > 0) return sql;
+
+  const raw = await safeStorage.getItem(STORAGE_KEYS.ACCOUNTS);
+  return raw ? JSON.parse(raw) : DEFAULT_ACCOUNTS;
 }
 
-export async function saveLocalAccount(acc: Omit<LocalAccount, "_id"> & { _id?: string }): Promise<LocalAccount> {
+export async function saveLocalAccount(account: Omit<LocalAccount, "_id"> & { _id?: string }): Promise<LocalAccount> {
   const list = await getLocalAccounts();
-  const id = acc._id || generateLocalId("acc");
-  const newAcc: LocalAccount = { ...acc, _id: id };
-  const updated = acc._id ? list.map((a) => (a._id === id ? newAcc : a)) : [newAcc, ...list];
-  await safeStorage.setItem(STORAGE_KEYS.ACCOUNTS, JSON.stringify(updated));
-  return newAcc;
+  const id = account._id || generateLocalId("acc");
+  const now = new Date().toISOString();
+  const updated: LocalAccount = {
+    _id: id,
+    name: account.name,
+    type: account.type,
+    balance: account.balance,
+    currency: account.currency || "USD",
+    icon: account.icon,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  await sqliteSaveAccount(updated);
+  const next = list.filter((a) => a._id !== id).concat(updated);
+  await safeStorage.setItem(STORAGE_KEYS.ACCOUNTS, JSON.stringify(next));
+  return updated;
 }
 
 export async function deleteLocalAccount(id: string): Promise<void> {
+  await sqliteDeleteAccount(id);
   const list = await getLocalAccounts();
-  await safeStorage.setItem(STORAGE_KEYS.ACCOUNTS, JSON.stringify(list.filter((a) => a._id !== id)));
+  const next = list.filter((a) => a._id !== id);
+  await safeStorage.setItem(STORAGE_KEYS.ACCOUNTS, JSON.stringify(next));
 }
 
-// 4. Transactions CRUD
+// ---------------- CATEGORIES ----------------
+export async function getLocalCategories(): Promise<LocalCategory[]> {
+  await ensureLocalSeedData();
+  const sql = await sqliteGetCategories();
+  if (sql.length > 0) return sql;
+
+  const raw = await safeStorage.getItem(STORAGE_KEYS.CATEGORIES);
+  return raw ? JSON.parse(raw) : DEFAULT_CATEGORIES;
+}
+
+export async function saveLocalCategory(category: Omit<LocalCategory, "_id"> & { _id?: string }): Promise<LocalCategory> {
+  const list = await getLocalCategories();
+  const id = category._id || generateLocalId("cat");
+  const now = new Date().toISOString();
+  const updated: LocalCategory = {
+    _id: id,
+    name: category.name,
+    type: category.type,
+    color: category.color,
+    icon: category.icon,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  await sqliteSaveCategory(updated);
+  const next = list.filter((c) => c._id !== id).concat(updated);
+  await safeStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(next));
+  return updated;
+}
+
+export async function deleteLocalCategory(id: string): Promise<void> {
+  await sqliteDeleteCategory(id);
+  const list = await getLocalCategories();
+  const next = list.filter((c) => c._id !== id);
+  await safeStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(next));
+}
+
+// ---------------- TRANSACTIONS ----------------
 export async function getLocalTransactions(): Promise<LocalTransaction[]> {
-  const data = await safeStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
-  return data ? JSON.parse(data) : [];
+  const sql = await sqliteGetTransactions();
+  if (sql.length > 0) return sql;
+
+  const raw = await safeStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
+  return raw ? JSON.parse(raw) : [];
 }
 
 export async function saveLocalTransaction(tx: Omit<LocalTransaction, "_id"> & { _id?: string }): Promise<LocalTransaction> {
-  const list = await getLocalTransactions();
   const id = tx._id || generateLocalId("tx");
-  const newTx: LocalTransaction = { ...tx, _id: id };
-  const updated = tx._id ? list.map((t) => (t._id === id ? newTx : t)) : [newTx, ...list];
-  await safeStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(updated));
+  const now = new Date().toISOString();
+  const updated: LocalTransaction = {
+    _id: id,
+    type: tx.type,
+    amount: tx.amount,
+    date: tx.date || now,
+    categoryId: tx.categoryId,
+    accountId: tx.accountId,
+    toAccountId: tx.toAccountId,
+    note: tx.note,
+    createdAt: now,
+    updatedAt: now,
+  };
 
-  // Auto-update Account Balances
+  await sqliteSaveTransaction(updated);
+
+  // Update account balance
   const accounts = await getLocalAccounts();
-  const acc = accounts.find((a) => a._id === tx.accountId);
-  if (acc) {
-    if (tx.type === "expense") {
-      acc.balance -= tx.amount;
-    } else if (tx.type === "income") {
-      acc.balance += tx.amount;
+  const targetAcc = accounts.find((a) => a._id === tx.accountId);
+  if (targetAcc) {
+    if (tx.type === "income") {
+      targetAcc.balance += tx.amount;
+    } else if (tx.type === "expense") {
+      targetAcc.balance -= tx.amount;
+    } else if (tx.type === "transfer" && tx.toAccountId) {
+      targetAcc.balance -= tx.amount;
+      const destAcc = accounts.find((a) => a._id === tx.toAccountId);
+      if (destAcc) destAcc.balance += tx.amount;
+    }
+    for (const a of accounts) {
+      await sqliteSaveAccount(a);
     }
     await safeStorage.setItem(STORAGE_KEYS.ACCOUNTS, JSON.stringify(accounts));
   }
 
-  return newTx;
+  const txs = await getLocalTransactions();
+  const nextTxs = [updated, ...txs.filter((t) => t._id !== id)];
+  await safeStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(nextTxs));
+  return updated;
 }
 
 export async function deleteLocalTransaction(id: string): Promise<void> {
-  const list = await getLocalTransactions();
-  await safeStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(list.filter((t) => t._id !== id)));
+  const txs = await getLocalTransactions();
+  const target = txs.find((t) => t._id === id);
+  if (target) {
+    const accounts = await getLocalAccounts();
+    const targetAcc = accounts.find((a) => a._id === target.accountId);
+    if (targetAcc) {
+      if (target.type === "income") targetAcc.balance -= target.amount;
+      if (target.type === "expense") targetAcc.balance += target.amount;
+      for (const a of accounts) {
+        await sqliteSaveAccount(a);
+      }
+      await safeStorage.setItem(STORAGE_KEYS.ACCOUNTS, JSON.stringify(accounts));
+    }
+  }
+
+  await sqliteDeleteTransaction(id);
+  const nextTxs = txs.filter((t) => t._id !== id);
+  await safeStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(nextTxs));
 }
 
-// 5. Budgets CRUD
+// ---------------- BUDGETS ----------------
 export async function getLocalBudgets(): Promise<LocalBudget[]> {
-  const data = await safeStorage.getItem(STORAGE_KEYS.BUDGETS);
-  const budgets: LocalBudget[] = data ? JSON.parse(data) : [];
-  const transactions = await getLocalTransactions();
+  const sql = await sqliteGetBudgets();
+  if (sql.length > 0) return sql;
 
-  // Compute spent per budget category
-  return budgets.map((b) => {
-    const spent = transactions
-      .filter((t) => t.type === "expense" && t.categoryId === b.categoryId)
-      .reduce((sum, t) => sum + t.amount, 0);
-    return { ...b, spent };
-  });
+  const raw = await safeStorage.getItem(STORAGE_KEYS.BUDGETS);
+  return raw ? JSON.parse(raw) : [];
 }
 
 export async function saveLocalBudget(budget: Omit<LocalBudget, "_id"> & { _id?: string }): Promise<LocalBudget> {
   const list = await getLocalBudgets();
-  const id = budget._id || generateLocalId("budget");
-  const newBudget: LocalBudget = { ...budget, _id: id };
-  const updated = budget._id ? list.map((b) => (b._id === id ? newBudget : b)) : [newBudget, ...list];
-  await safeStorage.setItem(STORAGE_KEYS.BUDGETS, JSON.stringify(updated));
-  return newBudget;
+  const id = budget._id || generateLocalId("bgt");
+  const now = new Date().toISOString();
+  const updated: LocalBudget = {
+    _id: id,
+    categoryId: budget.categoryId,
+    amount: budget.amount,
+    period: budget.period,
+    spent: budget.spent || 0,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  await sqliteSaveBudget(updated);
+  const next = list.filter((b) => b._id !== id).concat(updated);
+  await safeStorage.setItem(STORAGE_KEYS.BUDGETS, JSON.stringify(next));
+  return updated;
 }
 
 export async function deleteLocalBudget(id: string): Promise<void> {
+  await sqliteDeleteBudget(id);
   const list = await getLocalBudgets();
-  await safeStorage.setItem(STORAGE_KEYS.BUDGETS, JSON.stringify(list.filter((b) => b._id !== id)));
+  const next = list.filter((b) => b._id !== id);
+  await safeStorage.setItem(STORAGE_KEYS.BUDGETS, JSON.stringify(next));
 }
 
-// 6. Goals CRUD
+// ---------------- GOALS ----------------
 export async function getLocalGoals(): Promise<LocalGoal[]> {
-  const data = await safeStorage.getItem(STORAGE_KEYS.GOALS);
-  return data ? JSON.parse(data) : [];
+  const sql = await sqliteGetGoals();
+  if (sql.length > 0) return sql;
+
+  const raw = await safeStorage.getItem(STORAGE_KEYS.GOALS);
+  return raw ? JSON.parse(raw) : [];
 }
 
 export async function saveLocalGoal(goal: Omit<LocalGoal, "_id"> & { _id?: string }): Promise<LocalGoal> {
   const list = await getLocalGoals();
   const id = goal._id || generateLocalId("goal");
-  const newGoal: LocalGoal = { ...goal, _id: id };
-  const updated = goal._id ? list.map((g) => (g._id === id ? newGoal : g)) : [newGoal, ...list];
-  await safeStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(updated));
-  return newGoal;
+  const now = new Date().toISOString();
+  const updated: LocalGoal = {
+    _id: id,
+    name: goal.name,
+    targetAmount: goal.targetAmount,
+    savedAmount: goal.savedAmount || 0,
+    status: goal.status || "in_progress",
+    targetDate: goal.targetDate,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  await sqliteSaveGoal(updated);
+  const next = list.filter((g) => g._id !== id).concat(updated);
+  await safeStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(next));
+  return updated;
 }
 
 export async function contributeLocalGoal(id: string, amount: number): Promise<LocalGoal> {
-  const list = await getLocalGoals();
-  const goal = list.find((g) => g._id === id);
-  if (!goal) throw new Error("Goal not found");
-  goal.savedAmount += amount;
-  if (goal.savedAmount >= goal.targetAmount) {
-    goal.status = "reached";
+  const goals = await getLocalGoals();
+  const target = goals.find((g) => g._id === id);
+  if (!target) throw new Error("Goal not found");
+  target.savedAmount += amount;
+  if (target.savedAmount >= target.targetAmount) {
+    target.status = "reached";
   }
-  await safeStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(list));
-  return goal;
+  await sqliteSaveGoal(target);
+  await safeStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(goals));
+  return target;
 }
 
 export async function deleteLocalGoal(id: string): Promise<void> {
+  await sqliteDeleteGoal(id);
   const list = await getLocalGoals();
-  await safeStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(list.filter((g) => g._id !== id)));
+  const next = list.filter((g) => g._id !== id);
+  await safeStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(next));
 }
 
-// 7. Money Rules CRUD
+// ---------------- MONEY RULES ----------------
 export async function getLocalMoneyRules(): Promise<LocalMoneyRule[]> {
-  const data = await safeStorage.getItem(STORAGE_KEYS.RULES);
-  return data ? JSON.parse(data) : [];
+  const sql = await sqliteGetMoneyRules();
+  if (sql.length > 0) return sql;
+
+  const raw = await safeStorage.getItem(STORAGE_KEYS.RULES);
+  return raw ? JSON.parse(raw) : [];
 }
 
 export async function saveLocalMoneyRule(rule: Omit<LocalMoneyRule, "_id"> & { _id?: string }): Promise<LocalMoneyRule> {
   const list = await getLocalMoneyRules();
   const id = rule._id || generateLocalId("rule");
-  const newRule: LocalMoneyRule = { ...rule, _id: id };
-  const updated = rule._id ? list.map((r) => (r._id === id ? newRule : r)) : [newRule, ...list];
-  await safeStorage.setItem(STORAGE_KEYS.RULES, JSON.stringify(updated));
-  return newRule;
+  const now = new Date().toISOString();
+  const updated: LocalMoneyRule = {
+    _id: id,
+    type: rule.type,
+    enabled: rule.enabled ?? true,
+    amount: rule.amount,
+    categoryId: rule.categoryId,
+    accountId: rule.accountId,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  await sqliteSaveMoneyRule(updated);
+  const next = list.filter((r) => r._id !== id).concat(updated);
+  await safeStorage.setItem(STORAGE_KEYS.RULES, JSON.stringify(next));
+  return updated;
 }
 
 export async function deleteLocalMoneyRule(id: string): Promise<void> {
+  await sqliteDeleteMoneyRule(id);
   const list = await getLocalMoneyRules();
-  await safeStorage.setItem(STORAGE_KEYS.RULES, JSON.stringify(list.filter((r) => r._id !== id)));
+  const next = list.filter((r) => r._id !== id);
+  await safeStorage.setItem(STORAGE_KEYS.RULES, JSON.stringify(next));
 }
 
-// 8. Overview & Analysis Aggregates for Local Mode
+// ---------------- OVERVIEW & AGGREGATIONS ----------------
 export async function getLocalOverview() {
   const txs = await getLocalTransactions();
   let income = 0;
   let expense = 0;
+
   txs.forEach((t) => {
     if (t.type === "income") income += t.amount;
     if (t.type === "expense") expense += t.amount;
   });
-  return { income, expense, net: income - expense };
+
+  return {
+    income,
+    expense,
+    net: income - expense,
+  };
 }
 
-// 9. Export all local records for cloud migration
-export async function exportAllLocalGuestData() {
-  const [accounts, transactions, budgets, goals, categories] = await Promise.all([
-    getLocalAccounts(),
-    getLocalTransactions(),
-    getLocalBudgets(),
-    getLocalGoals(),
-    getLocalCategories(),
-  ]);
-  return { accounts, transactions, budgets, goals, categories };
-}
-
-// Clear all local guest data
-export async function clearAllLocalGuestData() {
+export async function clearAllLocalGuestData(): Promise<void> {
+  await sqliteClearAll();
   await Promise.all([
     safeStorage.removeItem(STORAGE_KEYS.ACCOUNTS),
     safeStorage.removeItem(STORAGE_KEYS.TRANSACTIONS),
@@ -289,5 +435,28 @@ export async function clearAllLocalGuestData() {
     safeStorage.removeItem(STORAGE_KEYS.GOALS),
     safeStorage.removeItem(STORAGE_KEYS.RULES),
     safeStorage.removeItem(STORAGE_KEYS.CATEGORIES),
+    safeStorage.removeItem("POCKETLY_GUEST_PROFILE"),
+    safeStorage.removeItem("POCKETLY_GUEST_POPUP_SEEN"),
   ]);
+}
+
+export async function exportAllLocalGuestData() {
+  const [accounts, transactions, categories, budgets, goals, rules] =
+    await Promise.all([
+      getLocalAccounts(),
+      getLocalTransactions(),
+      getLocalCategories(),
+      getLocalBudgets(),
+      getLocalGoals(),
+      getLocalMoneyRules(),
+    ]);
+
+  return {
+    accounts,
+    transactions,
+    categories,
+    budgets,
+    goals,
+    rules,
+  };
 }
