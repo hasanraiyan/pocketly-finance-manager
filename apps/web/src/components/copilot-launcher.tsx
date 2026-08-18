@@ -30,6 +30,7 @@ export function CopilotLauncher() {
       starterPrompts={COPILOT_STARTER_PROMPTS}
       showSidebar
       showFilesDrawer
+      showAssistantAvatar={false}
       theme={COPILOT_THEME}
     />
   );

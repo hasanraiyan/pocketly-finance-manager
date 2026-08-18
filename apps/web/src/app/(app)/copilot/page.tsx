@@ -22,6 +22,7 @@ export default function CopilotPage() {
         starterPrompts={COPILOT_STARTER_PROMPTS}
         showSidebar
         showFilesDrawer
+        showAssistantAvatar={false}
         className="h-full w-full"
         theme={COPILOT_THEME}
       />
