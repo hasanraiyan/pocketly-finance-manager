@@ -1,7 +1,7 @@
 import "../global.css";
 
 import { useEffect } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { useFonts, Fraunces_500Medium } from "@expo-google-fonts/fraunces";
 import {
   Inter_400Regular,
@@ -11,13 +11,11 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { OfflineBanner } from "@/components/OfflineBanner";
 import { AuthProvider } from "@/lib/auth-provider";
+import { asyncStoragePersister, queryClient } from "@/lib/query-persister";
 
 SplashScreen.preventAutoHideAsync();
-
-const queryClient = new QueryClient({
-  defaultOptions: { queries: { staleTime: 30_000 } },
-});
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -38,11 +36,15 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister: asyncStoragePersister, maxAge: 1000 * 60 * 60 * 24 * 7 }}
+    >
+      <AuthProvider>
         <StatusBar style="dark" />
+        <OfflineBanner />
         <Slot />
-      </QueryClientProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </PersistQueryClientProvider>
   );
 }
