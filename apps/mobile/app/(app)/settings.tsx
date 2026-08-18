@@ -477,7 +477,7 @@ export default function SettingsScreen() {
                         <Pressable
                           onPress={() => handleAddCategory("expense")}
                           hitSlop={6}
-                          className="flex-row items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-1.5 shrink-0 active:opacity-75"
+                          className="flex-row items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 shrink-0 active:opacity-75"
                         >
                           <Feather name="plus" size={13} color={theme.primary} />
                           <Text className="text-xs font-semibold text-primary">
@@ -486,41 +486,39 @@ export default function SettingsScreen() {
                         </Pressable>
                       </View>
 
-                      <View className="flex-row flex-wrap gap-2.5">
-                        {expenseCategories.map((cat) => (
-                          <Pressable
-                            key={cat._id}
-                            onPress={() => handleEditCategory(cat)}
-                            className="flex-row items-center gap-2 rounded-xl bg-card border border-border px-3.5 py-2 active:opacity-75 shadow-xs"
-                          >
-                            <View
-                              style={{ backgroundColor: cat.color ?? theme.primary }}
-                              className="h-2.5 w-2.5 rounded-full shrink-0"
-                            />
-                            <Text
-                              numberOfLines={1}
-                              className="text-xs font-medium text-foreground max-w-[150px]"
-                            >
-                              {cat.name}
-                            </Text>
+                      {expenseCategories.length === 0 ? (
+                        <Text className="text-xs text-muted-foreground italic py-1">
+                          No expense categories added yet.
+                        </Text>
+                      ) : (
+                        <View className="flex-row flex-wrap gap-2">
+                          {expenseCategories.map((cat) => (
                             <Pressable
-                              onPress={() => handleDeleteCategory(cat)}
-                              hitSlop={8}
-                              className="ml-1 shrink-0 p-0.5"
+                              key={cat._id}
+                              onPress={() => handleEditCategory(cat)}
+                              className="flex-row items-center gap-2 rounded-xl bg-card border border-border px-3 py-2 active:opacity-75 shadow-2xs"
                             >
-                              <Feather name="x" size={12} color={theme.mutedForeground} />
+                              <View
+                                style={{ backgroundColor: cat.color ?? theme.primary }}
+                                className="h-2.5 w-2.5 rounded-full shrink-0"
+                              />
+                              <Text
+                                numberOfLines={1}
+                                className="text-xs font-medium text-foreground max-w-[150px]"
+                              >
+                                {cat.name}
+                              </Text>
+                              <Pressable
+                                onPress={() => handleDeleteCategory(cat)}
+                                hitSlop={8}
+                                className="ml-0.5 shrink-0 p-0.5"
+                              >
+                                <Feather name="x" size={12} color={theme.mutedForeground} />
+                              </Pressable>
                             </Pressable>
-                          </Pressable>
-                        ))}
-
-                        <Pressable
-                          onPress={() => handleAddCategory("expense")}
-                          className="flex-row items-center gap-1.5 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-3.5 py-2 active:opacity-75"
-                        >
-                          <Feather name="plus" size={13} color={theme.primary} />
-                          <Text className="text-xs font-medium text-primary">New</Text>
-                        </Pressable>
-                      </View>
+                          ))}
+                        </View>
+                      )}
                     </View>
 
                     {/* Income Categories Section */}
@@ -532,7 +530,7 @@ export default function SettingsScreen() {
                         <Pressable
                           onPress={() => handleAddCategory("income")}
                           hitSlop={6}
-                          className="flex-row items-center gap-1 rounded-lg bg-positive/10 px-2.5 py-1.5 shrink-0 active:opacity-75"
+                          className="flex-row items-center gap-1.5 rounded-lg bg-positive/10 px-3 py-1.5 shrink-0 active:opacity-75"
                         >
                           <Feather name="plus" size={13} color={theme.positive} />
                           <Text className="text-xs font-semibold text-positive">
@@ -541,41 +539,39 @@ export default function SettingsScreen() {
                         </Pressable>
                       </View>
 
-                      <View className="flex-row flex-wrap gap-2.5">
-                        {incomeCategories.map((cat) => (
-                          <Pressable
-                            key={cat._id}
-                            onPress={() => handleEditCategory(cat)}
-                            className="flex-row items-center gap-2 rounded-xl bg-card border border-border px-3.5 py-2 active:opacity-75 shadow-xs"
-                          >
-                            <View
-                              style={{ backgroundColor: cat.color ?? theme.positive }}
-                              className="h-2.5 w-2.5 rounded-full shrink-0"
-                            />
-                            <Text
-                              numberOfLines={1}
-                              className="text-xs font-medium text-foreground max-w-[150px]"
-                            >
-                              {cat.name}
-                            </Text>
+                      {incomeCategories.length === 0 ? (
+                        <Text className="text-xs text-muted-foreground italic py-1">
+                          No income categories added yet.
+                        </Text>
+                      ) : (
+                        <View className="flex-row flex-wrap gap-2">
+                          {incomeCategories.map((cat) => (
                             <Pressable
-                              onPress={() => handleDeleteCategory(cat)}
-                              hitSlop={8}
-                              className="ml-1 shrink-0 p-0.5"
+                              key={cat._id}
+                              onPress={() => handleEditCategory(cat)}
+                              className="flex-row items-center gap-2 rounded-xl bg-card border border-border px-3 py-2 active:opacity-75 shadow-2xs"
                             >
-                              <Feather name="x" size={12} color={theme.mutedForeground} />
+                              <View
+                                style={{ backgroundColor: cat.color ?? theme.positive }}
+                                className="h-2.5 w-2.5 rounded-full shrink-0"
+                              />
+                              <Text
+                                numberOfLines={1}
+                                className="text-xs font-medium text-foreground max-w-[150px]"
+                              >
+                                {cat.name}
+                              </Text>
+                              <Pressable
+                                onPress={() => handleDeleteCategory(cat)}
+                                hitSlop={8}
+                                className="ml-0.5 shrink-0 p-0.5"
+                              >
+                                <Feather name="x" size={12} color={theme.mutedForeground} />
+                              </Pressable>
                             </Pressable>
-                          </Pressable>
-                        ))}
-
-                        <Pressable
-                          onPress={() => handleAddCategory("income")}
-                          className="flex-row items-center gap-1.5 rounded-xl border border-dashed border-positive/40 bg-positive/5 px-3.5 py-2 active:opacity-75"
-                        >
-                          <Feather name="plus" size={13} color={theme.positive} />
-                          <Text className="text-xs font-medium text-positive">New</Text>
-                        </Pressable>
-                      </View>
+                          ))}
+                        </View>
+                      )}
                     </View>
                   </CardContent>
                 </Card>
