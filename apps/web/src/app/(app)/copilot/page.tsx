@@ -1,9 +1,31 @@
 "use client";
 
 import { PersonaChatView } from "@personaai/ui";
+import type { PersonaCustomTheme } from "@personaai/ui";
 import { useAuth } from "@/lib/auth-provider";
 
 const AGENT_ID = "6a83ea6bb3d55db9792763a6";
+
+// Every value here is a reference into Pocketly's own CSS custom properties
+// (see globals.css), not a literal color -- @personaai/ui's --persona-* vars
+// become indirections into ours, so they pick up our light/dark toggling for
+// free instead of needing separate light/dark values here.
+const PERSONA_THEME: PersonaCustomTheme = {
+  primaryColor: "var(--primary)",
+  backgroundColor: "var(--background)",
+  cardBackgroundColor: "var(--card)",
+  textColor: "var(--foreground)",
+  mutedTextColor: "var(--muted-foreground)",
+  borderColor: "var(--border)",
+  userMessageBg: "var(--primary)",
+  userMessageText: "var(--primary-foreground)",
+  assistantMessageBg: "var(--card)",
+  assistantMessageText: "var(--card-foreground)",
+  userAvatarBg: "var(--secondary)",
+  userAvatarText: "var(--secondary-foreground)",
+  assistantAvatarBg: "var(--accent)",
+  assistantAvatarText: "var(--accent-foreground)",
+};
 
 const STARTER_PROMPTS = [
   {
@@ -47,6 +69,7 @@ export default function CopilotPage() {
         showSidebar
         showFilesDrawer
         className="h-full w-full"
+        theme={PERSONA_THEME}
       />
     </div>
   );
