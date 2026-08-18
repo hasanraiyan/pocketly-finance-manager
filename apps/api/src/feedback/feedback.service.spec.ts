@@ -54,6 +54,7 @@ describe('FeedbackService', () => {
       mockFeedbackModel.create.mockResolvedValue(createdDoc);
 
       const result = await service.create(mockUser, {
+        type: 'feature_request',
         category: 'feature_request',
         title: 'Dark mode improvements',
         description: 'Please add high-contrast dark theme',

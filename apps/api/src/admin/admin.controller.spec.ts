@@ -98,7 +98,7 @@ describe('AdminController', () => {
         targetId: 'user1',
       }),
     );
-    expect(result.role).toBe('admin');
+    expect(result?.role).toBe('admin');
   });
 
   it('rejects an admin changing their own role', async () => {
