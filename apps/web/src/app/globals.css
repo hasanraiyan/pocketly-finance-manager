@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+/* @personaai/ui 0.4.0+ renders LaTeX (PersonaMarkdown, via rehype-katex) but
+   ships no CSS of its own -- without KaTeX's stylesheet the math has no
+   font/positioning rules and renders as broken, unstyled fallback text. */
+@import "katex/dist/katex.min.css";
 
 /* Tailwind v4's automatic content detection skips node_modules, so without
    this, @personaai/ui's own Tailwind classes (used inside its pre-built
