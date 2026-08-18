@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { encodeIdCursor } from '../common/pagination/id-cursor';
+import { decodeIdCursor, encodeIdCursor } from '../common/pagination/id-cursor';
 import {
   AdminAuditLog,
   AdminAuditLogDocument,
@@ -40,6 +40,9 @@ export class AdminAuditLogService {
     const filter: Record<string, any> = {};
     if (query.action) {
       filter.action = query.action;
+    }
+    if (query.cursor) {
+      filter._id = { $lt: decodeIdCursor(query.cursor) };
     }
 
     const limit = query.limit ?? 50;

@@ -3794,7 +3794,7 @@ export interface operations {
         parameters: {
             query?: {
                 limit?: number;
-                offset?: number;
+                cursor?: string;
                 type?: "feedback" | "feature_request";
                 category?: "general" | "bug" | "feature_request" | "ux_ui" | "financial_intelligence" | "mcp" | "other";
                 status?: "submitted" | "under_review" | "planned" | "in_progress" | "shipped" | "rejected";
@@ -3867,7 +3867,7 @@ export interface operations {
         parameters: {
             query?: {
                 limit?: number;
-                offset?: number;
+                cursor?: string;
                 action?: string;
             };
             header?: never;
@@ -3890,7 +3890,7 @@ export interface operations {
         parameters: {
             query?: {
                 limit?: number;
-                offset?: number;
+                cursor?: string;
                 search?: string;
             };
             header?: never;

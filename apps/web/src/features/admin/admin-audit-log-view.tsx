@@ -8,86 +8,122 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import { formatDate } from "@/lib/format";
-import { useAdminAuditLogs } from "./hooks";
+import { useAdminAuditLogs, useLoadMoreAdminAuditLogs } from "./hooks";
 
 export function AdminAuditLogView() {
-  const { data, isLoading } = useAdminAuditLogs({ limit: 50 });
+  const { data, isLoading } = useAdminAuditLogs();
+  const loadMore = useLoadMoreAdminAuditLogs({});
   const items = data?.items ?? [];
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-base font-semibold">
-                Security & Administrative Audit Trail
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Immutable record of administrative changes, status updates, and role modifications
-              </CardDescription>
-            </div>
-            <ShieldAlert className="size-4 text-primary" />
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-base font-semibold">
+              Security & Administrative Audit Trail
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Immutable record of administrative changes, status updates, and role modifications
+            </CardDescription>
           </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Skeleton key={i} className="h-16 w-full rounded-lg" />
-              ))}
-            </div>
-          ) : items.length === 0 ? (
-            <div className="rounded-lg border border-dashed p-8 text-center text-xs text-muted-foreground">
-              No administrative audit entries logged yet.
-            </div>
-          ) : (
-            <div className="divide-y divide-border">
-              {items.map((log) => (
-                <div
-                  key={log._id}
-                  className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
+          <ShieldAlert className="size-4 text-primary" />
+        </div>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="space-y-3">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Skeleton key={i} className="h-10 w-full rounded-lg" />
+            ))}
+          </div>
+        ) : items.length === 0 ? (
+          <div className="rounded-lg border border-dashed p-8 text-center text-xs text-muted-foreground">
+            No administrative audit entries logged yet.
+          </div>
+        ) : (
+          <>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Action</TableHead>
+                  <TableHead>Target</TableHead>
+                  <TableHead>Admin</TableHead>
+                  <TableHead>IP</TableHead>
+                  <TableHead>Details</TableHead>
+                  <TableHead className="text-right">When</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {items.map((log) => (
+                  <TableRow key={log._id}>
+                    <TableCell>
                       <Badge variant="outline" className="font-mono text-2xs uppercase">
                         {log.action}
                       </Badge>
-                      <span className="font-medium text-foreground">
-                        Target: {log.targetType} ({log.targetId.slice(-6)})
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3 text-2xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {log.targetType} <span className="font-mono">({log.targetId.slice(-6)})</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="flex items-center gap-1 text-muted-foreground">
                         <User className="size-3" />
                         {log.adminEmail}
                       </span>
-                      {log.ip && (
-                        <span className="flex items-center gap-1 font-mono">
+                    </TableCell>
+                    <TableCell className="font-mono text-muted-foreground">
+                      {log.ip ? (
+                        <span className="flex items-center gap-1">
                           <Terminal className="size-3" />
                           {log.ip}
                         </span>
+                      ) : (
+                        "—"
                       )}
-                    </div>
-                    {Object.keys(log.details || {}).length > 0 && (
-                      <div className="font-mono text-2xs bg-muted/60 px-2 py-1 rounded max-w-lg truncate">
-                        {JSON.stringify(log.details)}
-                      </div>
-                    )}
-                  </div>
+                    </TableCell>
+                    <TableCell className="max-w-xs truncate font-mono text-2xs text-muted-foreground">
+                      {Object.keys(log.details || {}).length > 0
+                        ? JSON.stringify(log.details)
+                        : "—"}
+                    </TableCell>
+                    <TableCell className="text-right whitespace-nowrap text-muted-foreground">
+                      {formatDate(log.createdAt)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
 
-                  <div className="text-2xs text-muted-foreground font-mono shrink-0 sm:text-right">
-                    {formatDate(log.createdAt)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+            {data?.nextCursor && (
+              <div className="flex justify-center pt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => loadMore.mutate(data.nextCursor as string)}
+                  disabled={loadMore.isPending}
+                  className="gap-1.5 text-xs"
+                >
+                  {loadMore.isPending && <Spinner className="size-3.5" />}
+                  Load more
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }

@@ -5,7 +5,11 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { encodeIdCursor } from '../common/pagination/id-cursor';
+import { decodeIdCursor, encodeIdCursor } from '../common/pagination/id-cursor';
+import {
+  decodeUpvoteCursor,
+  encodeUpvoteCursor,
+} from '../common/pagination/upvote-cursor';
 import type { UserDocument } from '../users/schemas/user.schema';
 import {
   AdminFeedbackQueryDto,
@@ -211,8 +215,28 @@ export class FeedbackService {
       ];
     }
 
-    const sort: Record<string, 1 | -1> =
-      query.sortBy === 'upvotes' ? { upvoteCount: -1, _id: -1 } : { _id: -1 };
+    const sortByUpvotes = query.sortBy === 'upvotes';
+    const sort: Record<string, 1 | -1> = sortByUpvotes
+      ? { upvoteCount: -1, _id: -1 }
+      : { _id: -1 };
+
+    if (query.cursor) {
+      if (sortByUpvotes) {
+        const { upvoteCount, id } = decodeUpvoteCursor(query.cursor);
+        // A separate key from the search `$or` above, which this needs to
+        // combine with via AND, not replace.
+        filter.$and = [
+          {
+            $or: [
+              { upvoteCount: { $lt: upvoteCount } },
+              { upvoteCount, _id: { $lt: id } },
+            ],
+          },
+        ];
+      } else {
+        filter._id = { $lt: decodeIdCursor(query.cursor) };
+      }
+    }
 
     const limit = query.limit ?? 20;
 
@@ -225,8 +249,11 @@ export class FeedbackService {
 
     const hasMore = items.length > limit;
     const page = hasMore ? items.slice(0, limit) : items;
+    const last = page[page.length - 1];
     const nextCursor = hasMore
-      ? encodeIdCursor(page[page.length - 1]._id)
+      ? sortByUpvotes
+        ? encodeUpvoteCursor(last)
+        : encodeIdCursor(last._id)
       : null;
 
     return {

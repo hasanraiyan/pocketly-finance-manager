@@ -51,6 +51,7 @@ import {
   useAdminFeedbackList,
   useAdminUpdateFeedback,
   useAdminDeleteFeedback,
+  useLoadMoreAdminFeedback,
   type AdminFeedbackItem,
 } from "./hooks";
 
@@ -90,11 +91,13 @@ export function AdminFeedbackView() {
   const updateMutation = useAdminUpdateFeedback();
   const deleteMutation = useAdminDeleteFeedback();
 
-  const { data, isLoading } = useAdminFeedbackList({
+  const filters = {
     category: category === "all" ? undefined : category,
     status: status === "all" ? undefined : status,
     search: search.trim() || undefined,
-  });
+  };
+  const { data, isLoading } = useAdminFeedbackList(filters);
+  const loadMore = useLoadMoreAdminFeedback(filters);
 
   const items = data?.items ?? [];
 
@@ -306,6 +309,21 @@ export function AdminFeedbackView() {
               </Card>
             );
           })}
+        </div>
+      )}
+
+      {data?.nextCursor && (
+        <div className="flex justify-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => loadMore.mutate(data.nextCursor as string)}
+            disabled={loadMore.isPending}
+            className="gap-1.5 text-xs"
+          >
+            {loadMore.isPending && <Loader2 className="size-3.5 animate-spin" />}
+            Load more
+          </Button>
         </div>
       )}
 

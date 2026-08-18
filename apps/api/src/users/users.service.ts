@@ -12,6 +12,7 @@ import {
   CategoryDocument,
 } from '../categories/schemas/category.schema';
 import { Goal, GoalDocument } from '../goals/schemas/goal.schema';
+import { decodeIdCursor, encodeIdCursor } from '../common/pagination/id-cursor';
 import {
   Transaction,
   TransactionDocument,
@@ -95,13 +96,20 @@ export class UsersService {
     await this.userModel.deleteOne({ _id: user._id });
   }
 
-  async findAllUsers(query: { limit?: number; search?: string }) {
+  async findAllUsers(query: {
+    limit?: number;
+    cursor?: string;
+    search?: string;
+  }) {
     const filter: Record<string, any> = {};
     if (query.search) {
       filter.$or = [
         { name: { $regex: query.search, $options: 'i' } },
         { email: { $regex: query.search, $options: 'i' } },
       ];
+    }
+    if (query.cursor) {
+      filter._id = { $lt: decodeIdCursor(query.cursor) };
     }
     const limit = query.limit ?? 50;
     const items = await this.userModel
@@ -113,7 +121,7 @@ export class UsersService {
     const hasMore = items.length > limit;
     const page = hasMore ? items.slice(0, limit) : items;
     const nextCursor = hasMore
-      ? Buffer.from(page[page.length - 1]._id.toString()).toString('base64url')
+      ? encodeIdCursor(page[page.length - 1]._id)
       : null;
 
     return { items: page, nextCursor };

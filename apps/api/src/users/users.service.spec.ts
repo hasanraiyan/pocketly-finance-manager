@@ -164,4 +164,58 @@ describe('UsersService', () => {
     expect(persisted?.currency).toBe('INR');
     expect(persisted?.timezone).toBe('Asia/Kolkata');
   });
+
+  it('findAllUsers pages through results via cursor with no overlap or gaps', async () => {
+    const created: UserDocument[] = [];
+    for (let i = 0; i < 5; i++) {
+      // Sequential, not parallel -- ids must be created in order for the
+      // newest-first cursor assertions below to be meaningful.
+      created.push(
+        await userModel.create({
+          email: `cursor-${i}@b.com`,
+          passwordHash: 'hash',
+          name: `Cursor User ${i}`,
+        }),
+      );
+    }
+    const createdIds = created.map((u) => u._id.toString());
+
+    const firstPage = await usersService.findAllUsers({
+      limit: 2,
+      search: 'cursor-',
+    });
+    expect(firstPage.items).toHaveLength(2);
+    expect(firstPage.nextCursor).not.toBeNull();
+    // Newest first (sorted by _id descending), matching creation order reversed.
+    expect(firstPage.items.map((u) => u._id.toString())).toEqual(
+      [...createdIds].reverse().slice(0, 2),
+    );
+
+    const secondPage = await usersService.findAllUsers({
+      limit: 2,
+      search: 'cursor-',
+      cursor: firstPage.nextCursor!,
+    });
+    expect(secondPage.items).toHaveLength(2);
+    expect(secondPage.nextCursor).not.toBeNull();
+    expect(secondPage.items.map((u) => u._id.toString())).toEqual(
+      [...createdIds].reverse().slice(2, 4),
+    );
+    // No overlap between pages -- the bug this guards against previously
+    // returned the exact same first page every time, since `cursor` was
+    // never applied to the query.
+    const firstIds = new Set(firstPage.items.map((u) => u._id.toString()));
+    for (const item of secondPage.items) {
+      expect(firstIds.has(item._id.toString())).toBe(false);
+    }
+
+    const thirdPage = await usersService.findAllUsers({
+      limit: 2,
+      search: 'cursor-',
+      cursor: secondPage.nextCursor!,
+    });
+    expect(thirdPage.items).toHaveLength(1);
+    expect(thirdPage.nextCursor).toBeNull();
+    expect(thirdPage.items[0]._id.toString()).toBe(createdIds[0]);
+  });
 });

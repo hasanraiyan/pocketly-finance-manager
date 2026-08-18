@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Shield, ShieldCheck, Mail, Calendar } from "lucide-react";
+import { Search, Shield, ShieldCheck } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -9,9 +9,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Spinner } from "@/components/ui/spinner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +38,7 @@ import { useUserProfile } from "@/features/settings/hooks";
 import {
   useAdminUsers,
   useAdminUpdateUserRole,
+  useLoadMoreAdminUsers,
 } from "./hooks";
 
 export function AdminUsersView() {
@@ -38,8 +49,10 @@ export function AdminUsersView() {
     currentRole: "user" | "admin";
   } | null>(null);
 
-  const { data, isLoading } = useAdminUsers({ search: search.trim() || undefined });
+  const filters = { search: search.trim() || undefined };
+  const { data, isLoading } = useAdminUsers(filters);
   const { data: currentUser } = useUserProfile();
+  const loadMore = useLoadMoreAdminUsers(filters);
   const updateRoleMutation = useAdminUpdateUserRole();
   const items = data?.items ?? [];
 
@@ -81,7 +94,7 @@ export function AdminUsersView() {
           {isLoading ? (
             <div className="space-y-3">
               {[1, 2, 3, 4, 5].map((i) => (
-                <Skeleton key={i} className="h-14 w-full rounded-lg" />
+                <Skeleton key={i} className="h-12 w-full rounded-lg" />
               ))}
             </div>
           ) : items.length === 0 ? (
@@ -89,79 +102,103 @@ export function AdminUsersView() {
               No users found matching your search.
             </div>
           ) : (
-            <div className="divide-y divide-border">
-              {items.map((user) => {
-                const isAdmin = user.role === "admin";
-                const isSelf = user._id === currentUser?._id;
-                return (
-                  <div
-                    key={user._id}
-                    className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="size-8 rounded-full bg-muted flex items-center justify-center font-semibold text-muted-foreground shrink-0">
-                        {user.name ? user.name[0].toUpperCase() : "U"}
-                      </div>
-                      <div className="space-y-0.5">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-foreground">{user.name}</span>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>User</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Joined</TableHead>
+                    <TableHead className="text-right">Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {items.map((user) => {
+                    const isAdmin = user.role === "admin";
+                    const isSelf = user._id === currentUser?._id;
+                    return (
+                      <TableRow key={user._id}>
+                        <TableCell>
+                          <div className="flex items-center gap-2.5">
+                            <Avatar className="size-7 shrink-0">
+                              <AvatarFallback className="text-2xs">
+                                {user.name ? user.name[0].toUpperCase() : "U"}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0">
+                              <div className="truncate font-medium text-foreground">
+                                {user.name}
+                              </div>
+                              <div className="truncate text-2xs text-muted-foreground">
+                                {user.email}
+                              </div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
                           <Badge
                             variant={isAdmin ? "default" : "outline"}
                             className="text-2xs uppercase tracking-wider"
                           >
                             {user.role}
                           </Badge>
-                        </div>
-                        <div className="flex items-center gap-3 text-2xs text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Mail className="size-3" />
-                            {user.email}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Calendar className="size-3" />
-                            Joined {formatDate(user.createdAt)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap text-muted-foreground">
+                          {formatDate(user.createdAt)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {isSelf ? (
+                            <Badge variant="outline" className="text-2xs">
+                              This is you
+                            </Badge>
+                          ) : (
+                            <Button
+                              variant={isAdmin ? "outline" : "secondary"}
+                              size="sm"
+                              onClick={() =>
+                                setUserToPromote({
+                                  id: user._id,
+                                  email: user.email,
+                                  currentRole: user.role,
+                                })
+                              }
+                              className="h-8 gap-1.5 text-xs"
+                            >
+                              {isAdmin ? (
+                                <>
+                                  <Shield className="size-3 text-muted-foreground" />
+                                  <span>Demote to User</span>
+                                </>
+                              ) : (
+                                <>
+                                  <ShieldCheck className="size-3 text-primary" />
+                                  <span>Promote to Admin</span>
+                                </>
+                              )}
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
 
-                    {isSelf ? (
-                      <Badge
-                        variant="outline"
-                        className="text-2xs self-end sm:self-auto"
-                      >
-                        This is you
-                      </Badge>
-                    ) : (
-                      <Button
-                        variant={isAdmin ? "outline" : "secondary"}
-                        size="sm"
-                        onClick={() =>
-                          setUserToPromote({
-                            id: user._id,
-                            email: user.email,
-                            currentRole: user.role,
-                          })
-                        }
-                        className="h-8 gap-1.5 text-xs self-end sm:self-auto"
-                      >
-                        {isAdmin ? (
-                          <>
-                            <Shield className="size-3 text-muted-foreground" />
-                            <span>Demote to User</span>
-                          </>
-                        ) : (
-                          <>
-                            <ShieldCheck className="size-3 text-primary" />
-                            <span>Promote to Admin</span>
-                          </>
-                        )}
-                      </Button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+              {data?.nextCursor && (
+                <div className="flex justify-center pt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => loadMore.mutate(data.nextCursor as string)}
+                    disabled={loadMore.isPending}
+                    className="gap-1.5 text-xs"
+                  >
+                    {loadMore.isPending && <Spinner className="size-3.5" />}
+                    Load more
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
