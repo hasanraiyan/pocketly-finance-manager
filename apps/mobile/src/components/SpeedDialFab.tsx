@@ -11,7 +11,6 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TransactionModal } from "@/features/transactions/TransactionModal";
 import type { Transaction } from "@/features/transactions/hooks";
-import { theme } from "@/lib/theme";
 
 export function SpeedDialFab() {
   const insets = useSafeAreaInsets();
@@ -45,20 +44,29 @@ export function SpeedDialFab() {
           onPress={() => setIsOpen((prev) => !prev)}
           hitSlop={14}
           style={({ pressed }) => [
-            styles.fabButton,
+            styles.fabButtonOuter,
             {
-              backgroundColor: isOpen ? "#1c251d" : "#0d3b1e",
-              borderColor: isOpen ? "#4ade80" : "#22c55e",
+              backgroundColor: isOpen ? "#1e293b" : "#10b981",
+              borderColor: isOpen ? "#475569" : "#059669",
               opacity: pressed ? 0.9 : 1,
               transform: [{ scale: pressed ? 0.94 : 1 }],
             },
           ]}
         >
-          <Feather
-            name={isOpen ? "x" : "plus"}
-            size={28}
-            color="#ffffff"
-          />
+          <View
+            style={[
+              styles.fabInnerCircle,
+              {
+                backgroundColor: isOpen ? "#0f172a" : "#047857",
+              },
+            ]}
+          >
+            <Feather
+              name={isOpen ? "x" : "plus"}
+              size={26}
+              color="#ffffff"
+            />
+          </View>
         </Pressable>
       </View>
 
@@ -138,11 +146,13 @@ export function SpeedDialFab() {
               <Pressable
                 onPress={() => setIsOpen(false)}
                 style={[
-                  styles.fabButton,
-                  { backgroundColor: "#1c251d", borderColor: "#4ade80", marginTop: 4 },
+                  styles.fabButtonOuter,
+                  { backgroundColor: "#1e293b", borderColor: "#475569", marginTop: 4 },
                 ]}
               >
-                <Feather name="x" size={28} color="#ffffff" />
+                <View style={[styles.fabInnerCircle, { backgroundColor: "#0f172a" }]}>
+                  <Feather name="x" size={26} color="#ffffff" />
+                </View>
               </Pressable>
             </View>
           </View>
@@ -163,20 +173,28 @@ const styles = StyleSheet.create({
   fabWrapper: {
     position: "absolute",
     zIndex: 99999,
-    elevation: 25,
+    elevation: 30,
   },
-  fabButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+  fabButtonOuter: {
+    width: 62,
+    height: 62,
+    borderRadius: 31,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.45,
     shadowRadius: 10,
-    elevation: 16,
+    elevation: 20,
     borderWidth: 2,
+    padding: 3,
+  },
+  fabInnerCircle: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
   },
   backdrop: {
     flex: 1,
