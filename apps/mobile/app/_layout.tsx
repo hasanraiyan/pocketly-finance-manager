@@ -1,7 +1,7 @@
 import "../global.css";
 
 import { useEffect } from "react";
-import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { useFonts, Fraunces_500Medium } from "@expo-google-fonts/fraunces";
 import {
   Inter_400Regular,
@@ -13,7 +13,7 @@ import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { AuthProvider } from "@/lib/auth-provider";
-import { asyncStoragePersister, queryClient } from "@/lib/query-persister";
+import { queryClient } from "@/lib/query-persister";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,15 +36,12 @@ export default function RootLayout() {
   }
 
   return (
-    <PersistQueryClientProvider
-      client={queryClient}
-      persistOptions={{ persister: asyncStoragePersister, maxAge: 1000 * 60 * 60 * 24 * 7 }}
-    >
+    <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <StatusBar style="dark" />
         <OfflineBanner />
         <Slot />
       </AuthProvider>
-    </PersistQueryClientProvider>
+    </QueryClientProvider>
   );
 }

@@ -29,6 +29,17 @@ export function Button({
     ghost: "text-foreground",
   };
 
+  const renderChild = (child: React.ReactNode, index?: number): React.ReactNode => {
+    if (typeof child === "string" || typeof child === "number") {
+      return (
+        <Text key={index} className={`text-sm font-medium ${textVariants[variant]}`}>
+          {child}
+        </Text>
+      );
+    }
+    return child;
+  };
+
   return (
     <Pressable
       disabled={disabled || loading}
@@ -41,13 +52,9 @@ export function Button({
           color={variant === "default" ? theme.primaryForeground : theme.foreground}
         />
       )}
-      {typeof children === "string" || typeof children === "number" ? (
-        <Text className={`text-sm font-medium ${textVariants[variant]}`}>
-          {children}
-        </Text>
-      ) : (
-        children
-      )}
+      {Array.isArray(children)
+        ? children.map((c, i) => renderChild(c, i))
+        : renderChild(children)}
     </Pressable>
   );
 }

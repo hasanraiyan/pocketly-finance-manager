@@ -1,21 +1,42 @@
 import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import * as Notifications from "expo-notifications";
+import Constants, { ExecutionEnvironment } from "expo-constants";
 import type { components } from "@pocketly/sdk";
 import { usePocketlyClient } from "@/lib/api-client";
 
-// Configure how notifications appear when app is in foreground
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    priority: Notifications.AndroidNotificationPriority.HIGH,
-  }),
-});
+// Safely obtain the expo-notifications module only in non-Expo-Go environments
+function getNotificationsModule() {
+  try {
+    // Remote notifications are permanently disabled from Expo Go in SDK 53+
+    if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+      return null;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require("expo-notifications");
+  } catch {
+    return null;
+  }
+}
+
+// Configure how notifications appear when app is in foreground (in standalone APK)
+const Notifications = getNotificationsModule();
+if (Notifications && typeof Notifications.setNotificationHandler === "function") {
+  try {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldShowBanner: true,
+        shouldShowList: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+        priority: Notifications.AndroidNotificationPriority?.HIGH ?? 4,
+      }),
+    });
+  } catch {
+    // Safe ignore in development environments
+  }
+}
 
 export type NotificationItem =
   components["schemas"]["NotificationListDto"]["data"]["items"][number];
@@ -108,22 +129,30 @@ export function usePushNotificationSetup() {
     let isMounted = true;
 
     async function registerForPush() {
+      const notifs = getNotificationsModule();
+      if (!notifs) {
+        return;
+      }
+
       try {
-        if (Platform.OS === "android") {
-          await Notifications.setNotificationChannelAsync("default", {
+        if (Platform.OS === "android" && notifs.setNotificationChannelAsync) {
+          await notifs.setNotificationChannelAsync("default", {
             name: "Pocketly Financial Alerts",
-            importance: Notifications.AndroidImportance.MAX,
+            importance: notifs.AndroidImportance?.MAX ?? 5,
             vibrationPattern: [0, 250, 250, 250],
             lightColor: "#10b981",
-          });
+          }).catch(() => {});
         }
 
-        const { status: existingStatus } =
-          await Notifications.getPermissionsAsync();
+        if (!notifs.getPermissionsAsync) {
+          return;
+        }
+
+        const { status: existingStatus } = await notifs.getPermissionsAsync();
         let finalStatus = existingStatus;
 
         if (existingStatus !== "granted") {
-          const { status } = await Notifications.requestPermissionsAsync();
+          const { status } = await notifs.requestPermissionsAsync();
           finalStatus = status;
         }
 
@@ -135,9 +164,9 @@ export function usePushNotificationSetup() {
         if (isMounted) setPermissionGranted(true);
 
         // Get device push token
-        const tokenData = await Notifications.getDevicePushTokenAsync().catch(
+        const tokenData = await notifs.getDevicePushTokenAsync().catch(
           async () => {
-            return await Notifications.getExpoPushTokenAsync().catch(() => null);
+            return await notifs.getExpoPushTokenAsync().catch(() => null);
           },
         );
 

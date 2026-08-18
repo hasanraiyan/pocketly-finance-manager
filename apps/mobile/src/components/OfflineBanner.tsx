@@ -2,12 +2,12 @@ import React from "react";
 import { Feather } from "@expo/vector-icons";
 import { useNetInfo } from "@react-native-community/netinfo";
 import { Text, View } from "react-native";
-import { theme } from "@/lib/theme";
 
 export function OfflineBanner() {
   const netInfo = useNetInfo();
   const isOffline =
-    netInfo.isConnected === false || netInfo.isInternetReachable === false;
+    Boolean(netInfo) &&
+    (netInfo.isConnected === false || netInfo.isInternetReachable === false);
 
   if (!isOffline) {
     return null;
