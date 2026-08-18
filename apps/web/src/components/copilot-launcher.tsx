@@ -28,10 +28,11 @@ export function CopilotLauncher() {
       title="Financial Copilot"
       greeting={`Good to see you, ${firstName}. How can I help with your finances today?`}
       starterPrompts={COPILOT_STARTER_PROMPTS}
-      showSidebar
+      showSidebar={false}
       showFilesDrawer
       showAssistantAvatar={false}
       theme={COPILOT_THEME}
+      fabClassName="size-14 shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
     />
   );
 }
