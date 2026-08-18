@@ -53,7 +53,7 @@ export function SpeedDialFab() {
             ]}
           >
             <View style={styles.mainFabInner}>
-              <Feather name="plus" size={28} color="#ffffff" />
+              <Feather name="plus" size={34} color="#ffffff" />
             </View>
           </Pressable>
         </View>
@@ -128,7 +128,7 @@ export function SpeedDialFab() {
                   },
                 ]}
               >
-                <Feather name="x" size={26} color="#ffffff" />
+                <Feather name="x" size={28} color="#ffffff" />
               </Pressable>
             </View>
           </View>
@@ -151,28 +151,28 @@ const styles = StyleSheet.create({
     zIndex: 99999,
     elevation: 30,
   },
-  // Main FAB (+) in closed state
+  // Main FAB (+) in closed state (Spacious 72px)
   mainFab: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     backgroundColor: "#10b981",
     borderWidth: 2.5,
     borderColor: "#059669",
     alignItems: "center",
     justifyContent: "center",
-    padding: 3,
+    padding: 4,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 16,
+    shadowOpacity: 0.45,
+    shadowRadius: 10,
+    elevation: 20,
     overflow: "hidden",
   },
   mainFabInner: {
     width: "100%",
     height: "100%",
-    borderRadius: 28,
+    borderRadius: 32,
     backgroundColor: "#047857",
     alignItems: "center",
     justifyContent: "center",
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#0f172a",
   },
-  // Sub-action buttons (decreased to 48px)
+  // Sub-action buttons (compact 48px)
   subFab: {
     width: 48,
     height: 48,
@@ -229,11 +229,11 @@ const styles = StyleSheet.create({
     elevation: 8,
     flexShrink: 0,
   },
-  // Close Button (Fixed 56px circle - will NOT stretch)
+  // Close Button (Fixed 60px circle)
   closeFab: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: "#0f172a",
     borderWidth: 2,
     borderColor: "#334155",
