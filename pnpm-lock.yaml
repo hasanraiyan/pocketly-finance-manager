@@ -317,8 +317,11 @@ importers:
         specifier: ^16.3.1
         version: 16.3.1(@mdx-js/loader@3.1.1(webpack@5.106.2))(@mdx-js/react@3.1.1(@types/react@19.2.18)(react@19.2.8))
       '@personaai/react':
-        specifier: 0.1.0
-        version: 0.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        specifier: ^0.2.0
+        version: 0.2.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@personaai/ui':
+        specifier: ^0.2.1
+        version: 0.2.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@pocketly/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
@@ -2457,8 +2460,8 @@ packages:
       rxjs:
         optional: true
 
-  '@personaai/react@0.1.0':
-    resolution: {integrity: sha512-2Ue/XY5oCTtIIjXil3F8zrgxEI2+e2d7dMmIzeyB2oahYjIupHhPF1YBe3gH0q1HKHQghdh+G75pUuuoO70roA==}
+  '@personaai/react@0.2.0':
+    resolution: {integrity: sha512-DvVmgPEkranfGNmrWEZyNxgiNCypTm42rfj1Q3S8apG8FxPPU3feuCPePXyJ/a4dw/vFIcj6p4Vk6qusotXMpg==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=18.0.0'
@@ -2471,6 +2474,13 @@ packages:
   '@personaai/sdk@0.4.1':
     resolution: {integrity: sha512-WAGDxX5d8swWikEytcV87uqIE+7ZBGmDDfY2LuLTgyrd6Hi9DhoMG/z/kxDmdMNb4V7aMz6Lf06dT/u8uKkLqQ==}
     engines: {node: '>=18'}
+
+  '@personaai/ui@0.2.1':
+    resolution: {integrity: sha512-JQoRtn8TBsTFtlD6ZVtbfbM2CmWxSs6PIWJDNofkowDRGjRRrHWOqgKTs0Z9CpCeAdIWjjO4KXXrzGdYnjsfvg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -12239,7 +12249,7 @@ snapshots:
       reflect-metadata: 0.2.2
       rxjs: 7.8.2
 
-  '@personaai/react@0.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+  '@personaai/react@0.2.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
@@ -12252,6 +12262,15 @@ snapshots:
   '@personaai/sdk@0.4.1':
     dependencies:
       '@ag-ui/core': 0.0.57
+
+  '@personaai/ui@0.2.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@personaai/react': 0.2.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      clsx: 2.1.1
+      lucide-react: 1.31.0(react@19.2.8)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      tailwind-merge: 3.6.0
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
