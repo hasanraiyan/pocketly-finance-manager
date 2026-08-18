@@ -35,6 +35,8 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1', {
     exclude: [
       { path: 'mcp', method: RequestMethod.ALL },
+      { path: 'api/persona', method: RequestMethod.ALL },
+      { path: 'api/persona/(.*)', method: RequestMethod.ALL },
       { path: '.well-known/(.*)', method: RequestMethod.ALL },
     ],
   });
