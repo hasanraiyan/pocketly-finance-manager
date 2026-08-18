@@ -63,7 +63,14 @@ export class WellKnownController {
       response_types_supported: ['code'],
       grant_types_supported: ['authorization_code'],
       code_challenge_methods_supported: ['S256', 'plain'],
-      token_endpoint_auth_methods_supported: ['none'],
+      // 'none' is the common case (PKCE-only, no secret); a client that
+      // asks for client_secret_basic/client_secret_post at registration
+      // gets a real secret instead -- see OAuthService.registerClient.
+      token_endpoint_auth_methods_supported: [
+        'none',
+        'client_secret_basic',
+        'client_secret_post',
+      ],
     };
   }
 }

@@ -44,9 +44,31 @@ function mcpAudience(): string {
 }
 
 /**
+ * client_secret_basic (RFC 6749 §2.3.1): `Authorization: Basic
+ * base64(client_id:client_secret)`. Only the secret half is used here --
+ * OAuthService.authenticateClient checks it against the body's client_id,
+ * so a mismatched id in the header just fails that lookup naturally rather
+ * than needing a second explicit check.
+ */
+function extractBasicAuthSecret(req: Request): string | undefined {
+  const header = req.headers.authorization;
+  if (!header?.startsWith('Basic ')) return undefined;
+  const decoded = Buffer.from(header.slice('Basic '.length), 'base64').toString('utf8');
+  const separatorIndex = decoded.indexOf(':');
+  if (separatorIndex === -1) return undefined;
+  return decoded.slice(separatorIndex + 1);
+}
+
+/**
  * Pocketly's own OAuth 2.1 authorization server for MCP clients (Claude,
- * ChatGPT, etc.) -- Dynamic Client Registration, PKCE-only authorization
- * code flow, and token issuance, replacing the Clerk-hosted equivalent.
+ * ChatGPT, etc.) -- Dynamic Client Registration, PKCE authorization code
+ * flow (mandatory for every client, public or confidential -- see
+ * OAuthService.exchangeCodeForToken), and token issuance, replacing the
+ * Clerk-hosted equivalent. Public (`none`) clients are the common case and
+ * need nothing beyond PKCE; a client that registers with
+ * `token_endpoint_auth_method: client_secret_basic` or `client_secret_post`
+ * additionally gets a real secret and must present it on every token
+ * request (OAuthService.authenticateClient).
  * `/oauth2/authorize` and `/oauth2/token` are the two endpoints a spec MCP
  * client discovers via `.well-known/oauth-authorization-server`
  * (`well-known.controller.ts`) and calls directly; `/oauth2/consent` is
@@ -167,11 +189,16 @@ export class OAuthController {
   @RawResponse()
   @Post('token')
   @HttpCode(HttpStatus.OK)
-  token(@Body() dto: TokenBodyDto) {
+  token(@Body() dto: TokenBodyDto, @Req() req: Request) {
     return this.oauth.exchangeCodeForToken({
       code: dto.code,
       clientId: dto.client_id,
       codeVerifier: dto.code_verifier,
+      // client_secret_basic sends it via Authorization: Basic <base64(id:secret)>;
+      // client_secret_post sends it as a body field instead. A public client
+      // sends neither, so both resolve to undefined and authenticateClient
+      // treats that client as unauthenticated-by-design (PKCE-only).
+      clientSecret: dto.client_secret ?? extractBasicAuthSecret(req),
       issuer: apiBaseUrl(),
       audience: mcpAudience(),
     });

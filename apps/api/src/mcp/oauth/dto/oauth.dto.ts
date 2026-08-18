@@ -8,6 +8,14 @@ export const registerClientSchema = z.object({
   grant_types: z.array(z.string()).optional(),
   response_types: z.array(z.string()).optional(),
   scope: z.string().optional(),
+  // 'none' (PKCE-only, no stored secret) or a confidential method
+  // ('client_secret_basic'/'client_secret_post', issued a real secret).
+  // Omitted defaults to 'none' -- the common case (Claude and most MCP
+  // clients register with no auth method at all) stays a public client
+  // exactly as before this field existed.
+  token_endpoint_auth_method: z
+    .enum(['none', 'client_secret_basic', 'client_secret_post'])
+    .optional(),
 });
 
 export const authorizeQuerySchema = z.object({
@@ -36,6 +44,10 @@ export const tokenBodySchema = z.object({
   client_id: z.string().min(1),
   code_verifier: z.string().min(1),
   redirect_uri: z.string().url().optional(),
+  // client_secret_post clients send the secret here; client_secret_basic
+  // clients send it via the Authorization header instead (see
+  // OAuthController.token, which reads both and passes whichever is set).
+  client_secret: z.string().optional(),
 });
 
 export const consentResponseSchema = z.object({ url: z.string() });

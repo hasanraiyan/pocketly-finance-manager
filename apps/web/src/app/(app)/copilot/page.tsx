@@ -1,58 +1,12 @@
 "use client";
 
 import { PersonaChatView } from "@personaai/ui";
-import type { PersonaCustomTheme } from "@personaai/ui";
 import { useAuth } from "@/lib/auth-provider";
-
-const AGENT_ID = "6a83ea6bb3d55db9792763a6";
-
-// Every value here is a reference into Pocketly's own CSS custom properties
-// (see globals.css), not a literal color -- @personaai/ui's --persona-* vars
-// become indirections into ours, so they pick up our light/dark toggling for
-// free instead of needing separate light/dark values here.
-const PERSONA_THEME: PersonaCustomTheme = {
-  primaryColor: "var(--primary)",
-  backgroundColor: "var(--background)",
-  cardBackgroundColor: "var(--card)",
-  textColor: "var(--foreground)",
-  mutedTextColor: "var(--muted-foreground)",
-  borderColor: "var(--border)",
-  userMessageBg: "var(--primary)",
-  userMessageText: "var(--primary-foreground)",
-  assistantMessageBg: "var(--card)",
-  assistantMessageText: "var(--card-foreground)",
-  userAvatarBg: "var(--secondary)",
-  userAvatarText: "var(--secondary-foreground)",
-  assistantAvatarBg: "var(--accent)",
-  assistantAvatarText: "var(--accent-foreground)",
-};
-
-const STARTER_PROMPTS = [
-  {
-    title: "Safe-to-Spend",
-    prompt:
-      "What is my current safe-to-spend balance and how much runway do I have left for discretionary spending this week?",
-    icon: "🛡️",
-  },
-  {
-    title: "Spending Breakdown",
-    prompt:
-      "Analyze my top spending categories for this month. Where did most of my money go?",
-    icon: "📊",
-  },
-  {
-    title: "Budget 50/30/20",
-    prompt:
-      "Based on my income and spending habits, suggest realistic 50/30/20 budget adjustments.",
-    icon: "🎯",
-  },
-  {
-    title: "Subscriptions",
-    prompt:
-      "List all my upcoming recurring bills and subscriptions due this week.",
-    icon: "🔄",
-  },
-];
+import {
+  COPILOT_AGENT_ID,
+  COPILOT_STARTER_PROMPTS,
+  COPILOT_THEME,
+} from "@/lib/persona-config";
 
 export default function CopilotPage() {
   const { user } = useAuth();
@@ -62,14 +16,14 @@ export default function CopilotPage() {
     // Expand to fill the (app) layout shell completely, with no padding
     <div className="flex h-full w-full overflow-hidden">
       <PersonaChatView
-        agentId={AGENT_ID}
+        agentId={COPILOT_AGENT_ID}
         title="Financial Copilot"
         greeting={`Good to see you, ${firstName}. How can I help with your finances today?`}
-        starterPrompts={STARTER_PROMPTS}
+        starterPrompts={COPILOT_STARTER_PROMPTS}
         showSidebar
         showFilesDrawer
         className="h-full w-full"
-        theme={PERSONA_THEME}
+        theme={COPILOT_THEME}
       />
     </div>
   );

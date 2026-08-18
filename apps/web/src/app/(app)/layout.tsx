@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/get-session";
 import { AppContent } from "@/components/app-content";
 import { AppSidebar } from "@/components/app-sidebar";
+import { CopilotLauncher } from "@/components/copilot-launcher";
 import { PageHeaderTitle } from "@/components/page-header-title";
 import {
   SidebarInset,
@@ -46,6 +47,7 @@ export default async function AppLayout({
         </header>
         <AppContent>{children}</AppContent>
       </SidebarInset>
+      <CopilotLauncher />
     </SidebarProvider>
   );
 }

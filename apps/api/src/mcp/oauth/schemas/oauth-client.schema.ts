@@ -29,6 +29,14 @@ export class OAuthClient {
   @Prop({ type: [String], default: [] })
   scope!: string[];
 
+  /**
+   * sha256 hex digest of the client secret, or null for a public (PKCE-only,
+   * `none`) client. Never store the raw secret -- it's returned to the
+   * caller exactly once, at registration, same as an authorization code.
+   */
+  @Prop({ type: String, default: null })
+  clientSecretHash!: string | null;
+
   createdAt!: Date;
   updatedAt!: Date;
 }

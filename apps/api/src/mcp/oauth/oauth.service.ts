@@ -44,8 +44,17 @@ export class OAuthService {
     grant_types?: string[];
     response_types?: string[];
     scope?: string;
+    token_endpoint_auth_method?: string;
   }) {
     const clientId = `mcp_${this.tokens.generateToken(16)}`;
+    const isConfidential =
+      params.token_endpoint_auth_method === 'client_secret_basic' ||
+      params.token_endpoint_auth_method === 'client_secret_post';
+
+    // Issued once, at registration -- like an authorization code, only the
+    // hash is ever persisted, so this is the caller's only chance to see it.
+    const rawSecret = isConfidential ? this.tokens.generateToken(32) : null;
+
     const client = await this.clientModel.create({
       clientId,
       clientName: params.client_name ?? 'MCP Client',
@@ -53,6 +62,7 @@ export class OAuthService {
       grantTypes: params.grant_types ?? ['authorization_code'],
       responseTypes: params.response_types ?? ['code'],
       scope: params.scope ? params.scope.split(' ') : DEFAULT_MCP_SCOPES,
+      clientSecretHash: rawSecret ? this.tokens.hashToken(rawSecret) : null,
     });
 
     return {
@@ -62,6 +72,14 @@ export class OAuthService {
       grant_types: client.grantTypes,
       response_types: client.responseTypes,
       scope: client.scope.join(' '),
+      token_endpoint_auth_method: isConfidential
+        ? params.token_endpoint_auth_method
+        : 'none',
+      // RFC 7591 §3.2.1: present (even if only to declare non-expiry) only
+      // for a confidential client -- a public client has no secret to expire.
+      ...(isConfidential
+        ? { client_secret: rawSecret, client_secret_expires_at: 0 }
+        : {}),
     };
   }
 
@@ -131,9 +149,12 @@ export class OAuthService {
     code: string;
     clientId: string;
     codeVerifier: string;
+    clientSecret?: string;
     issuer: string;
     audience: string;
   }) {
+    await this.authenticateClient(params.clientId, params.clientSecret);
+
     const codeHash = this.tokens.hashToken(params.code);
     const oauthCode = await this.codeModel
       .findOne({ codeHash, clientId: params.clientId })
@@ -178,6 +199,40 @@ export class OAuthService {
       expires_in: 3600,
       scope,
     };
+  }
+
+  /**
+   * A confidential client (registered with a secret) must present it on
+   * every token request; a public client (PKCE-only, `none`) has none to
+   * present and PKCE alone is its proof of possession -- verifyPkce above
+   * still runs unconditionally for both, matching OAuth 2.1's recommendation
+   * to require PKCE regardless of client type.
+   */
+  private async authenticateClient(
+    clientId: string,
+    clientSecret?: string,
+  ): Promise<void> {
+    const client = await this.getClient(clientId);
+    if (!client) {
+      throw new UnauthorizedException('Unknown client_id');
+    }
+
+    if (!client.clientSecretHash) return;
+
+    if (!clientSecret) {
+      throw new UnauthorizedException(
+        'This client is registered as confidential and must authenticate with its client_secret',
+      );
+    }
+
+    if (
+      !this.tokens.timingSafeEqual(
+        this.tokens.hashToken(clientSecret),
+        client.clientSecretHash,
+      )
+    ) {
+      throw new UnauthorizedException('Invalid client_secret');
+    }
   }
 
   private verifyPkce(
