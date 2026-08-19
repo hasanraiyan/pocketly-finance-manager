@@ -99,7 +99,7 @@ export function useUpdateAccount() {
           name: input.name || "Account",
           type: input.type || "bank",
           balance: Number(input.initialBalance) || 0,
-          currency: input.currency || "USD",
+          currency: input.currency || "INR",
           icon: input.icon,
         });
         return saved as unknown as Account;

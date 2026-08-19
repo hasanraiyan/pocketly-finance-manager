@@ -150,6 +150,7 @@ export function useCreateTransaction(filters: TransactionFilters = {}) {
         items: [transaction, ...(old?.items ?? [])],
         nextCursor: old?.nextCursor ?? null,
       }));
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ACCOUNTS_KEY });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },

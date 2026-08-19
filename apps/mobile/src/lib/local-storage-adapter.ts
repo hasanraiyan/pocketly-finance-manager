@@ -112,40 +112,48 @@ const DEFAULT_CATEGORIES: LocalCategory[] = [
   { _id: "cat_investments", name: "Investments", type: "income", color: "#8b5cf6", icon: "trending-up", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
 ];
 
-const DEFAULT_ACCOUNTS: LocalAccount[] = [
-  { _id: "acc_cash", name: "Cash Wallet", type: "cash", balance: 0, currency: "USD", icon: "wallet", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-  { _id: "acc_checking", name: "Main Checking", type: "bank", balance: 0, currency: "USD", icon: "credit-card", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-];
+const DEFAULT_ACCOUNTS: LocalAccount[] = [];
 
 export function generateLocalId(prefix: string) {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
 }
 
-// 1. Initial Seed Data
+// 1. Initial Seed Data (Only standard categories, no forced mock accounts)
 export async function ensureLocalSeedData() {
   const sqlCats = await sqliteGetCategories();
   if (sqlCats.length === 0) {
-    for (const c of DEFAULT_CATEGORIES) {
-      await sqliteSaveCategory(c);
-    }
-  }
-
-  const sqlAccs = await sqliteGetAccounts();
-  if (sqlAccs.length === 0) {
-    for (const a of DEFAULT_ACCOUNTS) {
-      await sqliteSaveAccount(a);
+    const raw = await safeStorage.getItem(STORAGE_KEYS.CATEGORIES);
+    const existing = raw ? JSON.parse(raw) : [];
+    if (existing.length > 0) {
+      for (const c of existing) {
+        await sqliteSaveCategory(c);
+      }
+    } else {
+      for (const c of DEFAULT_CATEGORIES) {
+        await sqliteSaveCategory(c);
+      }
+      await safeStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(DEFAULT_CATEGORIES));
     }
   }
 }
 
 // ---------------- ACCOUNTS ----------------
 export async function getLocalAccounts(): Promise<LocalAccount[]> {
-  await ensureLocalSeedData();
   const sql = await sqliteGetAccounts();
-  if (sql.length > 0) return sql;
+  if (sql.length > 0) {
+    await safeStorage.setItem(STORAGE_KEYS.ACCOUNTS, JSON.stringify(sql));
+    return sql;
+  }
 
   const raw = await safeStorage.getItem(STORAGE_KEYS.ACCOUNTS);
-  return raw ? JSON.parse(raw) : DEFAULT_ACCOUNTS;
+  if (raw) {
+    const parsed: LocalAccount[] = JSON.parse(raw);
+    for (const a of parsed) {
+      await sqliteSaveAccount(a);
+    }
+    return parsed;
+  }
+  return [];
 }
 
 export async function saveLocalAccount(account: Omit<LocalAccount, "_id"> & { _id?: string }): Promise<LocalAccount> {
@@ -157,7 +165,7 @@ export async function saveLocalAccount(account: Omit<LocalAccount, "_id"> & { _i
     name: account.name,
     type: account.type,
     balance: account.balance,
-    currency: account.currency || "USD",
+    currency: account.currency || "INR",
     icon: account.icon,
     createdAt: now,
     updatedAt: now,

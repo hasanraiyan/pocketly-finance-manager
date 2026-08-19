@@ -1,4 +1,4 @@
-import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 
 // In-memory fallback
@@ -13,7 +13,7 @@ export const safeStorage = {
         }
         return memoryStore.get(key) ?? null;
       }
-      return await SecureStore.getItemAsync(key);
+      return await AsyncStorage.getItem(key);
     } catch {
       return memoryStore.get(key) ?? null;
     }
@@ -29,7 +29,7 @@ export const safeStorage = {
         memoryStore.set(key, value);
         return;
       }
-      await SecureStore.setItemAsync(key, value);
+      await AsyncStorage.setItem(key, value);
     } catch {
       memoryStore.set(key, value);
     }
@@ -45,7 +45,7 @@ export const safeStorage = {
         memoryStore.delete(key);
         return;
       }
-      await SecureStore.deleteItemAsync(key);
+      await AsyncStorage.removeItem(key);
     } catch {
       memoryStore.delete(key);
     }
