@@ -124,7 +124,7 @@ export default function AccountsScreen() {
       </View>
 
       <ScrollView
-        contentContainerClassName="items-center px-4 md:px-8 py-6 pb-32"
+        contentContainerClassName="items-center px-3.5 sm:px-6 py-4 pb-32"
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
@@ -133,7 +133,7 @@ export default function AccountsScreen() {
           />
         }
       >
-        <View className="w-full max-w-5xl gap-6">
+        <View className="w-full max-w-5xl gap-4">
           {isLoading && !isRefetching ? (
             <AccountsSkeleton />
           ) : isError ? (
@@ -167,10 +167,10 @@ export default function AccountsScreen() {
               <Button onPress={handleAddAccount}>Add First Account</Button>
             </View>
           ) : (
-            <View className="gap-6">
+            <View className="gap-4">
               {/* Net Worth Hero Card */}
               <Card className="bg-card border border-border/80">
-                <CardContent className="gap-2">
+                <CardContent className="p-4 gap-2">
                   <View className="flex-row items-center justify-between">
                     <Text className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                       Total Net Worth
@@ -179,7 +179,11 @@ export default function AccountsScreen() {
                       <Feather name="trending-up" size={14} color={theme.primary} />
                     </View>
                   </View>
-                  <Text className="font-mono text-3xl font-bold tracking-tight text-foreground">
+                  <Text
+                    className="font-mono text-2xl sm:text-3xl font-bold tracking-tight text-foreground tabular-nums"
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
                     {formatCurrency(netWorth, defaultCurrency)}
                   </Text>
                   <Text className="text-xs text-muted-foreground">

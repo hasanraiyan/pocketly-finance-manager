@@ -366,7 +366,7 @@ export default function DashboardScreen() {
       </View>
 
       <ScrollView
-        contentContainerClassName="items-center px-4 md:px-8 py-5 pb-32"
+        contentContainerClassName="items-center px-3.5 sm:px-6 py-4 pb-32"
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
@@ -375,7 +375,7 @@ export default function DashboardScreen() {
           />
         }
       >
-        <View className="w-full max-w-5xl gap-5">
+        <View className="w-full max-w-5xl gap-4">
           {isLoading && !isRefetching ? (
             <DashboardSkeleton />
           ) : isError || !data ? (
@@ -415,7 +415,7 @@ export default function DashboardScreen() {
                       </Pressable>
                     </View>
 
-                    <ProgressBar value={completedSteps} max={checklist.length} />
+                    <ProgressBar value={completedSteps} max={checklist.length} adaptiveColor />
 
                     <View className="flex-col md:flex-row gap-2 mt-1">
                       {checklist.map((step) => (
@@ -465,11 +465,11 @@ export default function DashboardScreen() {
 
               {/* 2. Web-matching Safe to Spend Hero Emerald Card */}
               {Boolean(data.safeToSpend) && (
-                <View className="w-full rounded-3xl bg-primary p-6 md:p-8 shadow-sm">
-                  <View className="flex-col gap-5">
+                <View className="w-full rounded-3xl bg-primary p-5 sm:p-6 md:p-8 shadow-sm">
+                  <View className="flex-col gap-4 sm:gap-5">
                     {/* Header Label */}
                     <View className="flex-row items-center justify-between">
-                      <View className="gap-1">
+                      <View className="gap-1 flex-1 pr-2">
                         <Text className="text-[11px] font-bold uppercase tracking-wider text-primary-foreground/75">
                           Safe to Spend
                         </Text>
@@ -477,13 +477,17 @@ export default function DashboardScreen() {
                           Your balance, after bills, budgets and goals still to come.
                         </Text>
                       </View>
-                      <View className="h-8 w-8 items-center justify-center rounded-full bg-primary-foreground/10">
+                      <View className="h-8 w-8 items-center justify-center rounded-full bg-primary-foreground/10 shrink-0">
                         <Feather name="shield" size={15} color={theme.primaryForeground} />
                       </View>
                     </View>
 
                     {/* Big Amount */}
-                    <Text className="font-heading text-4xl md:text-5xl font-bold tracking-tight text-primary-foreground tabular-nums">
+                    <Text
+                      className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-primary-foreground tabular-nums"
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                    >
                       {formatCurrency(data.safeToSpend.amount, data.currency)}
                     </Text>
 
@@ -497,33 +501,33 @@ export default function DashboardScreen() {
                     )}
 
                     {/* Deductions Breakdown */}
-                    <View className="gap-2 border-t border-primary-foreground/15 pt-4">
-                      <View className="flex-row justify-between items-center">
-                        <Text className="text-xs text-primary-foreground/70">
+                    <View className="gap-2 border-t border-primary-foreground/15 pt-3">
+                      <View className="flex-row justify-between items-center gap-2">
+                        <Text className="text-xs text-primary-foreground/70 flex-1" numberOfLines={1}>
                           Total Balance
                         </Text>
-                        <Text className="font-mono text-xs font-semibold text-primary-foreground tabular-nums">
+                        <Text className="font-mono text-xs font-semibold text-primary-foreground tabular-nums shrink-0">
                           {formatCurrency(data.safeToSpend.totalBalance, data.currency)}
                         </Text>
                       </View>
 
                       {data.safeToSpend.expectedIncome > 0 && (
-                        <View className="flex-row justify-between items-center">
-                          <Text className="text-xs text-primary-foreground/70">
+                        <View className="flex-row justify-between items-center gap-2">
+                          <Text className="text-xs text-primary-foreground/70 flex-1" numberOfLines={1}>
                             Still coming in
                           </Text>
-                          <Text className="font-mono text-xs font-semibold text-emerald-300 tabular-nums">
+                          <Text className="font-mono text-xs font-semibold text-emerald-300 tabular-nums shrink-0">
                             +{formatCurrency(data.safeToSpend.expectedIncome, data.currency)}
                           </Text>
                         </View>
                       )}
 
                       {data.safeToSpend.deductions.map((d) => (
-                        <View key={d.key} className="flex-row justify-between items-center">
-                          <Text className="text-xs text-primary-foreground/70">
+                        <View key={d.key} className="flex-row justify-between items-center gap-2">
+                          <Text className="text-xs text-primary-foreground/70 flex-1" numberOfLines={1}>
                             {d.label}
                           </Text>
-                          <Text className="font-mono text-xs font-semibold text-rose-300 tabular-nums">
+                          <Text className="font-mono text-xs font-semibold text-rose-300 tabular-nums shrink-0">
                             -{formatCurrency(d.amount, data.currency)}
                           </Text>
                         </View>
@@ -577,11 +581,11 @@ export default function DashboardScreen() {
               )}
 
               {/* 3. Two-Column Grid: Balance & Intelligence */}
-              <View className="flex-col md:flex-row gap-5">
+              <View className="flex-col md:flex-row gap-4">
                 {/* Left Column: Total Balance & Cash Flow Ribbon */}
-                <View className="flex-1 gap-5">
+                <View className="flex-1 gap-4">
                   <Card className="bg-card border border-border/80">
-                    <CardContent className="gap-4">
+                    <CardContent className="p-4 gap-3.5">
                       <View className="flex-row items-center justify-between">
                         <Text className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                           Total Balance
@@ -591,7 +595,11 @@ export default function DashboardScreen() {
                         </Text>
                       </View>
 
-                      <Text className="font-mono text-3xl font-bold tracking-tight text-foreground">
+                      <Text
+                        className="font-mono text-2xl sm:text-3xl font-bold tracking-tight text-foreground"
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                      >
                         {formatCurrency(data.totalBalance, data.currency)}
                       </Text>
 
@@ -601,7 +609,7 @@ export default function DashboardScreen() {
                           <Text className="text-[10px] uppercase font-medium text-muted-foreground">
                             Income
                           </Text>
-                          <Text className="font-mono text-xs font-bold text-positive mt-0.5">
+                          <Text className="font-mono text-xs font-bold text-positive mt-0.5 tabular-nums">
                             +{formatCurrency(data.overview?.income ?? 0, data.currency)}
                           </Text>
                         </View>
@@ -610,7 +618,7 @@ export default function DashboardScreen() {
                           <Text className="text-[10px] uppercase font-medium text-muted-foreground">
                             Expenses
                           </Text>
-                          <Text className="font-mono text-xs font-bold text-negative mt-0.5">
+                          <Text className="font-mono text-xs font-bold text-negative mt-0.5 tabular-nums">
                             -{formatCurrency(data.overview?.expense ?? 0, data.currency)}
                           </Text>
                         </View>
@@ -620,7 +628,7 @@ export default function DashboardScreen() {
                             Net Flow
                           </Text>
                           <Text
-                            className={`font-mono text-xs font-bold mt-0.5 ${
+                            className={`font-mono text-xs font-bold mt-0.5 tabular-nums ${
                               (data.overview?.net ?? 0) >= 0
                                 ? "text-positive"
                                 : "text-negative"
@@ -637,17 +645,17 @@ export default function DashboardScreen() {
                   {/* 4. Health Score Card */}
                   {Boolean(data.health) && (
                     <Card className="bg-card border border-border/80">
-                      <CardContent className="gap-4">
+                      <CardContent className="p-4 gap-3.5">
                         <View className="flex-row items-center justify-between">
-                          <View>
+                          <View className="flex-1 pr-2">
                             <Text className="text-sm font-semibold text-foreground">
                               Pocketly Health Score
                             </Text>
-                            <Text className="text-xs text-muted-foreground mt-0.5">
+                            <Text className="text-xs text-muted-foreground mt-0.5" numberOfLines={1}>
                               {HEALTH_BAND_COPY[data.health!.band] ?? "Financial wellness reading"}
                             </Text>
                           </View>
-                          <View className="h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
+                          <View className="h-8 w-8 items-center justify-center rounded-xl bg-primary/10 shrink-0">
                             <Feather name="activity" size={16} color={theme.primary} />
                           </View>
                         </View>
@@ -672,7 +680,7 @@ export default function DashboardScreen() {
                                   {comp.score}%
                                 </Text>
                               </View>
-                              <ProgressBar value={comp.score} max={100} />
+                              <ProgressBar value={comp.score} max={100} adaptiveColor />
                               <Text className="text-[10px] text-muted-foreground">
                                 {comp.reason}
                               </Text>
@@ -686,7 +694,7 @@ export default function DashboardScreen() {
                   {/* 5. Forecast Card */}
                   {Boolean(data.forecast) && (
                     <Card className="bg-card border border-border/80">
-                      <CardContent className="gap-3.5">
+                      <CardContent className="p-4 gap-3">
                         <View className="flex-row items-center justify-between">
                           <View className="flex-row items-center gap-2">
                             <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
@@ -702,26 +710,30 @@ export default function DashboardScreen() {
                           Your repeats on their own dates, plus your average daily spend held flat for the rest of the month.
                         </Text>
 
-                        <Text className="font-mono text-2xl font-bold text-foreground">
+                        <Text
+                          className="font-mono text-2xl font-bold text-foreground"
+                          numberOfLines={1}
+                          adjustsFontSizeToFit
+                        >
                           {formatCurrency(data.forecast!.projectedBalance, data.currency)}
                         </Text>
 
                         <View className="gap-1.5 pt-2 border-t border-border/60">
-                          <View className="flex-row justify-between items-center">
-                            <Text className="text-xs text-muted-foreground">Coming in</Text>
-                            <Text className="font-mono text-xs text-positive font-semibold">
+                          <View className="flex-row justify-between items-center gap-2">
+                            <Text className="text-xs text-muted-foreground flex-1" numberOfLines={1}>Coming in</Text>
+                            <Text className="font-mono text-xs text-positive font-semibold shrink-0 tabular-nums">
                               +{formatCurrency(data.forecast!.projectedIncome, data.currency)}
                             </Text>
                           </View>
-                          <View className="flex-row justify-between items-center">
-                            <Text className="text-xs text-muted-foreground">Repeats going out</Text>
-                            <Text className="font-mono text-xs text-negative font-semibold">
+                          <View className="flex-row justify-between items-center gap-2">
+                            <Text className="text-xs text-muted-foreground flex-1" numberOfLines={1}>Repeats going out</Text>
+                            <Text className="font-mono text-xs text-negative font-semibold shrink-0 tabular-nums">
                               -{formatCurrency(data.forecast!.projectedExpense, data.currency)}
                             </Text>
                           </View>
-                          <View className="flex-row justify-between items-center">
-                            <Text className="text-xs text-muted-foreground">Everything else, usual rate</Text>
-                            <Text className="font-mono text-xs text-muted-foreground font-semibold">
+                          <View className="flex-row justify-between items-center gap-2">
+                            <Text className="text-xs text-muted-foreground flex-1" numberOfLines={1}>Everything else, usual rate</Text>
+                            <Text className="font-mono text-xs text-muted-foreground font-semibold shrink-0 tabular-nums">
                               {formatCurrency(data.forecast!.projectedDiscretionary, data.currency)}
                             </Text>
                           </View>
@@ -732,10 +744,10 @@ export default function DashboardScreen() {
                 </View>
 
                 {/* Right Column: Budgets, Goals & Recent Records */}
-                <View className="flex-1 gap-5">
+                <View className="flex-1 gap-4">
                   {/* Monthly Budgets */}
                   <Card>
-                    <CardContent className="gap-3.5">
+                    <CardContent className="p-4 gap-3.5">
                       <View className="flex-row items-center justify-between">
                         <View className="flex-row items-center gap-2">
                           <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
@@ -763,20 +775,21 @@ export default function DashboardScreen() {
                           </Text>
                         </View>
                       ) : (
-                        <View className="gap-3">
+                        <View className="gap-2.5">
                           {data.budgets.slice(0, 4).map((b) => {
                             const catName =
                               categoryMap.get(b.categoryId)?.name ?? "Category";
                             const isOver = (b.spent || 0) > b.amount;
                             const remaining = Math.max(0, b.amount - (b.spent || 0));
+                            const pct = Math.round(((b.spent || 0) / (b.amount || 1)) * 100);
 
                             return (
-                              <View key={b._id} className="gap-1.5">
-                                <View className="flex-row justify-between items-center">
-                                  <Text className="text-xs font-medium text-foreground">
+                              <View key={b._id} className="gap-1.5 p-2.5 rounded-xl bg-muted/30 border border-border/40">
+                                <View className="flex-row justify-between items-center gap-2">
+                                  <Text className="text-xs font-semibold text-foreground flex-1" numberOfLines={1}>
                                     {catName}
                                   </Text>
-                                  <Text className="font-mono text-xs text-muted-foreground">
+                                  <Text className="font-mono text-xs text-muted-foreground shrink-0 tabular-nums">
                                     {formatCurrency(b.spent || 0, data.currency)} /{" "}
                                     {formatCurrency(b.amount, data.currency)}
                                   </Text>
@@ -785,22 +798,28 @@ export default function DashboardScreen() {
                                 <ProgressBar
                                   value={b.spent || 0}
                                   max={b.amount}
-                                  color={isOver ? theme.negative : undefined}
+                                  adaptiveColor
                                 />
 
-                                <View className="flex-row justify-between items-center">
-                                  <Text className="text-[10px] text-muted-foreground">
+                                <View className="flex-row justify-between items-center gap-2">
+                                  <Text className="text-[10px] text-muted-foreground flex-1" numberOfLines={1}>
                                     {isOver ? (
-                                      <Text className="text-negative font-semibold">
-                                        Over budget
+                                      <Text className="text-rose-600 dark:text-rose-400 font-semibold">
+                                        Over budget by {formatCurrency((b.spent || 0) - b.amount, data.currency)}
                                       </Text>
                                     ) : (
                                       `${formatCurrency(remaining, data.currency)} remaining`
                                     )}
                                   </Text>
-                                  <Text className="text-[10px] font-mono text-muted-foreground">
-                                    {Math.round(((b.spent || 0) / (b.amount || 1)) * 100)}%
-                                  </Text>
+                                  <View className={`px-1.5 py-0.5 rounded-md ${
+                                    isOver ? "bg-rose-500/15" : pct >= 70 ? "bg-amber-500/15" : "bg-emerald-500/15"
+                                  }`}>
+                                    <Text className={`text-[10px] font-mono font-bold ${
+                                      isOver ? "text-rose-600 dark:text-rose-400" : pct >= 70 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"
+                                    }`}>
+                                      {pct}%
+                                    </Text>
+                                  </View>
                                 </View>
                               </View>
                             );
@@ -813,7 +832,7 @@ export default function DashboardScreen() {
                   {/* Savings Goals */}
                   {data.goals.length > 0 && (
                     <Card>
-                      <CardContent className="gap-3.5">
+                      <CardContent className="p-4 gap-3.5">
                         <View className="flex-row items-center justify-between">
                           <View className="flex-row items-center gap-2">
                             <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
@@ -834,30 +853,36 @@ export default function DashboardScreen() {
                           </Pressable>
                         </View>
 
-                        <View className="gap-3">
+                        <View className="gap-2.5">
                           {data.goals.slice(0, 3).map((goal) => {
                             const progress = goal.savedAmount || 0;
                             const target = goal.targetAmount || 1;
                             const pct = Math.min(100, Math.round((progress / target) * 100));
 
                             return (
-                              <View key={goal._id} className="gap-1.5">
-                                <View className="flex-row justify-between items-center">
-                                  <Text className="text-xs font-medium text-foreground">
+                              <View key={goal._id} className="gap-1.5 p-2.5 rounded-xl bg-muted/30 border border-border/40">
+                                <View className="flex-row justify-between items-center gap-2">
+                                  <Text className="text-xs font-semibold text-foreground flex-1" numberOfLines={1}>
                                     {goal.name}
                                   </Text>
-                                  <Text className="font-mono text-xs text-muted-foreground">
+                                  <Text className="font-mono text-xs text-muted-foreground shrink-0 tabular-nums">
                                     {formatCurrency(progress, data.currency)} / {formatCurrency(target, data.currency)}
                                   </Text>
                                 </View>
-                                <ProgressBar value={progress} max={target} />
-                                <View className="flex-row justify-between items-center">
-                                  <Text className="text-[10px] text-muted-foreground">
+                                <ProgressBar value={progress} max={target} adaptiveColor />
+                                <View className="flex-row justify-between items-center gap-2">
+                                  <Text className="text-[10px] text-muted-foreground flex-1" numberOfLines={1}>
                                     {goal.targetDate ? `Target: ${formatDate(goal.targetDate)}` : "Ongoing goal"}
                                   </Text>
-                                  <Text className="text-[10px] font-mono font-medium text-foreground">
-                                    {pct}%
-                                  </Text>
+                                  <View className={`px-1.5 py-0.5 rounded-md ${
+                                    pct >= 100 ? "bg-emerald-500/15" : pct >= 50 ? "bg-primary/15" : "bg-muted"
+                                  }`}>
+                                    <Text className={`text-[10px] font-mono font-bold ${
+                                      pct >= 100 ? "text-emerald-600 dark:text-emerald-400" : pct >= 50 ? "text-primary" : "text-muted-foreground"
+                                    }`}>
+                                      {pct}%
+                                    </Text>
+                                  </View>
                                 </View>
                               </View>
                             );

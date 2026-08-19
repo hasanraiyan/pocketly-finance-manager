@@ -313,7 +313,7 @@ export default function PlanningScreen() {
       </View>
 
       <ScrollView
-        contentContainerClassName="items-center px-4 md:px-8 py-5 pb-32"
+        contentContainerClassName="items-center px-3.5 sm:px-6 py-4 pb-32"
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
@@ -322,9 +322,8 @@ export default function PlanningScreen() {
           />
         }
       >
-        <View className="w-full max-w-5xl gap-5">
-        {/* Tab Segment Selector */}
-        <View className="flex-row rounded-xl bg-card border border-border p-1">
+        {/* Segmented Controls */}
+        <View className="w-full max-w-5xl flex-row rounded-xl bg-card border border-border/80 p-1 mb-4 shadow-sm">
           <Pressable
             onPress={() => setActiveTab("budgets")}
             className={`flex-1 items-center justify-center rounded-lg py-2.5 ${
@@ -384,10 +383,10 @@ export default function PlanningScreen() {
           /* ===================================================
            * BUDGETS TAB
            * =================================================== */
-          <View className="gap-5">
+          <View className="w-full max-w-5xl gap-4">
             {/* Overview Card */}
             <Card className="bg-card border border-border/80">
-              <CardContent className="p-5 gap-3">
+              <CardContent className="p-4 gap-3">
                 <View className="flex-row items-center justify-between">
                   <Text className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                     Monthly Budget Overview
@@ -397,18 +396,23 @@ export default function PlanningScreen() {
                   </View>
                 </View>
 
-                <View className="flex-row items-baseline justify-between">
-                  <Text className="font-mono text-2xl font-bold text-foreground">
-                    {formatCurrency(totalSpent, user?.currency ?? "USD")}
+                <View className="flex-row items-baseline justify-between gap-2">
+                  <Text
+                    className="font-mono text-xl sm:text-2xl font-bold text-foreground tabular-nums shrink-0"
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
+                    {formatCurrency(totalSpent, user?.currency ?? "INR")}
                   </Text>
-                  <Text className="text-xs text-muted-foreground">
-                    of {formatCurrency(totalBudgeted, user?.currency ?? "USD")} limit
+                  <Text className="text-xs text-muted-foreground shrink-0 tabular-nums">
+                    of {formatCurrency(totalBudgeted, user?.currency ?? "INR")} limit
                   </Text>
                 </View>
 
                 <ProgressBar
                   value={totalSpent}
                   max={totalBudgeted > 0 ? totalBudgeted : 1}
+                  adaptiveColor
                 />
               </CardContent>
             </Card>
@@ -435,19 +439,19 @@ export default function PlanningScreen() {
                   const catName = categoryMap.get(b.categoryId) ?? "Category";
                   const spent = b.spent || 0;
                   const limit = b.amount;
-                  const ratio = limit > 0 ? spent / limit : 0;
                   const isOver = spent > limit;
                   const remaining = Math.max(0, limit - spent);
+                  const pct = Math.round((spent / (limit || 1)) * 100);
 
                   return (
                     <Card
                       key={b._id}
                       className="w-full md:w-[calc(50%-6px)] bg-card border border-border/80"
                     >
-                      <CardContent className="p-4 gap-3">
-                        <View className="flex-row items-start justify-between">
-                          <View className="flex-1 pr-2">
-                            <Text className="text-base font-semibold text-foreground">
+                      <CardContent className="p-3.5 sm:p-4 gap-3">
+                        <View className="flex-row items-start justify-between gap-2">
+                          <View className="flex-1 pr-1">
+                            <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
                               {catName}
                             </Text>
                             <Text className="text-xs text-muted-foreground capitalize mt-0.5">
@@ -455,7 +459,7 @@ export default function PlanningScreen() {
                             </Text>
                           </View>
 
-                          <View className="flex-row items-center gap-1">
+                          <View className="flex-row items-center gap-1 shrink-0">
                             <Pressable
                               onPress={() => handleEditBudget(b)}
                               hitSlop={6}
@@ -473,25 +477,25 @@ export default function PlanningScreen() {
                           </View>
                         </View>
 
-                        <ProgressBar value={spent} max={limit > 0 ? limit : 1} />
+                        <ProgressBar value={spent} max={limit > 0 ? limit : 1} adaptiveColor />
 
-                        <View className="flex-row justify-between items-center text-xs">
-                          <Text className="font-mono text-xs text-muted-foreground">
+                        <View className="flex-row justify-between items-center gap-2 text-xs">
+                          <Text className="font-mono text-xs text-muted-foreground flex-1" numberOfLines={1}>
                             Spent:{" "}
-                            <Text className={`font-semibold ${isOver ? "text-negative" : "text-foreground"}`}>
-                              {formatCurrency(spent, user?.currency ?? "USD")}
+                            <Text className={`font-semibold ${isOver ? "text-rose-600 dark:text-rose-400" : "text-foreground"}`}>
+                              {formatCurrency(spent, user?.currency ?? "INR")}
                             </Text>
                           </Text>
-                          <Text className="font-mono text-xs text-muted-foreground">
+                          <Text className="font-mono text-xs text-muted-foreground shrink-0 tabular-nums">
                             {isOver ? (
-                              <Text className="text-negative font-semibold">
-                                Over by {formatCurrency(spent - limit, user?.currency ?? "USD")}
+                              <Text className="text-rose-600 dark:text-rose-400 font-semibold">
+                                +{formatCurrency(spent - limit, user?.currency ?? "INR")}
                               </Text>
                             ) : (
                               <>
                                 Left:{" "}
-                                <Text className="font-semibold text-positive">
-                                  {formatCurrency(remaining, user?.currency ?? "USD")}
+                                <Text className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                  {formatCurrency(remaining, user?.currency ?? "INR")}
                                 </Text>
                               </>
                             )}
@@ -508,10 +512,10 @@ export default function PlanningScreen() {
           /* ===================================================
            * SAVINGS GOALS TAB
            * =================================================== */
-          <View className="gap-5">
+          <View className="w-full max-w-5xl gap-4">
             {/* Overview Goals Card */}
             <Card className="bg-card border border-border/80">
-              <CardContent className="p-5 gap-3">
+              <CardContent className="p-4 gap-3">
                 <View className="flex-row items-center justify-between">
                   <Text className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                     Savings Targets Progress
@@ -521,18 +525,23 @@ export default function PlanningScreen() {
                   </View>
                 </View>
 
-                <View className="flex-row items-baseline justify-between">
-                  <Text className="font-mono text-2xl font-bold text-foreground">
-                    {formatCurrency(totalGoalsSaved, user?.currency ?? "USD")}
+                <View className="flex-row items-baseline justify-between gap-2">
+                  <Text
+                    className="font-mono text-xl sm:text-2xl font-bold text-foreground tabular-nums shrink-0"
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
+                    {formatCurrency(totalGoalsSaved, user?.currency ?? "INR")}
                   </Text>
-                  <Text className="text-xs text-muted-foreground">
-                    of {formatCurrency(totalGoalsTarget, user?.currency ?? "USD")} target
+                  <Text className="text-xs text-muted-foreground shrink-0 tabular-nums">
+                    of {formatCurrency(totalGoalsTarget, user?.currency ?? "INR")} target
                   </Text>
                 </View>
 
                 <ProgressBar
                   value={totalGoalsSaved}
                   max={totalGoalsTarget > 0 ? totalGoalsTarget : 1}
+                  adaptiveColor
                 />
               </CardContent>
             </Card>
@@ -568,14 +577,14 @@ export default function PlanningScreen() {
 
                   return (
                     <Card key={g._id} className="w-full md:w-[calc(50%-6px)] bg-card border border-border/80">
-                      <CardContent className="p-4 gap-3">
-                        <View className="flex-row items-start justify-between">
-                          <View className="flex-1 pr-2">
-                            <View className="flex-row items-center gap-2">
-                              <Text className="text-base font-semibold text-foreground">
+                      <CardContent className="p-3.5 sm:p-4 gap-3">
+                        <View className="flex-row items-start justify-between gap-2">
+                          <View className="flex-1 pr-1">
+                            <View className="flex-row items-center gap-1.5 flex-wrap">
+                              <Text className="text-base font-semibold text-foreground flex-1" numberOfLines={1}>
                                 {g.name}
                               </Text>
-                              <View className={`rounded-md px-2 py-0.5 ${statusInfo.bg}`}>
+                              <View className={`rounded-md px-1.5 py-0.5 ${statusInfo.bg} shrink-0`}>
                                 <Text className={`text-[10px] font-semibold ${statusInfo.text}`}>
                                   {statusInfo.label}
                                 </Text>
@@ -588,15 +597,15 @@ export default function PlanningScreen() {
                             )}
                           </View>
 
-                          <View className="flex-row items-center gap-1">
+                          <View className="flex-row items-center gap-1 shrink-0">
                             <Pressable
                               onPress={() => handleOpenContribute(g)}
                               hitSlop={6}
-                              className="flex-row items-center gap-1 rounded-md bg-primary/10 px-2.5 py-1"
+                              className="flex-row items-center gap-1 rounded-md bg-primary/10 px-2 py-1"
                             >
-                              <Feather name="dollar-sign" size={12} color={theme.primary} />
+                              <Feather name="plus-circle" size={12} color={theme.primary} />
                               <Text className="text-xs font-semibold text-primary">
-                                Funds
+                                Add
                               </Text>
                             </Pressable>
                             <Pressable
@@ -616,21 +625,17 @@ export default function PlanningScreen() {
                           </View>
                         </View>
 
-                        <ProgressBar value={g.savedAmount} max={g.targetAmount} />
+                        <ProgressBar value={g.savedAmount} max={g.targetAmount} adaptiveColor />
 
-                        <View className="flex-row justify-between items-center">
-                          <Text className="font-mono text-xs text-muted-foreground">
+                        <View className="flex-row justify-between items-center gap-2">
+                          <Text className="font-mono text-xs text-muted-foreground flex-1" numberOfLines={1}>
                             Saved:{" "}
                             <Text className="font-semibold text-foreground">
-                              {formatCurrency(g.savedAmount, user?.currency ?? "USD")}
-                            </Text>{" "}
-                            ({pct}%)
-                          </Text>
-                          <Text className="font-mono text-xs text-muted-foreground">
-                            Target:{" "}
-                            <Text className="font-semibold text-foreground">
-                              {formatCurrency(g.targetAmount, user?.currency ?? "USD")}
+                              {formatCurrency(g.savedAmount, user?.currency ?? "INR")}
                             </Text>
+                          </Text>
+                          <Text className="font-mono text-xs text-muted-foreground shrink-0 tabular-nums">
+                            Target: {formatCurrency(g.targetAmount, user?.currency ?? "INR")}
                           </Text>
                         </View>
                       </CardContent>
@@ -755,7 +760,6 @@ export default function PlanningScreen() {
             )}
           </View>
         )}
-        </View>
       </ScrollView>
 
       {/* Budget Modal */}
