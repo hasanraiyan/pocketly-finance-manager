@@ -18,6 +18,8 @@ import {
   saveRefreshToken,
 } from "./auth-tokens";
 
+import { queryClient } from "./query-persister";
+
 export type SessionUser =
   components["schemas"]["AuthSessionDto"]["data"]["user"];
 type Session = components["schemas"]["AuthSessionDto"]["data"];
@@ -73,6 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsGuest(false);
     setUser(session.user);
     setAccessToken(session.accessToken);
+    queryClient.clear();
     await safeStorage.removeItem(GUEST_STORAGE_KEY);
     await saveRefreshToken(session.refreshToken);
   }, []);
@@ -81,6 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsGuest(false);
     setUser(null);
     setAccessToken(null);
+    queryClient.clear();
     await safeStorage.removeItem(GUEST_STORAGE_KEY);
     await deleteRefreshToken();
   }, []);
@@ -139,6 +143,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [accessToken, isGuest, refresh]);
 
   const continueAsGuest = useCallback(async () => {
+    queryClient.clear();
     await ensureLocalSeedData();
     await safeStorage.setItem(GUEST_STORAGE_KEY, "true");
     setIsGuest(true);
@@ -147,6 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const exitGuestMode = useCallback(async () => {
+    queryClient.clear();
     await clear();
   }, [clear]);
 

@@ -15,12 +15,17 @@ export type UpdateBudgetInput = components["schemas"]["UpdateBudgetDto"];
 
 export const BUDGETS_KEY = ["budgets"] as const;
 
+export function budgetsKey(isGuest = false, userId?: string) {
+  return ["budgets", isGuest, userId ?? "anon"] as const;
+}
+
 export function useBudgets() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
+  const key = budgetsKey(isGuest, user?._id);
 
   return useQuery({
-    queryKey: BUDGETS_KEY,
+    queryKey: key,
     queryFn: async () => {
       if (isGuest) {
         const local = await getLocalBudgets();
@@ -39,9 +44,10 @@ export function useBudgets() {
 }
 
 export function useCreateBudget() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const key = budgetsKey(isGuest, user?._id);
 
   return useMutation({
     mutationFn: async (input: CreateBudgetInput) => {
@@ -61,19 +67,21 @@ export function useCreateBudget() {
       return data.data;
     },
     onSuccess: (budget) => {
-      queryClient.setQueryData<Budget[]>(BUDGETS_KEY, (old) => [
+      queryClient.setQueryData<Budget[]>(key, (old) => [
         budget,
         ...(old ?? []),
       ]);
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
 
 export function useUpdateBudget() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const key = budgetsKey(isGuest, user?._id);
 
   return useMutation({
     mutationFn: async ({
@@ -104,18 +112,20 @@ export function useUpdateBudget() {
     },
     onSuccess: (budget) => {
       queryClient.setQueryData<Budget[]>(
-        BUDGETS_KEY,
+        key,
         (old) => old?.map((b) => (b._id === budget._id ? budget : b)) ?? [],
       );
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
 
 export function useDeleteBudget() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const key = budgetsKey(isGuest, user?._id);
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -133,21 +143,21 @@ export function useDeleteBudget() {
       return id;
     },
     onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: BUDGETS_KEY });
-      const previous = queryClient.getQueryData<Budget[]>(BUDGETS_KEY);
+      await queryClient.cancelQueries({ queryKey: key });
+      const previous = queryClient.getQueryData<Budget[]>(key);
       queryClient.setQueryData<Budget[]>(
-        BUDGETS_KEY,
+        key,
         (old) => old?.filter((b) => b._id !== id) ?? [],
       );
       return { previous };
     },
     onError: (_err, _id, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(BUDGETS_KEY, context.previous);
+        queryClient.setQueryData(key, context.previous);
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: BUDGETS_KEY });
+      queryClient.invalidateQueries({ queryKey: ["budgets"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });

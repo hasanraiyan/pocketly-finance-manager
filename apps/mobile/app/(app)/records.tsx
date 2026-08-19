@@ -100,13 +100,16 @@ export default function RecordsScreen() {
     return new Map(categories.map((c) => [c._id, c.name]));
   }, [categories]);
 
+  const activeCurrency = user?.currency ?? accounts[0]?.currency ?? "INR";
+
   // Quick stats for visible items
   const stats = useMemo(() => {
     let income = 0;
     let expense = 0;
     for (const t of transactions) {
-      if (t.type === "income") income += t.amount;
-      if (t.type === "expense") expense += t.amount;
+      const amt = Number(t.amount) || 0;
+      if (t.type === "income") income += amt;
+      if (t.type === "expense") expense += amt;
     }
     return { income, expense };
   }, [transactions]);
@@ -286,7 +289,7 @@ export default function RecordsScreen() {
                     Income
                   </Text>
                   <Text className="font-mono text-sm font-bold text-positive">
-                    {formatCurrency(stats.income, user?.currency ?? "USD")}
+                    {formatCurrency(stats.income, activeCurrency)}
                   </Text>
                 </View>
               </CardContent>
@@ -302,7 +305,7 @@ export default function RecordsScreen() {
                     Expenses
                   </Text>
                   <Text className="font-mono text-sm font-bold text-negative">
-                    {formatCurrency(stats.expense, user?.currency ?? "USD")}
+                    {formatCurrency(stats.expense, activeCurrency)}
                   </Text>
                 </View>
               </CardContent>
@@ -437,7 +440,7 @@ export default function RecordsScreen() {
                       }`}
                     >
                       {isIncome ? "+" : isTransfer ? "" : "-"}
-                      {formatCurrency(tx.amount, user?.currency ?? "USD")}
+                      {formatCurrency(tx.amount, activeCurrency)}
                     </Text>
 
                     <View className="flex-row items-center gap-1">

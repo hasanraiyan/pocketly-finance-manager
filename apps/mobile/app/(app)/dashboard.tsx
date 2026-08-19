@@ -48,7 +48,7 @@ import { theme } from "@/lib/theme";
 
 export default function DashboardScreen() {
   const router = useRouter();
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
 
   const [checklistDismissed, setChecklistDismissed] = useState(false);
@@ -60,7 +60,7 @@ export default function DashboardScreen() {
   const [goalModalVisible, setGoalModalVisible] = useState(false);
 
   const { data, isLoading, isError, refetch, isRefetching } = useQuery({
-    queryKey: ["dashboard", isGuest],
+    queryKey: ["dashboard", isGuest, user?._id ?? "anon"],
     queryFn: async () => {
       if (isGuest) {
         const [

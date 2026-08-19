@@ -110,16 +110,28 @@ export function TransactionModal({
     }
   }, [visible, transaction]);
 
-  // Keep selected account in sync if accounts arrive
+  // Keep selected account in sync if accounts arrive or change
   useEffect(() => {
-    if (!accountId && accounts.length > 0) {
+    if (accounts.length === 0) return;
+
+    // Validate accountId
+    const hasAccountId = accounts.some((a) => a._id === accountId);
+    if (!accountId || !hasAccountId) {
       setAccountId(accounts[0]._id);
     }
-    if (!toAccountId && accounts.length > 1) {
-      const dest = accounts.find((a) => a._id !== (accountId || accounts[0]._id));
-      if (dest) setToAccountId(dest._id);
+
+    // Validate toAccountId for transfers
+    if (type === "transfer" && accounts.length > 1) {
+      const currentSource = hasAccountId ? accountId : accounts[0]._id;
+      const hasToAccount = accounts.some(
+        (a) => a._id === toAccountId && a._id !== currentSource,
+      );
+      if (!toAccountId || !hasToAccount) {
+        const dest = accounts.find((a) => a._id !== currentSource);
+        if (dest) setToAccountId(dest._id);
+      }
     }
-  }, [accounts, accountId, toAccountId]);
+  }, [accounts, accountId, toAccountId, type]);
 
   async function handleCreateNewCategory() {
     if (!newCatName.trim()) return;
@@ -342,7 +354,13 @@ export function TransactionModal({
                           return (
                             <Pressable
                               key={acc._id}
-                              onPress={() => setAccountId(acc._id)}
+                              onPress={() => {
+                                setAccountId(acc._id);
+                                if (type === "transfer" && toAccountId === acc._id) {
+                                  const other = accounts.find((a) => a._id !== acc._id);
+                                  if (other) setToAccountId(other._id);
+                                }
+                              }}
                               className={`rounded-xl px-3.5 py-2.5 border ${
                                 isSelected
                                   ? "bg-primary border-primary"

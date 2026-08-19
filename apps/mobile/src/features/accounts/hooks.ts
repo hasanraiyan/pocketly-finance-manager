@@ -15,12 +15,17 @@ export type UpdateAccountInput = components["schemas"]["UpdateAccountDto"];
 
 export const ACCOUNTS_KEY = ["accounts"] as const;
 
+export function accountsKey(isGuest = false, userId?: string) {
+  return ["accounts", isGuest, userId ?? "anon"] as const;
+}
+
 export function useAccounts() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
+  const key = accountsKey(isGuest, user?._id);
 
   return useQuery({
-    queryKey: ACCOUNTS_KEY,
+    queryKey: key,
     queryFn: async () => {
       if (isGuest) {
         const local = await getLocalAccounts();
@@ -38,9 +43,10 @@ export function useAccounts() {
 }
 
 export function useCreateAccount() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const key = accountsKey(isGuest, user?._id);
 
   return useMutation({
     mutationFn: async (input: CreateAccountInput) => {
@@ -63,19 +69,21 @@ export function useCreateAccount() {
       return data.data;
     },
     onSuccess: (account) => {
-      queryClient.setQueryData<Account[]>(ACCOUNTS_KEY, (old) => [
+      queryClient.setQueryData<Account[]>(key, (old) => [
         account,
         ...(old ?? []),
       ]);
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
 
 export function useUpdateAccount() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const key = accountsKey(isGuest, user?._id);
 
   return useMutation({
     mutationFn: async ({
@@ -107,18 +115,20 @@ export function useUpdateAccount() {
     },
     onSuccess: (account) => {
       queryClient.setQueryData<Account[]>(
-        ACCOUNTS_KEY,
+        key,
         (old) => old?.map((a) => (a._id === account._id ? account : a)) ?? [],
       );
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
 
 export function useDeleteAccount() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const key = accountsKey(isGuest, user?._id);
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -135,21 +145,21 @@ export function useDeleteAccount() {
       return id;
     },
     onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: ACCOUNTS_KEY });
-      const previous = queryClient.getQueryData<Account[]>(ACCOUNTS_KEY);
+      await queryClient.cancelQueries({ queryKey: key });
+      const previous = queryClient.getQueryData<Account[]>(key);
       queryClient.setQueryData<Account[]>(
-        ACCOUNTS_KEY,
+        key,
         (old) => old?.filter((a) => a._id !== id) ?? [],
       );
       return { previous };
     },
     onError: (_err, _id, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(ACCOUNTS_KEY, context.previous);
+        queryClient.setQueryData(key, context.previous);
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ACCOUNTS_KEY });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });

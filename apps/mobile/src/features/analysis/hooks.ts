@@ -33,11 +33,11 @@ export const PERIOD_OPTIONS: Array<{ value: AnalysisPeriod; label: string }> = [
 ];
 
 export function useAnalysisOverview(period: AnalysisPeriod) {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
 
   return useQuery({
-    queryKey: ["analysis", "overview", period, isGuest],
+    queryKey: ["analysis", "overview", period, isGuest, user?._id ?? "anon"],
     queryFn: async (): Promise<Overview> => {
       if (isGuest) {
         const txs = await getLocalTransactions();
@@ -69,11 +69,11 @@ export function useAnalysisOverview(period: AnalysisPeriod) {
 }
 
 export function useCategoryBreakdown(period: AnalysisPeriod) {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
 
   return useQuery({
-    queryKey: ["analysis", "categories", period, isGuest],
+    queryKey: ["analysis", "categories", period, isGuest, user?._id ?? "anon"],
     queryFn: async (): Promise<CategoryBreakdown> => {
       if (isGuest) {
         const [txs, cats] = await Promise.all([
@@ -122,11 +122,11 @@ export function useCategoryBreakdown(period: AnalysisPeriod) {
 }
 
 export function useCashFlow(period: AnalysisPeriod) {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
 
   return useQuery({
-    queryKey: ["analysis", "cash-flow", period, isGuest],
+    queryKey: ["analysis", "cash-flow", period, isGuest, user?._id ?? "anon"],
     queryFn: async (): Promise<CashFlow> => {
       if (isGuest) {
         return {
@@ -148,11 +148,11 @@ export function useCashFlow(period: AnalysisPeriod) {
 }
 
 export function useAccountBreakdown(period: AnalysisPeriod) {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
 
   return useQuery({
-    queryKey: ["analysis", "accounts", period, isGuest],
+    queryKey: ["analysis", "accounts", period, isGuest, user?._id ?? "anon"],
     queryFn: async (): Promise<AccountBreakdown> => {
       if (isGuest) {
         const accs = await getLocalAccounts();

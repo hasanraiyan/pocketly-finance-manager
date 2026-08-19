@@ -16,12 +16,17 @@ export type UpdateGoalInput = components["schemas"]["UpdateGoalDto"];
 
 export const GOALS_KEY = ["goals"] as const;
 
+export function goalsKey(isGuest = false, userId?: string) {
+  return ["goals", isGuest, userId ?? "anon"] as const;
+}
+
 export function useGoals() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
+  const key = goalsKey(isGuest, user?._id);
 
   return useQuery({
-    queryKey: GOALS_KEY,
+    queryKey: key,
     queryFn: async () => {
       if (isGuest) {
         const local = await getLocalGoals();
@@ -40,9 +45,10 @@ export function useGoals() {
 }
 
 export function useCreateGoal() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const key = goalsKey(isGuest, user?._id);
 
   return useMutation({
     mutationFn: async (input: CreateGoalInput) => {
@@ -64,19 +70,21 @@ export function useCreateGoal() {
       return data.data;
     },
     onSuccess: (goal) => {
-      queryClient.setQueryData<Goal[]>(GOALS_KEY, (old) => [
+      queryClient.setQueryData<Goal[]>(key, (old) => [
         goal,
         ...(old ?? []),
       ]);
+      queryClient.invalidateQueries({ queryKey: ["goals"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
 
 export function useUpdateGoal() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const key = goalsKey(isGuest, user?._id);
 
   return useMutation({
     mutationFn: async ({
@@ -109,18 +117,20 @@ export function useUpdateGoal() {
     },
     onSuccess: (goal) => {
       queryClient.setQueryData<Goal[]>(
-        GOALS_KEY,
+        key,
         (old) => old?.map((g) => (g._id === goal._id ? goal : g)) ?? [],
       );
+      queryClient.invalidateQueries({ queryKey: ["goals"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
 
 export function useContributeToGoal() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const key = goalsKey(isGuest, user?._id);
 
   return useMutation({
     mutationFn: async ({
@@ -146,18 +156,20 @@ export function useContributeToGoal() {
     },
     onSuccess: (goal) => {
       queryClient.setQueryData<Goal[]>(
-        GOALS_KEY,
+        key,
         (old) => old?.map((g) => (g._id === goal._id ? goal : g)) ?? [],
       );
+      queryClient.invalidateQueries({ queryKey: ["goals"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
 
 export function useDeleteGoal() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const key = goalsKey(isGuest, user?._id);
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -175,21 +187,21 @@ export function useDeleteGoal() {
       return id;
     },
     onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: GOALS_KEY });
-      const previous = queryClient.getQueryData<Goal[]>(GOALS_KEY);
+      await queryClient.cancelQueries({ queryKey: key });
+      const previous = queryClient.getQueryData<Goal[]>(key);
       queryClient.setQueryData<Goal[]>(
-        GOALS_KEY,
+        key,
         (old) => old?.filter((g) => g._id !== id) ?? [],
       );
       return { previous };
     },
     onError: (_err, _id, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(GOALS_KEY, context.previous);
+        queryClient.setQueryData(key, context.previous);
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: GOALS_KEY });
+      queryClient.invalidateQueries({ queryKey: ["goals"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });

@@ -35,16 +35,27 @@ export interface TransactionsPage {
   nextCursor: string | null;
 }
 
-export function transactionsKey(filters: TransactionFilters) {
-  return ["transactions", filters] as const;
+export function transactionsKey(filters: TransactionFilters, isGuest = false, userId?: string) {
+  return ["transactions", filters, isGuest, userId ?? "anon"] as const;
+}
+
+function sanitizeQuery(filters: TransactionFilters, limit = 25, cursor?: string) {
+  const query: Record<string, any> = { limit };
+  if (filters.type) query.type = filters.type;
+  if (filters.accountId && filters.accountId.trim()) query.accountId = filters.accountId.trim();
+  if (filters.categoryId && filters.categoryId.trim()) query.categoryId = filters.categoryId.trim();
+  if (filters.q && filters.q.trim()) query.q = filters.q.trim();
+  if (cursor) query.cursor = cursor;
+  return query;
 }
 
 export function useTransactions(filters: TransactionFilters) {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
+  const key = transactionsKey(filters, isGuest, user?._id);
 
   return useQuery({
-    queryKey: transactionsKey(filters),
+    queryKey: key,
     queryFn: async (): Promise<TransactionsPage> => {
       if (isGuest) {
         let items = await getLocalTransactions();
@@ -52,8 +63,12 @@ export function useTransactions(filters: TransactionFilters) {
         if (filters.accountId) items = items.filter((t) => t.accountId === filters.accountId);
         if (filters.categoryId) items = items.filter((t) => t.categoryId === filters.categoryId);
         if (filters.q) {
-          const q = filters.q.toLowerCase();
-          items = items.filter((t) => t.note?.toLowerCase().includes(q));
+          const q = filters.q.toLowerCase().trim();
+          items = items.filter(
+            (t) =>
+              t.note?.toLowerCase().includes(q) ||
+              t.description?.toLowerCase().includes(q)
+          );
         }
         return {
           items: items as unknown as Transaction[],
@@ -62,7 +77,7 @@ export function useTransactions(filters: TransactionFilters) {
       }
 
       const { data, error } = await client.GET("/transactions", {
-        params: { query: { ...filters, limit: 25 } },
+        params: { query: sanitizeQuery(filters, 25) as any },
       });
       if (error || !data) {
         throw new Error("Failed to load records");
@@ -77,16 +92,16 @@ export function useTransactions(filters: TransactionFilters) {
 }
 
 export function useLoadMoreTransactions(filters: TransactionFilters) {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
-  const key = transactionsKey(filters);
+  const key = transactionsKey(filters, isGuest, user?._id);
 
   return useMutation({
     mutationFn: async (cursor: string) => {
       if (isGuest) return { items: [], nextCursor: null };
       const { data, error } = await client.GET("/transactions", {
-        params: { query: { ...filters, cursor, limit: 25 } },
+        params: { query: sanitizeQuery(filters, 25, cursor) as any },
       });
       if (error || !data) {
         throw new Error("Failed to load more records");
@@ -102,11 +117,11 @@ export function useLoadMoreTransactions(filters: TransactionFilters) {
   });
 }
 
-export function useCreateTransaction(filters: TransactionFilters) {
-  const { isGuest } = useAuth();
+export function useCreateTransaction(filters: TransactionFilters = {}) {
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
-  const key = transactionsKey(filters);
+  const key = transactionsKey(filters, isGuest, user?._id);
 
   return useMutation({
     mutationFn: async (input: CreateTransactionInput) => {
@@ -143,11 +158,11 @@ export function useCreateTransaction(filters: TransactionFilters) {
   });
 }
 
-export function useUpdateTransaction(filters: TransactionFilters) {
-  const { isGuest } = useAuth();
+export function useUpdateTransaction(filters: TransactionFilters = {}) {
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
-  const key = transactionsKey(filters);
+  const key = transactionsKey(filters, isGuest, user?._id);
 
   return useMutation({
     mutationFn: async ({
@@ -188,17 +203,19 @@ export function useUpdateTransaction(filters: TransactionFilters) {
           ) ?? [],
         nextCursor: old?.nextCursor ?? null,
       }));
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ACCOUNTS_KEY });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      syncAndroidWidgets();
     },
   });
 }
 
-export function useDeleteTransaction(filters: TransactionFilters) {
-  const { isGuest } = useAuth();
+export function useDeleteTransaction(filters: TransactionFilters = {}) {
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
-  const key = transactionsKey(filters);
+  const key = transactionsKey(filters, isGuest, user?._id);
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -230,8 +247,10 @@ export function useDeleteTransaction(filters: TransactionFilters) {
       }
     },
     onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ACCOUNTS_KEY });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      syncAndroidWidgets();
     },
   });
 }

@@ -60,12 +60,13 @@ export function AccountModal({
       if (account) {
         setName(account.name);
         setType(account.type as AccountType);
-        setBalance(String(account.initialBalance / 100));
-        setCurrency(account.currency);
+        const initialAmt = account.initialBalance ?? (account as any).balance ?? 0;
+        setBalance(String(initialAmt / 100));
+        setCurrency(account.currency || defaultCurrency);
         setIcon(
           account.icon && isAccountIconKey(account.icon)
             ? account.icon
-            : defaultAccountIcon(account.type as AccountType),
+            : defaultAccountIcon((account.type as AccountType) || "bank"),
         );
         setIconTouched(true);
       } else {

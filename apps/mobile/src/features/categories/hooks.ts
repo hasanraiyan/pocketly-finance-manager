@@ -15,12 +15,17 @@ export type UpdateCategoryInput = components["schemas"]["UpdateCategoryDto"];
 
 export const CATEGORIES_KEY = ["categories"] as const;
 
+export function categoriesKey(isGuest = false, userId?: string) {
+  return ["categories", isGuest, userId ?? "anon"] as const;
+}
+
 export function useCategories() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
+  const key = categoriesKey(isGuest, user?._id);
 
   return useQuery({
-    queryKey: CATEGORIES_KEY,
+    queryKey: key,
     queryFn: async () => {
       if (isGuest) {
         const local = await getLocalCategories();
@@ -39,9 +44,10 @@ export function useCategories() {
 }
 
 export function useCreateCategory() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const key = categoriesKey(isGuest, user?._id);
 
   return useMutation({
     mutationFn: async (input: CreateCategoryInput) => {
@@ -64,18 +70,22 @@ export function useCreateCategory() {
       return data.data;
     },
     onSuccess: (category) => {
-      queryClient.setQueryData<Category[]>(CATEGORIES_KEY, (old) => [
+      queryClient.setQueryData<Category[]>(key, (old) => [
         category,
         ...(old ?? []),
       ]);
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 }
 
 export function useUpdateCategory() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const key = categoriesKey(isGuest, user?._id);
 
   return useMutation({
     mutationFn: async ({
@@ -107,19 +117,21 @@ export function useUpdateCategory() {
     },
     onSuccess: (category) => {
       queryClient.setQueryData<Category[]>(
-        CATEGORIES_KEY,
+        key,
         (old) => old?.map((c) => (c._id === category._id ? category : c)) ?? [],
       );
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["records"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 }
 
 export function useDeleteCategory() {
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const client = usePocketlyClient();
   const queryClient = useQueryClient();
+  const key = categoriesKey(isGuest, user?._id);
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -137,23 +149,23 @@ export function useDeleteCategory() {
       return id;
     },
     onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: CATEGORIES_KEY });
-      const previous = queryClient.getQueryData<Category[]>(CATEGORIES_KEY);
+      await queryClient.cancelQueries({ queryKey: key });
+      const previous = queryClient.getQueryData<Category[]>(key);
       queryClient.setQueryData<Category[]>(
-        CATEGORIES_KEY,
+        key,
         (old) => old?.filter((c) => c._id !== id) ?? [],
       );
       return { previous };
     },
     onError: (_err, _id, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(CATEGORIES_KEY, context.previous);
+        queryClient.setQueryData(key, context.previous);
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: CATEGORIES_KEY });
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["records"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 }
