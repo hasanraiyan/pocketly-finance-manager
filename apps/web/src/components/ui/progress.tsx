@@ -4,11 +4,14 @@ import * as React from "react"
 import { Progress as ProgressPrimitive } from "@base-ui/react/progress"
 import { cn } from "@/lib/utils"
 
+export type ProgressMode = "budget" | "goal" | "health" | "task" | "default"
+
 interface ExtendedProgressProps extends ProgressPrimitive.Root.Props {
   indicatorClassName?: string
   trackClassName?: string
   size?: "sm" | "md" | "lg"
-  adaptiveColor?: boolean
+  mode?: ProgressMode
+  adaptiveColor?: boolean | ProgressMode
 }
 
 function Progress({
@@ -18,25 +21,51 @@ function Progress({
   indicatorClassName,
   trackClassName,
   size = "md",
+  mode,
   adaptiveColor = false,
   ...props
 }: ExtendedProgressProps) {
   const numericValue = typeof value === "number" ? value : 0
   const clamped = Math.min(100, Math.max(0, numericValue))
 
+  const effectiveMode: ProgressMode =
+    mode ??
+    (typeof adaptiveColor === "string"
+      ? adaptiveColor
+      : adaptiveColor
+        ? "budget"
+        : "default")
+
+  const isAdaptive = Boolean(adaptiveColor) || Boolean(mode)
+
   let dynamicIndicatorClass = "bg-primary"
   let dynamicTrackClass = "bg-muted"
 
-  if (adaptiveColor && !indicatorClassName) {
-    if (clamped >= 90) {
-      dynamicIndicatorClass = "bg-rose-500"
-      dynamicTrackClass = "bg-rose-500/15"
-    } else if (clamped >= 70) {
-      dynamicIndicatorClass = "bg-amber-500"
-      dynamicTrackClass = "bg-amber-500/15"
+  if (!indicatorClassName && isAdaptive && effectiveMode !== "default") {
+    if (effectiveMode === "goal" || effectiveMode === "health" || effectiveMode === "task") {
+      // HIGHER IS BETTER (Savings Goal, Health Score, Task Checklist)
+      if (clamped >= 90) {
+        dynamicIndicatorClass = "bg-emerald-500"
+        dynamicTrackClass = "bg-emerald-500/15"
+      } else if (clamped >= 50) {
+        dynamicIndicatorClass = "bg-sky-500"
+        dynamicTrackClass = "bg-sky-500/15"
+      } else {
+        dynamicIndicatorClass = "bg-indigo-500"
+        dynamicTrackClass = "bg-indigo-500/15"
+      }
     } else {
-      dynamicIndicatorClass = "bg-emerald-500"
-      dynamicTrackClass = "bg-emerald-500/15"
+      // LOWER IS BETTER (Category Budgets / Expense Limits)
+      if (clamped >= 90) {
+        dynamicIndicatorClass = "bg-rose-500"
+        dynamicTrackClass = "bg-rose-500/15"
+      } else if (clamped >= 70) {
+        dynamicIndicatorClass = "bg-amber-500"
+        dynamicTrackClass = "bg-amber-500/15"
+      } else {
+        dynamicIndicatorClass = "bg-emerald-500"
+        dynamicTrackClass = "bg-emerald-500/15"
+      }
     }
   }
 

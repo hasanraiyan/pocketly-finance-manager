@@ -354,7 +354,7 @@ export async function HealthCard() {
                   {component.score}%
                 </span>
               </div>
-              <Progress value={component.score} adaptiveColor />
+              <Progress value={component.score} mode="health" />
               <span className="text-xs text-muted-foreground">
                 {component.reason}
               </span>
@@ -403,7 +403,7 @@ export async function GoalsCard() {
                   {formatCurrency(goal.targetAmount, currency)}
                 </span>
               </div>
-              <Progress value={pct} adaptiveColor />
+              <Progress value={pct} mode="goal" />
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>{goal.onTrack ? "On track" : "Needs attention"}</span>
                 <span className="font-mono font-medium">{pct}%</span>
@@ -531,7 +531,7 @@ export async function BudgetsCard() {
                 </div>
                 <Progress
                   value={Math.min(budget.percentageUsed, 100)}
-                  adaptiveColor
+                  mode="budget"
                 />
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span className={cn(isOver && "text-rose-600 dark:text-rose-400 font-semibold")}>

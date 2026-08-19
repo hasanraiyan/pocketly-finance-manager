@@ -412,7 +412,7 @@ export default function PlanningScreen() {
                 <ProgressBar
                   value={totalSpent}
                   max={totalBudgeted > 0 ? totalBudgeted : 1}
-                  adaptiveColor
+                  mode="budget"
                 />
               </CardContent>
             </Card>
@@ -477,7 +477,7 @@ export default function PlanningScreen() {
                           </View>
                         </View>
 
-                        <ProgressBar value={spent} max={limit > 0 ? limit : 1} adaptiveColor />
+                        <ProgressBar value={spent} max={limit > 0 ? limit : 1} mode="budget" />
 
                         <View className="flex-row justify-between items-center gap-2 text-xs">
                           <Text className="font-mono text-xs text-muted-foreground flex-1" numberOfLines={1}>
@@ -541,7 +541,7 @@ export default function PlanningScreen() {
                 <ProgressBar
                   value={totalGoalsSaved}
                   max={totalGoalsTarget > 0 ? totalGoalsTarget : 1}
-                  adaptiveColor
+                  mode="goal"
                 />
               </CardContent>
             </Card>
@@ -625,17 +625,17 @@ export default function PlanningScreen() {
                           </View>
                         </View>
 
-                        <ProgressBar value={g.savedAmount} max={g.targetAmount} adaptiveColor />
+                        <ProgressBar value={g.savedAmount} max={g.targetAmount} mode="goal" />
 
                         <View className="flex-row justify-between items-center gap-2">
                           <Text className="font-mono text-xs text-muted-foreground flex-1" numberOfLines={1}>
                             Saved:{" "}
-                            <Text className="font-semibold text-foreground">
+                            <Text className={`font-semibold ${pct >= 90 ? "text-emerald-600 dark:text-emerald-400" : "text-foreground"}`}>
                               {formatCurrency(g.savedAmount, user?.currency ?? "INR")}
                             </Text>
                           </Text>
                           <Text className="font-mono text-xs text-muted-foreground shrink-0 tabular-nums">
-                            Target: {formatCurrency(g.targetAmount, user?.currency ?? "INR")}
+                            Target: {formatCurrency(g.targetAmount, user?.currency ?? "INR")} ({pct}%)
                           </Text>
                         </View>
                       </CardContent>

@@ -317,7 +317,7 @@ export function GoalsView({
                         {formatCurrency(goal.targetAmount, currency)}
                       </span>
                     </div>
-                    <Progress value={goal.percentComplete} />
+                    <Progress value={goal.percentComplete} mode="goal" />
                   </div>
 
                   <dl className="flex flex-col gap-1 text-xs text-muted-foreground">

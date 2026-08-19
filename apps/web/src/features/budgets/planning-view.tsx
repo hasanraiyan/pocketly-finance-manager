@@ -216,7 +216,7 @@ export function PlanningView({
                       {budget.percentageUsed}%
                     </span>
                   </div>
-                  <Progress value={Math.min(budget.percentageUsed, 100)} />
+                  <Progress value={Math.min(budget.percentageUsed, 100)} mode="budget" />
                 </CardContent>
               </Card>
             );

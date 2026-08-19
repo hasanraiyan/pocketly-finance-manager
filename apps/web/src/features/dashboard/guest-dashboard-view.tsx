@@ -93,10 +93,15 @@ export function GuestDashboardView() {
                       {formatCurrency(saved, currency)} of {formatCurrency(goal.targetAmount, currency)}
                     </span>
                   </div>
-                  <Progress value={pct} adaptiveColor />
+                  <Progress value={pct} mode="goal" />
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{pct >= 100 ? "Completed" : "In progress"}</span>
-                    <span className="font-mono font-medium">{pct}%</span>
+                    <span>{pct >= 90 ? "On track" : "In progress"}</span>
+                    <span className={cn(
+                      "font-mono font-bold px-1.5 py-0.5 rounded text-[11px]",
+                      pct >= 90 ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" : pct >= 50 ? "bg-sky-500/15 text-sky-600 dark:text-sky-400" : "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400"
+                    )}>
+                      {pct}%
+                    </span>
                   </div>
                 </div>
               );
@@ -179,7 +184,7 @@ export function GuestDashboardView() {
                         {formatCurrency(spent, currency)} of {formatCurrency(limit, currency)}
                       </span>
                     </div>
-                    <Progress value={Math.min(pct, 100)} adaptiveColor />
+                    <Progress value={Math.min(pct, 100)} mode="budget" />
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span className={cn(isOver && "text-rose-600 dark:text-rose-400 font-semibold")}>
                         {isOver ? `Over budget by ${formatCurrency(spent - limit, currency)}` : `${formatCurrency(Math.max(0, limit - spent), currency)} remaining`}

@@ -63,7 +63,7 @@ export function GetStartedChecklist({ steps }: { steps: ChecklistStep[] }) {
         </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-1">
-        <Progress value={(completed / steps.length) * 100} className="mb-3" />
+        <Progress value={(completed / steps.length) * 100} mode="task" className="mb-3" />
         {steps.map((step) => (
           <div
             key={step.href}

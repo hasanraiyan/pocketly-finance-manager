@@ -415,7 +415,7 @@ export default function DashboardScreen() {
                       </Pressable>
                     </View>
 
-                    <ProgressBar value={completedSteps} max={checklist.length} adaptiveColor />
+                    <ProgressBar value={completedSteps} max={checklist.length} mode="task" />
 
                     <View className="flex-col md:flex-row gap-2 mt-1">
                       {checklist.map((step) => (
@@ -680,7 +680,7 @@ export default function DashboardScreen() {
                                   {comp.score}%
                                 </Text>
                               </View>
-                              <ProgressBar value={comp.score} max={100} adaptiveColor />
+                              <ProgressBar value={comp.score} max={100} mode="health" />
                               <Text className="text-[10px] text-muted-foreground">
                                 {comp.reason}
                               </Text>
@@ -798,7 +798,7 @@ export default function DashboardScreen() {
                                 <ProgressBar
                                   value={b.spent || 0}
                                   max={b.amount}
-                                  adaptiveColor
+                                  mode="budget"
                                 />
 
                                 <View className="flex-row justify-between items-center gap-2">
@@ -869,16 +869,16 @@ export default function DashboardScreen() {
                                     {formatCurrency(progress, data.currency)} / {formatCurrency(target, data.currency)}
                                   </Text>
                                 </View>
-                                <ProgressBar value={progress} max={target} adaptiveColor />
+                                <ProgressBar value={progress} max={target} mode="goal" />
                                 <View className="flex-row justify-between items-center gap-2">
                                   <Text className="text-[10px] text-muted-foreground flex-1" numberOfLines={1}>
                                     {goal.targetDate ? `Target: ${formatDate(goal.targetDate)}` : "Ongoing goal"}
                                   </Text>
                                   <View className={`px-1.5 py-0.5 rounded-md ${
-                                    pct >= 100 ? "bg-emerald-500/15" : pct >= 50 ? "bg-primary/15" : "bg-muted"
+                                    pct >= 90 ? "bg-emerald-500/15" : pct >= 50 ? "bg-sky-500/15" : "bg-indigo-500/15"
                                   }`}>
                                     <Text className={`text-[10px] font-mono font-bold ${
-                                      pct >= 100 ? "text-emerald-600 dark:text-emerald-400" : pct >= 50 ? "text-primary" : "text-muted-foreground"
+                                      pct >= 90 ? "text-emerald-600 dark:text-emerald-400" : pct >= 50 ? "text-sky-600 dark:text-sky-400" : "text-indigo-600 dark:text-indigo-400"
                                     }`}>
                                       {pct}%
                                     </Text>
