@@ -11,6 +11,7 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { ObserveRoot } from "expo-observe";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { AppUpdatePrompt } from "@/components/AppUpdatePrompt";
 import { BiometricGuard } from "@/components/BiometricGuard";
@@ -20,7 +21,7 @@ import { useQuickActionsSetup } from "@/lib/use-quick-actions";
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function RootLayout() {
   useQuickActionsSetup();
 
   const [fontsLoaded] = useFonts({
@@ -53,3 +54,5 @@ export default function RootLayout() {
     </QueryClientProvider>
   );
 }
+
+export default ObserveRoot.wrap(RootLayout);

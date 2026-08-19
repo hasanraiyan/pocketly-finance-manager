@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
+import { useObserve } from "expo-observe";
 import {
   Image,
   KeyboardAvoidingView,
@@ -20,6 +21,11 @@ import { theme } from "@/lib/theme";
 export default function SignInScreen() {
   const router = useRouter();
   const { login, continueAsGuest } = useAuth();
+  const { markInteractive } = useObserve();
+
+  useEffect(() => {
+    markInteractive();
+  }, [markInteractive]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

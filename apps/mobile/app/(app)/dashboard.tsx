@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Feather } from "@expo/vector-icons";
+import { useObserve } from "expo-observe";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import {
@@ -289,6 +290,14 @@ export default function DashboardScreen() {
   const accountMap = useMemo(() => {
     return new Map((data?.accounts ?? []).map((a) => [a._id, a.name]));
   }, [data?.accounts]);
+
+  const { markInteractive } = useObserve();
+
+  useEffect(() => {
+    if (!isLoading) {
+      markInteractive();
+    }
+  }, [isLoading, markInteractive]);
 
   // Greeting time
   const greeting = useMemo(() => {
