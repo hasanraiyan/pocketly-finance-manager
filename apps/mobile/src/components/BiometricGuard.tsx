@@ -1,6 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Feather } from "@expo/vector-icons";
-import { AppState, type AppStateStatus, Modal, Platform, Pressable, Text, View } from "react-native";
+import {
+  AppState,
+  type AppStateStatus,
+  Image,
+  Modal,
+  Platform,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 import { Button } from "@/components/Button";
 import {
   authenticateWithBiometrics,
@@ -94,34 +103,74 @@ export function BiometricGuard({ children }: BiometricGuardProps) {
         animationType="fade"
         statusBarTranslucent
       >
-        <View className="flex-1 bg-background items-center justify-center px-6">
-          <View className="w-full max-w-sm items-center gap-6">
-            <View className="h-20 w-20 items-center justify-center rounded-3xl bg-primary/10 border border-primary/20">
-              <Feather
-                name={
-                  bioStatus.biometricType === "Face ID"
-                    ? "smile"
-                    : "shield"
-                }
-                size={38}
-                color={theme.primary}
-              />
+        <View className="flex-1 bg-background items-center justify-between px-6 py-16">
+          <View className="items-center w-full pt-8">
+            {/* Pocketly Icon with Biometric Badge */}
+            <View className="relative mb-6">
+              <View className="h-24 w-24 items-center justify-center rounded-3xl bg-card border border-border shadow-md overflow-hidden p-3.5">
+                <Image
+                  source={require("../../assets/pocketly-icon.png")}
+                  style={{ width: "100%", height: "100%" }}
+                  resizeMode="contain"
+                />
+              </View>
+              <View className="absolute -bottom-2 -right-2 h-9 w-9 rounded-full bg-primary items-center justify-center border-2 border-background shadow-sm">
+                <Feather
+                  name={
+                    bioStatus.biometricType === "Face ID"
+                      ? "smile"
+                      : "shield"
+                  }
+                  size={16}
+                  color="#ffffff"
+                />
+              </View>
             </View>
 
-            <View className="items-center gap-2">
-              <Text className="font-heading text-2xl font-bold text-foreground text-center">
-                Pocketly is Locked
-              </Text>
-              <Text className="text-xs text-muted-foreground text-center max-w-xs leading-relaxed">
-                Biometric security is enabled. Verify your identity with {bioStatus.biometricType} to view your financial ledger.
+            <Text className="font-heading text-3xl font-bold text-foreground text-center">
+              Pocketly
+            </Text>
+            <View className="flex-row items-center gap-1.5 mt-2 px-3 py-1 rounded-full bg-muted/60 border border-border">
+              <Feather name="lock" size={12} color={theme.mutedForeground} />
+              <Text className="text-xs font-medium text-muted-foreground">
+                App Locked
               </Text>
             </View>
 
-            <View className="w-full gap-3 pt-4">
-              <Button onPress={performUnlock} className="w-full">
-                Unlock with {bioStatus.biometricType}
-              </Button>
-            </View>
+            <Text className="mt-6 text-sm text-muted-foreground text-center max-w-xs leading-relaxed">
+              Biometric protection is active. Authenticate with {bioStatus.biometricType} to access your financial OS.
+            </Text>
+          </View>
+
+          {/* Action Trigger */}
+          <View className="w-full max-w-sm gap-4 pb-4">
+            <Button
+              onPress={performUnlock}
+              className="w-full shadow-sm"
+            >
+              <View className="flex-row items-center justify-center gap-2">
+                <Feather
+                  name={
+                    bioStatus.biometricType === "Face ID"
+                      ? "smile"
+                      : "user-check"
+                  }
+                  size={18}
+                  color="#ffffff"
+                />
+                <Text className="text-base font-semibold text-white">
+                  Unlock with {bioStatus.biometricType}
+                </Text>
+              </View>
+            </Button>
+            <Pressable
+              onPress={performUnlock}
+              className="py-2.5 items-center justify-center"
+            >
+              <Text className="text-xs font-medium text-muted-foreground">
+                Tap to retry scan
+              </Text>
+            </Pressable>
           </View>
         </View>
       </Modal>
