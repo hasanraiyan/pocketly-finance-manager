@@ -43,7 +43,7 @@ jobs:
           cache: 'pnpm'
 
       - name: 📥 Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: 🔍 Typecheck Mobile Project
         run: pnpm --filter mobile typecheck
@@ -54,7 +54,10 @@ jobs:
 
       - name: 🔨 Compile Android Artifacts
         working-directory: apps/mobile/android
+        env:
+          EXPO_USE_METRO_WORKSPACE_ROOT: '1'
         run: |
+          chmod +x ./gradlew
           BUILD_TYPE="${{ github.event.inputs.build_type }}"
           
           if [ "$BUILD_TYPE" = "preview-apk" ]; then
