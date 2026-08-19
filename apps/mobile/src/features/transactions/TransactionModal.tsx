@@ -20,6 +20,8 @@ import {
   useCreateCategory,
 } from "@/features/categories/hooks";
 import { theme } from "@/lib/theme";
+import { haptics } from "@/lib/haptics";
+import { recordPositiveActionAndCheckReview } from "@/lib/use-store-review";
 import {
   useCreateTransaction,
   useUpdateTransaction,
@@ -198,7 +200,9 @@ export function TransactionModal({
         });
       } else {
         await createTransaction.mutateAsync(payload);
+        recordPositiveActionAndCheckReview().catch(() => {});
       }
+      haptics.success();
       onClose();
     } catch (err) {
       setError(

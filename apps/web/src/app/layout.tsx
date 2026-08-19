@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/lib/auth-provider";
 import { Providers } from "@/components/providers";
+import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
 import {
   SITE_DESCRIPTION,
   SITE_KEYWORDS,
@@ -88,7 +89,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>
-          <Providers>{children}</Providers>
+          <Providers>
+            {children}
+            <PwaInstallPrompt />
+          </Providers>
         </AuthProvider>
       </body>
     </html>

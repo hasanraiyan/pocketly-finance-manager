@@ -12,6 +12,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { AppUpdatePrompt } from "@/components/AppUpdatePrompt";
 import { AuthProvider } from "@/lib/auth-provider";
 import { queryClient } from "@/lib/query-persister";
 import { useQuickActionsSetup } from "@/lib/use-quick-actions";
@@ -43,6 +44,7 @@ export default function RootLayout() {
       <AuthProvider>
         <StatusBar style="dark" />
         <OfflineBanner />
+        <AppUpdatePrompt />
         <Slot />
       </AuthProvider>
     </QueryClientProvider>
