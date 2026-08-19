@@ -13,6 +13,7 @@
     },
     "android": {
       "package": "app.hasanraiyan.pocketly",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#ffffff",
         "foregroundImage": "./assets/android-icon-foreground.png",

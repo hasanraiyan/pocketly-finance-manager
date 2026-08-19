@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "619619081331",
+    "project_id": "pocketly-e56ee",
+    "storage_bucket": "pocketly-e56ee.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:619619081331:android:7a9e891670eb4bf9819e06",
+        "android_client_info": {
+          "package_name": "app.hasanraiyan.pocketly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgkGVLGUzpqTufG5N15r7AeRfvvwH_XDQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
