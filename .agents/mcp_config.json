@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "pocketly": {
+      "serverUrl": "https://api.pocketly.hasanraiyan.me/mcp"
+    }
+  }
+}
