@@ -18,10 +18,24 @@ const assetLinks = [
   },
 ];
 
+export const dynamic = "force-static";
+
 export async function GET() {
   return NextResponse.json(assetLinks, {
     headers: {
       "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Cache-Control": "public, max-age=86400, s-maxage=86400",
+    },
+  });
+}
+
+export async function HEAD() {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
       "Cache-Control": "public, max-age=86400, s-maxage=86400",
     },
   });
