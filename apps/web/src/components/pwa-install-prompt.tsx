@@ -48,8 +48,14 @@ export function PwaInstallPrompt() {
     const isSafari = /safari/.test(userAgent) && !/chrome|crios|fxios/.test(userAgent);
 
     if (isIosDevice && isSafari && !isStandalone) {
-      setIsIos(true);
-      setIsVisible(true);
+      const timer = setTimeout(() => {
+        setIsIos(true);
+        setIsVisible(true);
+      }, 50);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      };
     }
 
     return () => {
