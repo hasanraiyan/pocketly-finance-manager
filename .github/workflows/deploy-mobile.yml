@@ -1,23 +1,62 @@
-name: Mobile CI/CD Pipeline
+name: Mobile CI/CD Pipeline (Resource-Optimized)
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'apps/mobile/**'
-      - '!apps/mobile/**/*.md'
+  # 1. Manual trigger via GitHub Web UI or `gh workflow run`
   workflow_dispatch:
     inputs:
+      profile:
+        description: 'Build profile (production or preview)'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - preview
       auto_submit:
-        description: 'Auto submit to Google Play'
+        description: 'Auto-submit to Google Play (only applies to production)'
         required: true
         type: boolean
         default: true
 
+  # 2. Daily schedule (Runs once at 00:00 UTC)
+  schedule:
+    - cron: '0 0 * * *'
+
 jobs:
+  check-changes:
+    name: Check for Mobile Changes
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - name: 🏗 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - name: 🔎 Evaluate Change Trigger
+        id: check
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual trigger detected - proceeding with build."
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          CHANGED_FILES=$(git log --since="24 hours ago" --name-only --pretty=format: -- apps/mobile | sort -u | grep -v '\.md$' || true)
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "Found mobile code changes in the last 24h:"
+            echo "$CHANGED_FILES"
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "No mobile code changes detected in the last 24h. Skipping build to save EAS resources."
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          fi
+
   build-and-deploy:
     name: EAS Build & Deploy
+    needs: check-changes
+    if: needs.check-changes.outputs.should_run == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: 🏗 Checkout repository
@@ -46,7 +85,19 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 📦 Build & Auto-Submit to Google Play
+      - name: 📦 Build on EAS
         working-directory: apps/mobile
         run: |
-          eas build --platform android --profile production --auto-submit --non-interactive
+          PROFILE="${{ github.event.inputs.profile || 'production' }}"
+          AUTO_SUBMIT="${{ github.event.inputs.auto_submit }}"
+          
+          if [ "$PROFILE" = "production" ] && [ "$AUTO_SUBMIT" != "false" ]; then
+            echo "Building Production AAB with auto-submit to Google Play..."
+            eas build --platform android --profile production --auto-submit --non-interactive
+          elif [ "$PROFILE" = "production" ]; then
+            echo "Building Production AAB (no auto-submit)..."
+            eas build --platform android --profile production --non-interactive
+          else
+            echo "Building Preview APK..."
+            eas build --platform android --profile preview --non-interactive
+          fi
