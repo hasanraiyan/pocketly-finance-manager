@@ -1,0 +1,96 @@
+name: On-Demand Local Android Builder (0 EAS Minutes)
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Select Build Type to generate'
+        required: true
+        default: 'preview-apk'
+        type: choice
+        options:
+          - 'preview-apk'       # Standalone Release APK for testing
+          - 'debug-apk'         # Development / Debug APK with live reload
+          - 'production-aab'    # Google Play Store Bundle (.aab)
+          - 'all'               # Generates both Release APK and Play Store AAB
+
+jobs:
+  build-android:
+    name: Build Android (${{ github.event.inputs.build_type }})
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 🤖 Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: 📥 Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔍 Typecheck Mobile Project
+        run: pnpm --filter mobile typecheck
+
+      - name: ⚙️ Expo Prebuild (Generate Native Android Project)
+        working-directory: apps/mobile
+        run: npx expo prebuild --platform android --clean
+
+      - name: 🔨 Compile Android Artifacts
+        working-directory: apps/mobile/android
+        run: |
+          BUILD_TYPE="${{ github.event.inputs.build_type }}"
+          
+          if [ "$BUILD_TYPE" = "preview-apk" ]; then
+            echo "Compiling Release APK..."
+            ./gradlew assembleRelease --no-daemon
+          elif [ "$BUILD_TYPE" = "debug-apk" ]; then
+            echo "Compiling Debug APK..."
+            ./gradlew assembleDebug --no-daemon
+          elif [ "$BUILD_TYPE" = "production-aab" ]; then
+            echo "Compiling Production AAB..."
+            ./gradlew bundleRelease --no-daemon
+          elif [ "$BUILD_TYPE" = "all" ]; then
+            echo "Compiling both Release APK and Production AAB..."
+            ./gradlew assembleRelease bundleRelease --no-daemon
+          fi
+
+      - name: 📤 Upload Release APK
+        if: ${{ github.event.inputs.build_type == 'preview-apk' || github.event.inputs.build_type == 'all' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: pocketly-release-apk
+          path: apps/mobile/android/app/build/outputs/apk/release/*.apk
+          retention-days: 30
+
+      - name: 📤 Upload Debug APK
+        if: ${{ github.event.inputs.build_type == 'debug-apk' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: pocketly-debug-apk
+          path: apps/mobile/android/app/build/outputs/apk/debug/*.apk
+          retention-days: 30
+
+      - name: 📤 Upload Production AAB
+        if: ${{ github.event.inputs.build_type == 'production-aab' || github.event.inputs.build_type == 'all' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: pocketly-production-aab
+          path: apps/mobile/android/app/build/outputs/bundle/release/*.aab
+          retention-days: 30
