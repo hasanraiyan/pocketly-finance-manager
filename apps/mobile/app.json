@@ -9,12 +9,12 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.hasanraiyan.pocketly"
+      "bundleIdentifier": "app.hasanraiyan.pocketly"
     },
     "android": {
-      "package": "com.hasanraiyan.pocketly",
+      "package": "app.hasanraiyan.pocketly",
       "adaptiveIcon": {
-        "backgroundColor": "#193b24",
+        "backgroundColor": "#ffffff",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
