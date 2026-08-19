@@ -1,0 +1,28 @@
+import { NextResponse } from "next/server";
+
+const assetLinks = [
+  {
+    relation: [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds",
+    ],
+    target: {
+      namespace: "android_app",
+      package_name: "app.hasanraiyan.pocketly",
+      sha256_cert_fingerprints: [
+        "1A:5D:1E:73:E1:8C:67:99:70:B0:79:D4:A1:E8:81:73:10:71:71:E1:69:8A:B6:EA:07:3E:D7:BA:34:84:E6:60",
+        "07:5A:F5:C6:9E:A3:36:E4:65:DF:1F:AE:A6:A9:15:70:FC:63:46:C5:B7:C5:F8:B1:76:AE:C6:E5:D5:55:E7:BA",
+        "C3:47:6E:D6:5D:C3:2D:01:C8:25:B8:34:C3:8D:1C:EC:ED:A2:58:85:EE:C9:DF:B0:2F:44:20:29:26:EE:88:0A",
+      ],
+    },
+  },
+];
+
+export async function GET() {
+  return NextResponse.json(assetLinks, {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "public, max-age=86400, s-maxage=86400",
+    },
+  });
+}
