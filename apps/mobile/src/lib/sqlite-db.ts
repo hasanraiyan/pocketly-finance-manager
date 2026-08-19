@@ -53,9 +53,10 @@ async function initTables(db: SQLite.SQLiteDatabase) {
       type TEXT NOT NULL,
       amount INTEGER NOT NULL,
       date TEXT NOT NULL,
-      category_id TEXT NOT NULL,
+      category_id TEXT,
       account_id TEXT NOT NULL,
       to_account_id TEXT,
+      description TEXT,
       note TEXT,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
@@ -211,9 +212,10 @@ export async function sqliteGetTransactions(): Promise<LocalTransaction[]> {
     type: "income" | "expense" | "transfer";
     amount: number;
     date: string;
-    category_id: string;
+    category_id: string | null;
     account_id: string;
     to_account_id: string | null;
+    description: string | null;
     note: string | null;
     created_at: string;
     updated_at: string;
@@ -224,9 +226,10 @@ export async function sqliteGetTransactions(): Promise<LocalTransaction[]> {
     type: r.type,
     amount: r.amount,
     date: r.date,
-    categoryId: r.category_id,
+    categoryId: r.category_id || undefined,
     accountId: r.account_id,
     toAccountId: r.to_account_id || undefined,
+    description: r.description || undefined,
     note: r.note || undefined,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -238,16 +241,17 @@ export async function sqliteSaveTransaction(tx: LocalTransaction): Promise<void>
   if (!db) return;
   const now = new Date().toISOString();
   await db.runAsync(
-    `INSERT OR REPLACE INTO transactions (id, type, amount, date, category_id, account_id, to_account_id, note, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+    `INSERT OR REPLACE INTO transactions (id, type, amount, date, category_id, account_id, to_account_id, description, note, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
     [
       tx._id,
       tx.type,
       tx.amount,
       tx.date,
-      tx.categoryId,
+      tx.categoryId || null,
       tx.accountId,
       tx.toAccountId || null,
+      tx.description || null,
       tx.note || null,
       tx.createdAt || now,
       tx.updatedAt || now,

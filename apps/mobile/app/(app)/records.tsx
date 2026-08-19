@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import {
   ActivityIndicator,
@@ -10,6 +10,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 import { Button } from "@/components/Button";
 import { Card, CardContent } from "@/components/Card";
 import { useAccounts } from "@/features/accounts/hooks";
@@ -40,10 +41,16 @@ const TYPE_FILTER_OPTIONS: Array<{
 
 export default function RecordsScreen() {
   const { user } = useAuth();
+  const searchParams = useLocalSearchParams<{ action?: string; type?: Transaction["type"] }>();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<Transaction["type"] | "">("");
   const [accountFilter, setAccountFilter] = useState<string>("");
   const [categoryFilter, setCategoryFilter] = useState<string>("");
+
+  const [modalVisible, setModalVisible] = useState(searchParams.action === "add");
+  const [modalDefaultType, setModalDefaultType] = useState<Transaction["type"]>(
+    searchParams.type || "expense"
+  );
 
   const filters: TransactionFilters = useMemo(
     () => ({
@@ -67,10 +74,18 @@ export default function RecordsScreen() {
   const deleteTransaction = useDeleteTransaction(filters);
   const { data: accounts = [] } = useAccounts();
   const { data: categories = [] } = useCategories();
-
-  const [modalVisible, setModalVisible] = useState(false);
   const [exportVisible, setExportVisible] = useState(false);
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null);
+
+  useEffect(() => {
+    if (searchParams.action === "add") {
+      setSelectedTx(null);
+      if (searchParams.type) {
+        setModalDefaultType(searchParams.type);
+      }
+      setModalVisible(true);
+    }
+  }, [searchParams.action, searchParams.type]);
 
   const transactions = data?.items ?? [];
   const nextCursor = data?.nextCursor;
@@ -469,6 +484,7 @@ export default function RecordsScreen() {
         onClose={() => setModalVisible(false)}
         transaction={selectedTx}
         filters={filters}
+        defaultType={modalDefaultType}
       />
 
       {/* Export Report Modal */}

@@ -26,6 +26,7 @@ import { AuthService, SessionMeta } from './auth.service';
 import { AuthSessionDto, SessionListDto } from './dto/auth-response.dto';
 import {
   ChangePasswordDto,
+  GoogleLoginDto,
   LoginDto,
   RefreshDto,
   RegisterDto,
@@ -56,6 +57,14 @@ export class AuthController {
   @ApiOkResponse({ type: AuthSessionDto })
   login(@Body() dto: LoginDto, @Req() req: Request) {
     return this.authService.login(dto, sessionMeta(req));
+  }
+
+  @Public()
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AuthSessionDto })
+  google(@Body() dto: GoogleLoginDto, @Req() req: Request) {
+    return this.authService.googleLogin(dto, sessionMeta(req));
   }
 
   // Public: a refresh token is its own credential, not backed by a still-valid

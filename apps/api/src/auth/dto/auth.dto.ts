@@ -24,7 +24,13 @@ export const changePasswordSchema = z.object({
   newPassword: z.string().min(8).max(200),
 });
 
+export const googleLoginSchema = z.object({
+  idToken: z.string().min(1),
+});
+
 export class RegisterDto extends createZodDto(registerSchema) {}
 export class LoginDto extends createZodDto(loginSchema) {}
 export class RefreshDto extends createZodDto(refreshSchema) {}
 export class ChangePasswordDto extends createZodDto(changePasswordSchema) {}
+export class GoogleLoginDto extends createZodDto(googleLoginSchema) {}
+

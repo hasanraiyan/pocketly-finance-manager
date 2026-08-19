@@ -5,8 +5,8 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ required: true })
-  passwordHash!: string;
+  @Prop({ type: String, default: null })
+  passwordHash?: string | null;
 
   @Prop({
     required: true,
@@ -22,6 +22,17 @@ export class User {
 
   @Prop()
   imageUrl?: string;
+
+  @Prop({ type: String, default: null, index: true, sparse: true })
+  googleId?: string | null;
+
+  @Prop({
+    type: String,
+    enum: ['password', 'google', 'both'],
+    default: 'password',
+    index: true,
+  })
+  authProvider!: 'password' | 'google' | 'both';
 
   @Prop()
   phone?: string;

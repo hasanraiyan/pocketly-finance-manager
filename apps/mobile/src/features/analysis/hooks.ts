@@ -85,10 +85,12 @@ export function useCategoryBreakdown(period: AnalysisPeriod) {
           map.set(c._id, { total: 0, count: 0, name: c.name, type: c.type, color: c.color });
         });
         txs.forEach((t) => {
-          const entry = map.get(t.categoryId);
-          if (entry) {
-            entry.total += t.amount;
-            entry.count += 1;
+          if (t.categoryId) {
+            const entry = map.get(t.categoryId);
+            if (entry) {
+              entry.total += t.amount;
+              entry.count += 1;
+            }
           }
         });
         const categories = Array.from(map.entries())

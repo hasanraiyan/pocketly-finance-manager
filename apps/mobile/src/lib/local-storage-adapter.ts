@@ -47,9 +47,10 @@ export interface LocalTransaction {
   type: "income" | "expense" | "transfer";
   amount: number;
   date: string;
-  categoryId: string;
+  categoryId?: string;
   accountId: string;
   toAccountId?: string;
+  description?: string;
   note?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -229,10 +230,11 @@ export async function saveLocalTransaction(tx: Omit<LocalTransaction, "_id"> & {
     type: tx.type,
     amount: tx.amount,
     date: tx.date || now,
-    categoryId: tx.categoryId,
+    categoryId: tx.categoryId || "",
     accountId: tx.accountId,
     toAccountId: tx.toAccountId,
-    note: tx.note,
+    description: tx.description || tx.note || "",
+    note: tx.note || tx.description || "",
     createdAt: now,
     updatedAt: now,
   };

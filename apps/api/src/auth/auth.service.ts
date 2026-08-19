@@ -15,9 +15,9 @@ import {
 import { TokenService } from './token.service';
 import { UserDocument } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
-import type { LoginDto, RegisterDto } from './dto/auth.dto';
+import { OAuth2Client } from 'google-auth-library';
+import type { GoogleLoginDto, LoginDto, RegisterDto } from './dto/auth.dto';
 
-/** Signed but self-verified -- the API is the only thing that ever checks a session token. */
 const ISSUER = 'pocketly';
 const SESSION_AUDIENCE = 'pocketly-api';
 
@@ -34,6 +34,8 @@ export interface IssuedSession {
   accessToken: string;
   refreshToken: string;
 }
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 @Injectable()
 export class AuthService {
@@ -59,14 +61,67 @@ export class AuthService {
 
   async login(dto: LoginDto, meta: SessionMeta): Promise<IssuedSession> {
     const user = await this.users.findByEmail(dto.email);
-    // Same message either way -- confirming an email exists via a different
-    // error is a real enumeration leak, small as it seems.
     const invalid = () =>
       new UnauthorizedException('Invalid email or password');
     if (!user) throw invalid();
 
+    if (!user.passwordHash) {
+      throw new UnauthorizedException(
+        'This account was created with Google. Please continue with Google.',
+      );
+    }
+
     const valid = await this.passwords.verify(user.passwordHash, dto.password);
     if (!valid) throw invalid();
+
+    return this.issueSession(user, meta);
+  }
+
+  async googleLogin(
+    dto: GoogleLoginDto,
+    meta: SessionMeta,
+  ): Promise<IssuedSession> {
+    let payload;
+    try {
+      const ticket = await googleClient.verifyIdToken({
+        idToken: dto.idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      payload = ticket.getPayload();
+    } catch {
+      throw new UnauthorizedException('Invalid Google token');
+    }
+
+    if (!payload || !payload.email) {
+      throw new UnauthorizedException('Google token did not contain an email');
+    }
+
+    const email = payload.email.toLowerCase().trim();
+    const googleId = payload.sub;
+    const name = payload.name || email.split('@')[0];
+    const picture = payload.picture;
+
+    let user = await this.users.findByEmail(email);
+
+    if (user) {
+      // Account exists: link Google account and update avatar if not present
+      let modified = false;
+      if (!user.googleId) {
+        user.googleId = googleId;
+        user.authProvider = user.passwordHash ? 'both' : 'google';
+        modified = true;
+      }
+      if (!user.imageUrl && picture) {
+        user.imageUrl = picture;
+        modified = true;
+      }
+      if (modified) {
+        await user.save();
+      }
+    } else {
+      // New User: register with Google
+      user = await this.users.registerWithGoogle(email, googleId, name, picture);
+    }
 
     return this.issueSession(user, meta);
   }
@@ -155,14 +210,19 @@ export class AuthService {
     currentPassword: string,
     newPassword: string,
   ): Promise<void> {
-    const valid = await this.passwords.verify(
-      user.passwordHash,
-      currentPassword,
-    );
-    if (!valid) {
-      throw new UnauthorizedException('Current password is incorrect');
+    if (user.passwordHash) {
+      const valid = await this.passwords.verify(
+        user.passwordHash,
+        currentPassword,
+      );
+      if (!valid) {
+        throw new UnauthorizedException('Current password is incorrect');
+      }
     }
     user.passwordHash = await this.passwords.hash(newPassword);
+    if (user.authProvider === 'google') {
+      user.authProvider = 'both';
+    }
     await user.save();
   }
 

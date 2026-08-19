@@ -42,6 +42,10 @@ export class UsersService {
     return this.userModel.findOne({ email: email.toLowerCase().trim() }).exec();
   }
 
+  async findByGoogleId(googleId: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ googleId }).exec();
+  }
+
   async findById(id: string): Promise<UserDocument | null> {
     return this.userModel.findById(id).exec();
   }
@@ -63,6 +67,31 @@ export class UsersService {
       email: normalizedEmail,
       passwordHash,
       name,
+      authProvider: 'password',
+      role: shouldBeAdmin ? 'admin' : 'user',
+    });
+  }
+
+  async registerWithGoogle(
+    email: string,
+    googleId: string,
+    name: string,
+    imageUrl?: string,
+  ): Promise<UserDocument> {
+    const normalizedEmail = email.toLowerCase().trim();
+    const shouldBeAdmin = (process.env.ADMIN_EMAILS || '')
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean)
+      .includes(normalizedEmail);
+
+    return this.userModel.create({
+      email: normalizedEmail,
+      googleId,
+      name,
+      imageUrl,
+      authProvider: 'google',
+      passwordHash: null,
       role: shouldBeAdmin ? 'admin' : 'user',
     });
   }

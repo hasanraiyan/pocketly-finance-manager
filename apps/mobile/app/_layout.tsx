@@ -14,10 +14,13 @@ import { StatusBar } from "expo-status-bar";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { AuthProvider } from "@/lib/auth-provider";
 import { queryClient } from "@/lib/query-persister";
+import { useQuickActionsSetup } from "@/lib/use-quick-actions";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  useQuickActionsSetup();
+
   const [fontsLoaded] = useFonts({
     Fraunces_500Medium,
     Inter_400Regular,

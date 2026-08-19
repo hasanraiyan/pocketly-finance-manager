@@ -49,6 +49,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "firebase-admin": "^14.2.0",
+    "google-auth-library": "^11.0.2",
     "ioredis": "^6.0.0",
     "jose": "^6.2.9",
     "mongodb": "^7.5.0",

@@ -206,10 +206,10 @@ export async function migrateLocalDataToCloud(
   let migratedTransactions = 0;
   for (const tx of localTxs) {
     const cloudAccId = accountMap.get(tx.accountId) || cloudAccs[0]?._id;
-    const cloudCatId = categoryMap.get(tx.categoryId) || cloudCats[0]?._id;
+    const cloudCatId = tx.categoryId ? (categoryMap.get(tx.categoryId) || cloudCats[0]?._id) : undefined;
     const cloudToAccId = tx.toAccountId ? accountMap.get(tx.toAccountId) : undefined;
 
-    if (cloudAccId && cloudCatId) {
+    if (cloudAccId && (tx.type === "transfer" || cloudCatId)) {
       try {
         await client.POST("/transactions", {
           body: {
@@ -217,8 +217,9 @@ export async function migrateLocalDataToCloud(
             amount: tx.amount,
             date: tx.date,
             accountId: cloudAccId,
-            categoryId: cloudCatId,
             toAccountId: cloudToAccId,
+            categoryId: tx.type !== "transfer" ? cloudCatId : undefined,
+            description: tx.description,
             note: tx.note,
           },
         });
