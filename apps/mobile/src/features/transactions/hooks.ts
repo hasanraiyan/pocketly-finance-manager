@@ -13,7 +13,6 @@ import {
   getLocalTransactions,
   saveLocalTransaction,
 } from "@/lib/local-storage-adapter";
-import { syncAndroidWidgets } from "@/lib/use-quick-actions";
 
 export type Transaction =
   components["schemas"]["TransactionListDto"]["data"]["items"][number];
@@ -153,7 +152,6 @@ export function useCreateTransaction(filters: TransactionFilters = {}) {
       }));
       queryClient.invalidateQueries({ queryKey: ACCOUNTS_KEY });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      syncAndroidWidgets();
     },
   });
 }
@@ -206,7 +204,6 @@ export function useUpdateTransaction(filters: TransactionFilters = {}) {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ACCOUNTS_KEY });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      syncAndroidWidgets();
     },
   });
 }
@@ -250,7 +247,6 @@ export function useDeleteTransaction(filters: TransactionFilters = {}) {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ACCOUNTS_KEY });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      syncAndroidWidgets();
     },
   });
 }

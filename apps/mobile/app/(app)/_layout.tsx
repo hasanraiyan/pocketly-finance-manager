@@ -6,8 +6,11 @@ import { View } from "react-native";
 import { SpeedDialFab } from "@/components/SpeedDialFab";
 import { theme } from "@/lib/theme";
 
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 export default function AppLayout() {
   const { isLoaded, isSignedIn } = useAuth();
+  const insets = useSafeAreaInsets();
   usePushNotificationSetup();
 
   if (!isLoaded) {
@@ -19,7 +22,7 @@ export default function AppLayout() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: theme.background }}>
       <Tabs
         screenOptions={{
           headerShown: false,

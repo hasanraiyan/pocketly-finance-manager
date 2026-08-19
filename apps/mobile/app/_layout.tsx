@@ -14,10 +14,7 @@ import { StatusBar } from "expo-status-bar";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { AuthProvider } from "@/lib/auth-provider";
 import { queryClient } from "@/lib/query-persister";
-import { useQuickActionsSetup, widgetTaskHandler } from "@/lib/use-quick-actions";
-import { registerWidgetTaskHandler } from "react-native-android-widget";
-
-registerWidgetTaskHandler(widgetTaskHandler);
+import { useQuickActionsSetup } from "@/lib/use-quick-actions";
 
 SplashScreen.preventAutoHideAsync();
 

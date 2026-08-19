@@ -103,7 +103,7 @@ export default function AccountsScreen() {
     <View className="flex-1 bg-background">
       {/* Header Bar */}
       <View className="w-full border-b border-border bg-background">
-        <View className="w-full max-w-5xl mx-auto flex-row items-center justify-between px-5 md:px-8 pt-16 pb-4">
+        <View className="w-full max-w-5xl mx-auto flex-row items-center justify-between px-5 md:px-8 pt-4 pb-4">
           <View>
             <Text className="font-heading text-2xl text-foreground">Accounts</Text>
             <Text className="text-xs text-muted-foreground">
