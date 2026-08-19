@@ -18,9 +18,9 @@ on:
         type: boolean
         default: true
 
-  # 2. Daily schedule (Runs once at 00:00 UTC)
+  # 2. Weekly schedule (Runs once every Sunday at 00:00 UTC)
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * 0'
 
 jobs:
   check-changes:
@@ -32,7 +32,7 @@ jobs:
       - name: 🏗 Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 50
+          fetch-depth: 100
 
       - name: 🔎 Evaluate Change Trigger
         id: check
@@ -43,13 +43,13 @@ jobs:
             exit 0
           fi
 
-          CHANGED_FILES=$(git log --since="24 hours ago" --name-only --pretty=format: -- apps/mobile | sort -u | grep -v '\.md$' || true)
+          CHANGED_FILES=$(git log --since="7 days ago" --name-only --pretty=format: -- apps/mobile | sort -u | grep -v '\.md$' || true)
           if [ -n "$CHANGED_FILES" ]; then
-            echo "Found mobile code changes in the last 24h:"
+            echo "Found mobile code changes in the last 7 days:"
             echo "$CHANGED_FILES"
             echo "should_run=true" >> $GITHUB_OUTPUT
           else
-            echo "No mobile code changes detected in the last 24h. Skipping build to save EAS resources."
+            echo "No mobile code changes detected in the last 7 days. Skipping build to save EAS resources."
             echo "should_run=false" >> $GITHUB_OUTPUT
           fi
 
