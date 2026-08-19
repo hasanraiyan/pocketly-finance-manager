@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export function GuestDashboardView() {
   const { user } = useAuth();
