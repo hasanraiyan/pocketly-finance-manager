@@ -38,7 +38,15 @@ import {
 import { SettingsSkeleton } from "@/features/settings/SettingsSkeleton";
 import { ExportModal } from "@/features/transactions/ExportModal";
 import { useAuth } from "@/lib/auth-provider";
+import {
+  authenticateWithBiometrics,
+  checkBiometricsStatus,
+  isBiometricsEnabled,
+  setBiometricsEnabled,
+  type BiometricStatus,
+} from "@/lib/biometrics";
 import { formatDate } from "@/lib/format";
+import { haptics } from "@/lib/haptics";
 import { theme } from "@/lib/theme";
 
 export default function SettingsScreen() {
@@ -95,6 +103,52 @@ export default function SettingsScreen() {
   const [name, setName] = useState("");
   const [currency, setCurrency] = useState("USD");
   const [profileMsg, setProfileMsg] = useState<string | null>(null);
+
+  // Biometrics state
+  const [bioStatus, setBioStatus] = useState<BiometricStatus>({
+    isAvailable: false,
+    isEnrolled: false,
+    biometricType: "Biometrics",
+  });
+  const [bioEnabled, setBioEnabled] = useState(false);
+  const [bioLoading, setBioLoading] = useState(false);
+
+  useEffect(() => {
+    async function loadBiometrics() {
+      const status = await checkBiometricsStatus();
+      setBioStatus(status);
+      const enabled = await isBiometricsEnabled();
+      setBioEnabled(enabled);
+    }
+    loadBiometrics();
+  }, []);
+
+  async function handleToggleBiometrics() {
+    if (!bioStatus.isAvailable) {
+      Alert.alert(
+        "Biometrics Unavailable",
+        "Your device does not have fingerprint or Face ID enrolled in system settings."
+      );
+      return;
+    }
+
+    setBioLoading(true);
+    const targetState = !bioEnabled;
+    const success = await authenticateWithBiometrics(
+      targetState
+        ? `Enable ${bioStatus.biometricType} Lock`
+        : `Disable ${bioStatus.biometricType} Lock`
+    );
+
+    if (success) {
+      await setBiometricsEnabled(targetState);
+      setBioEnabled(targetState);
+      haptics.success();
+    } else {
+      haptics.error();
+    }
+    setBioLoading(false);
+  }
 
   // Modals state
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
@@ -761,7 +815,41 @@ export default function SettingsScreen() {
                   </Card>
                 )}
 
-                {/* 6. Security Card (Cloud Only) */}
+                {/* 6. Biometric App Lock Card (Available for Guest & Signed In) */}
+                <Card>
+                  <CardContent className="gap-3.5">
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-row items-center gap-2 flex-1 pr-2">
+                        <View className="h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                          <Feather
+                            name={bioStatus.biometricType === "Face ID" ? "smile" : "shield"}
+                            size={14}
+                            color={theme.primary}
+                          />
+                        </View>
+                        <Text className="text-sm font-semibold text-foreground">
+                          {bioStatus.biometricType} App Lock
+                        </Text>
+                      </View>
+
+                      <Pressable
+                        onPress={handleToggleBiometrics}
+                        disabled={bioLoading}
+                        className={`w-12 h-6 rounded-full p-0.5 justify-center ${
+                          bioEnabled ? "bg-primary items-end" : "bg-muted items-start"
+                        }`}
+                      >
+                        <View className="h-5 w-5 rounded-full bg-white shadow-xs" />
+                      </Pressable>
+                    </View>
+
+                    <Text className="text-xs text-muted-foreground leading-relaxed">
+                      Require {bioStatus.biometricType} authentication whenever you open Pocketly or return from other apps.
+                    </Text>
+                  </CardContent>
+                </Card>
+
+                {/* 7. Password & Authentication Card (Cloud Only) */}
                 {!isGuest && (
                   <Card>
                     <CardContent className="gap-3">
@@ -770,7 +858,7 @@ export default function SettingsScreen() {
                           <Feather name="lock" size={14} color={theme.primary} />
                         </View>
                         <Text className="text-sm font-semibold text-foreground">
-                          Security & Authentication
+                          Password & Account
                         </Text>
                       </View>
 
