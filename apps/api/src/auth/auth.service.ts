@@ -81,7 +81,7 @@ export class AuthService {
     dto: GoogleLoginDto,
     meta: SessionMeta,
   ): Promise<IssuedSession> {
-    let payload;
+    let payload: import('google-auth-library').TokenPayload | undefined;
     try {
       const ticket = await googleClient.verifyIdToken({
         idToken: dto.idToken,
@@ -96,10 +96,10 @@ export class AuthService {
       throw new UnauthorizedException('Google token did not contain an email');
     }
 
-    const email = payload.email.toLowerCase().trim();
-    const googleId = payload.sub;
-    const name = payload.name || email.split('@')[0];
-    const picture = payload.picture;
+    const email: string = payload.email.toLowerCase().trim();
+    const googleId: string = payload.sub;
+    const name: string = payload.name || email.split('@')[0];
+    const picture: string | undefined = payload.picture;
 
     let user = await this.users.findByEmail(email);
 
@@ -120,7 +120,12 @@ export class AuthService {
       }
     } else {
       // New User: register with Google
-      user = await this.users.registerWithGoogle(email, googleId, name, picture);
+      user = await this.users.registerWithGoogle(
+        email,
+        googleId,
+        name,
+        picture,
+      );
     }
 
     return this.issueSession(user, meta);

@@ -33,4 +33,3 @@ export class LoginDto extends createZodDto(loginSchema) {}
 export class RefreshDto extends createZodDto(refreshSchema) {}
 export class ChangePasswordDto extends createZodDto(changePasswordSchema) {}
 export class GoogleLoginDto extends createZodDto(googleLoginSchema) {}
-
