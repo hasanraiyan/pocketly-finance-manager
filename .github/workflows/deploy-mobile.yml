@@ -1,4 +1,4 @@
-﻿name: Mobile CI/CD Pipeline
+name: Mobile CI/CD Pipeline
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - master
     paths:
       - 'apps/mobile/**'
-      - 'packages/**'
+      - '!apps/mobile/**/*.md'
   workflow_dispatch:
     inputs:
       auto_submit:
