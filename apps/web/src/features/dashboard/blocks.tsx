@@ -348,13 +348,13 @@ export async function HealthCard() {
         <div className="flex flex-col gap-3">
           {health.components.map((component) => (
             <div key={component.key} className="flex flex-col gap-1">
-              <div className="flex items-center justify-between text-sm">
-                <span>{component.label}</span>
-                <span className="font-mono text-xs tabular-nums text-muted-foreground">
-                  {component.score}
+              <div className="flex items-center justify-between text-sm gap-2">
+                <span className="truncate flex-1">{component.label}</span>
+                <span className="font-mono text-xs tabular-nums text-muted-foreground shrink-0">
+                  {component.score}%
                 </span>
               </div>
-              <Progress value={component.score} />
+              <Progress value={component.score} adaptiveColor />
               <span className="text-xs text-muted-foreground">
                 {component.reason}
               </span>
@@ -392,18 +392,25 @@ export async function GoalsCard() {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        {goals.slice(0, 4).map((goal) => (
-          <div key={goal._id} className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between text-sm">
-              <span className="truncate">{goal.name}</span>
-              <span className="font-mono text-xs tabular-nums text-muted-foreground">
-                {formatCurrency(goal.progress, currency)} of{" "}
-                {formatCurrency(goal.targetAmount, currency)}
-              </span>
+        {goals.slice(0, 4).map((goal) => {
+          const pct = Math.min(Math.round(goal.percentComplete), 100);
+          return (
+            <div key={goal._id} className="flex flex-col gap-1.5 p-2 rounded-lg bg-muted/20 border border-border/40">
+              <div className="flex items-center justify-between text-sm gap-2">
+                <span className="truncate flex-1 font-medium">{goal.name}</span>
+                <span className="font-mono text-xs tabular-nums text-muted-foreground shrink-0">
+                  {formatCurrency(goal.progress, currency)} of{" "}
+                  {formatCurrency(goal.targetAmount, currency)}
+                </span>
+              </div>
+              <Progress value={pct} adaptiveColor />
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>{goal.onTrack ? "On track" : "Needs attention"}</span>
+                <span className="font-mono font-medium">{pct}%</span>
+              </div>
             </div>
-            <Progress value={goal.percentComplete} />
-          </div>
-        ))}
+          );
+        })}
         <Button
           render={<Link href="/goals" />}
           variant="outline"
@@ -458,10 +465,10 @@ export async function AccountsCard() {
           shown.map((account) => (
             <div
               key={account._id}
-              className="flex items-center justify-between border-l-2 border-primary py-2 pl-3"
+              className="flex items-center justify-between border-l-2 border-primary py-2 pl-3 gap-2"
             >
-              <span className="text-sm">{account.name}</span>
-              <span className="font-mono text-sm tabular-nums">
+              <span className="text-sm truncate flex-1">{account.name}</span>
+              <span className="font-mono text-sm tabular-nums shrink-0">
                 {formatCurrency(account.balance, currency)}
               </span>
             </div>
@@ -510,19 +517,33 @@ export async function BudgetsCard() {
         ) : (
           budgets.map((budget) => {
             const categoryName = categoryMap.get(budget.categoryId) ?? "Budget";
+            const isOver = budget.spent > budget.amount;
+            const pct = Math.round(budget.percentageUsed);
+
             return (
-              <div key={budget._id} className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between text-sm">
-                  <span>{categoryName}</span>
-                  <span className="font-mono text-xs tabular-nums text-muted-foreground">
+              <div key={budget._id} className="flex flex-col gap-1.5 p-2 rounded-lg bg-muted/20 border border-border/40">
+                <div className="flex items-center justify-between text-sm gap-2">
+                  <span className="truncate flex-1 font-medium">{categoryName}</span>
+                  <span className="font-mono text-xs tabular-nums text-muted-foreground shrink-0">
                     {formatCurrency(budget.spent, currency)} of{" "}
                     {formatCurrency(budget.amount, currency)}
                   </span>
                 </div>
                 <Progress
                   value={Math.min(budget.percentageUsed, 100)}
-                  className={cn(budget.spent > budget.amount && "bg-negative/20")}
+                  adaptiveColor
                 />
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span className={cn(isOver && "text-rose-600 dark:text-rose-400 font-semibold")}>
+                    {isOver ? `Over budget by ${formatCurrency(budget.spent - budget.amount, currency)}` : `${formatCurrency(Math.max(0, budget.amount - budget.spent), currency)} remaining`}
+                  </span>
+                  <span className={cn(
+                    "font-mono font-bold px-1.5 py-0.5 rounded text-[11px]",
+                    isOver ? "bg-rose-500/15 text-rose-600 dark:text-rose-400" : pct >= 70 ? "bg-amber-500/15 text-amber-600 dark:text-amber-400" : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                  )}>
+                    {pct}%
+                  </span>
+                </div>
               </div>
             );
           })

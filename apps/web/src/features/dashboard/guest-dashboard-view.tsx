@@ -85,14 +85,18 @@ export function GuestDashboardView() {
               const saved = goal.savedAmount ?? 0;
               const pct = Math.min(Math.round((saved / (goal.targetAmount || 1)) * 100), 100);
               return (
-                <div key={goal._id} className="flex flex-col gap-1.5">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="truncate">{goal.name}</span>
-                    <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                <div key={goal._id} className="flex flex-col gap-1.5 p-2 rounded-lg bg-muted/20 border border-border/40">
+                  <div className="flex items-center justify-between text-sm gap-2">
+                    <span className="truncate flex-1 font-medium">{goal.name}</span>
+                    <span className="font-mono text-xs tabular-nums text-muted-foreground shrink-0">
                       {formatCurrency(saved, currency)} of {formatCurrency(goal.targetAmount, currency)}
                     </span>
                   </div>
-                  <Progress value={pct} />
+                  <Progress value={pct} adaptiveColor />
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{pct >= 100 ? "Completed" : "In progress"}</span>
+                    <span className="font-mono font-medium">{pct}%</span>
+                  </div>
                 </div>
               );
             })}
@@ -129,10 +133,10 @@ export function GuestDashboardView() {
               accounts.slice(0, 5).map((account) => (
                 <div
                   key={account._id}
-                  className="flex items-center justify-between border-l-2 border-primary py-2 pl-3"
+                  className="flex items-center justify-between border-l-2 border-primary py-2 pl-3 gap-2"
                 >
-                  <span className="text-sm">{account.name}</span>
-                  <span className="font-mono text-sm tabular-nums">
+                  <span className="text-sm truncate flex-1">{account.name}</span>
+                  <span className="font-mono text-sm tabular-nums shrink-0">
                     {formatCurrency(account.balance, currency)}
                   </span>
                 </div>
@@ -163,16 +167,29 @@ export function GuestDashboardView() {
               budgets.map((budget) => {
                 const categoryName = categoryMap.get(budget.categoryId) ?? "Budget";
                 const spent = budget.spent || 0;
-                const pct = Math.min(Math.round((spent / (budget.amount || 1)) * 100), 100);
+                const limit = budget.amount || 1;
+                const isOver = spent > limit;
+                const pct = Math.round((spent / limit) * 100);
                 return (
-                  <div key={budget._id} className="flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between text-sm">
-                      <span>{categoryName}</span>
-                      <span className="font-mono text-xs tabular-nums text-muted-foreground">
-                        {formatCurrency(spent, currency)} of {formatCurrency(budget.amount, currency)}
+                  <div key={budget._id} className="flex flex-col gap-1.5 p-2 rounded-lg bg-muted/20 border border-border/40">
+                    <div className="flex items-center justify-between text-sm gap-2">
+                      <span className="truncate flex-1 font-medium">{categoryName}</span>
+                      <span className="font-mono text-xs tabular-nums text-muted-foreground shrink-0">
+                        {formatCurrency(spent, currency)} of {formatCurrency(limit, currency)}
                       </span>
                     </div>
-                    <Progress value={pct} />
+                    <Progress value={Math.min(pct, 100)} adaptiveColor />
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span className={cn(isOver && "text-rose-600 dark:text-rose-400 font-semibold")}>
+                        {isOver ? `Over budget by ${formatCurrency(spent - limit, currency)}` : `${formatCurrency(Math.max(0, limit - spent), currency)} remaining`}
+                      </span>
+                      <span className={cn(
+                        "font-mono font-bold px-1.5 py-0.5 rounded text-[11px]",
+                        isOver ? "bg-rose-500/15 text-rose-600 dark:text-rose-400" : pct >= 70 ? "bg-amber-500/15 text-amber-600 dark:text-amber-400" : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                      )}>
+                        {pct}%
+                      </span>
+                    </div>
                   </div>
                 );
               })

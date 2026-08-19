@@ -1,25 +1,58 @@
 "use client"
 
+import * as React from "react"
 import { Progress as ProgressPrimitive } from "@base-ui/react/progress"
-
 import { cn } from "@/lib/utils"
+
+interface ExtendedProgressProps extends ProgressPrimitive.Root.Props {
+  indicatorClassName?: string
+  trackClassName?: string
+  size?: "sm" | "md" | "lg"
+  adaptiveColor?: boolean
+}
 
 function Progress({
   className,
   children,
-  value,
+  value = 0,
+  indicatorClassName,
+  trackClassName,
+  size = "md",
+  adaptiveColor = false,
   ...props
-}: ProgressPrimitive.Root.Props) {
+}: ExtendedProgressProps) {
+  const numericValue = typeof value === "number" ? value : 0
+  const clamped = Math.min(100, Math.max(0, numericValue))
+
+  let dynamicIndicatorClass = "bg-primary"
+  let dynamicTrackClass = "bg-muted"
+
+  if (adaptiveColor && !indicatorClassName) {
+    if (clamped >= 90) {
+      dynamicIndicatorClass = "bg-rose-500"
+      dynamicTrackClass = "bg-rose-500/15"
+    } else if (clamped >= 70) {
+      dynamicIndicatorClass = "bg-amber-500"
+      dynamicTrackClass = "bg-amber-500/15"
+    } else {
+      dynamicIndicatorClass = "bg-emerald-500"
+      dynamicTrackClass = "bg-emerald-500/15"
+    }
+  }
+
+  const heightClass =
+    size === "sm" ? "h-1.5" : size === "lg" ? "h-3" : "h-2"
+
   return (
     <ProgressPrimitive.Root
       value={value}
       data-slot="progress"
-      className={cn("flex flex-wrap gap-3", className)}
+      className={cn("flex flex-col gap-1.5 w-full", className)}
       {...props}
     >
       {children}
-      <ProgressTrack>
-        <ProgressIndicator />
+      <ProgressTrack className={cn("rounded-full overflow-hidden", heightClass, dynamicTrackClass, trackClassName)}>
+        <ProgressIndicator className={cn("rounded-full", dynamicIndicatorClass, indicatorClassName)} />
       </ProgressTrack>
     </ProgressPrimitive.Root>
   )
@@ -29,7 +62,7 @@ function ProgressTrack({ className, ...props }: ProgressPrimitive.Track.Props) {
   return (
     <ProgressPrimitive.Track
       className={cn(
-        "relative flex h-1 w-full items-center overflow-x-hidden rounded-none bg-muted",
+        "relative flex h-2 w-full items-center overflow-x-hidden rounded-full bg-muted",
         className
       )}
       data-slot="progress-track"

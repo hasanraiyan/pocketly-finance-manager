@@ -20,7 +20,7 @@ export function AppContent({ children }: { children: React.ReactNode }) {
         "flex min-h-0 flex-1 flex-col",
         isFullBleed
           ? "overflow-hidden"
-          : "gap-6 overflow-y-auto p-4 md:p-8"
+          : "gap-4 sm:gap-6 overflow-y-auto p-3 sm:p-4 md:p-8"
       )}
     >
       {!isFullBleed && <GuestBanner />}
