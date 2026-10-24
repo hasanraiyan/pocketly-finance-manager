@@ -1,9 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Request, Response } from 'express';
@@ -60,7 +55,7 @@ export class McpAuthGuard implements CanActivate {
     );
 
     const token = extractBearerToken(request);
-    if (!token) throw new UnauthorizedException('Missing bearer token');
+    if (!token) return this.reject(response, 'Missing bearer token');
 
     let payload: JWTPayload;
     try {
@@ -69,12 +64,12 @@ export class McpAuthGuard implements CanActivate {
         audience: `${apiBaseUrl()}/mcp`,
       });
     } catch {
-      throw new UnauthorizedException('Invalid or expired access token');
+      return this.reject(response, 'Invalid or expired access token');
     }
 
     const userId = payload.sub;
     const clientId = payload.client_id as string | undefined;
-    if (!userId) throw new UnauthorizedException();
+    if (!userId) return this.reject(response, 'Invalid access token');
 
     // Instant revocation: a disconnect writes a marker here newer than the
     // token's own `iat`, so even an unexpired token stops working right
@@ -87,16 +82,20 @@ export class McpAuthGuard implements CanActivate {
         createdAt: { $gt: new Date(payload.iat * 1000) },
       });
       if (revoked) {
-        throw new UnauthorizedException(
+        return this.reject(
+          response,
           'This connection was disconnected. Reconnect to grant access again.',
         );
       }
     }
 
     const user = await this.usersService.findById(userId);
-    if (!user) throw new UnauthorizedException();
+    if (!user) return this.reject(response, 'Invalid access token');
 
     const scopes = this.parseScopes(payload.scope);
+    if (!scopes) {
+      return this.reject(response, 'Access token has no supported MCP scope');
+    }
 
     if (clientId) {
       // Settings' "Connected apps" list reads clientName off this row, not
@@ -126,14 +125,18 @@ export class McpAuthGuard implements CanActivate {
     return true;
   }
 
-  private parseScopes(scopeClaim: JWTPayload['scope']): McpScope[] {
+  private parseScopes(scopeClaim: JWTPayload['scope']): McpScope[] | undefined {
     const scopes = typeof scopeClaim === 'string' ? scopeClaim.split(' ') : [];
     const granted = GRANTED_SCOPES.filter((scope) => scopes.includes(scope));
-    if (!granted.includes('pocketly:read')) {
-      throw new UnauthorizedException(
-        'Access token has no supported MCP scope',
-      );
-    }
-    return granted;
+    return granted.includes('pocketly:read') ? granted : undefined;
+  }
+
+  private reject(response: Response, message: string): false {
+    response.status(401).json({
+      jsonrpc: '2.0',
+      error: { code: -32001, message },
+      id: null,
+    });
+    return false;
   }
 }

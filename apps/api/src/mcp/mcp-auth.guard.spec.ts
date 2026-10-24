@@ -1,4 +1,4 @@
-import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { ExecutionContext } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { JwtKeysService } from '../auth/jwt-keys.service';
 import { McpAuthGuard } from './mcp-auth.guard';
@@ -8,7 +8,9 @@ import { McpRevocation } from './schemas/mcp-revocation.schema';
 import { UsersService } from '../users/users.service';
 
 function mockResponse() {
-  return { setHeader: jest.fn() };
+  const json = jest.fn();
+  const status = jest.fn(() => ({ json }));
+  return { setHeader: jest.fn(), status, json };
 }
 
 /** Mocks the `.findOne(...).select(...).exec()` chain the guard calls to look up the registered client's name. */
@@ -58,9 +60,7 @@ describe('McpAuthGuard', () => {
 
   it('rejects requests with no bearer token', async () => {
     const context = contextWithAuthHeader(undefined);
-    await expect(guard.canActivate(context)).rejects.toThrow(
-      UnauthorizedException,
-    );
+    await expect(guard.canActivate(context)).resolves.toBe(false);
     expect(keys.verify).not.toHaveBeenCalled();
     expect(context.switchToHttp().getResponse().setHeader).toHaveBeenCalledWith(
       'WWW-Authenticate',
@@ -76,7 +76,7 @@ describe('McpAuthGuard', () => {
 
     await expect(
       guard.canActivate(contextWithAuthHeader('Bearer bad-token')),
-    ).rejects.toThrow(UnauthorizedException);
+    ).resolves.toBe(false);
   });
 
   it('rejects a token issued before the connection was revoked', async () => {
@@ -89,7 +89,7 @@ describe('McpAuthGuard', () => {
 
     await expect(
       guard.canActivate(contextWithAuthHeader('Bearer token')),
-    ).rejects.toThrow(UnauthorizedException);
+    ).resolves.toBe(false);
     expect(revocationModel.exists).toHaveBeenCalledWith({
       userId: 'user-1',
       clientId: 'client-1',
@@ -122,7 +122,7 @@ describe('McpAuthGuard', () => {
 
     await expect(
       guard.canActivate(contextWithAuthHeader('Bearer good-token')),
-    ).rejects.toThrow(UnauthorizedException);
+    ).resolves.toBe(false);
   });
 
   it('attaches the resolved user, token and scopes on success', async () => {
@@ -258,7 +258,7 @@ describe('McpAuthGuard', () => {
 
     await expect(
       guard.canActivate(contextWithAuthHeader('Bearer good-token')),
-    ).rejects.toThrow(UnauthorizedException);
+    ).resolves.toBe(false);
     expect(connectionModel.updateOne).not.toHaveBeenCalled();
   });
 });
