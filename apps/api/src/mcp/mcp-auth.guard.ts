@@ -56,7 +56,7 @@ export class McpAuthGuard implements CanActivate {
     const resourceMetadataUrl = `${apiBaseUrl()}/.well-known/oauth-protected-resource/mcp`;
     response.setHeader(
       'WWW-Authenticate',
-      `Bearer resource_metadata="${resourceMetadataUrl}"`,
+      ['Bearer', 'resource_metadata="' + resourceMetadataUrl + '"'].join(' '),
     );
 
     const token = extractBearerToken(request);
@@ -96,6 +96,8 @@ export class McpAuthGuard implements CanActivate {
     const user = await this.usersService.findById(userId);
     if (!user) throw new UnauthorizedException();
 
+    const scopes = this.parseScopes(payload.scope);
+
     if (clientId) {
       // Settings' "Connected apps" list reads clientName off this row, not
       // off OAuthClient directly -- without this lookup it falls back to the
@@ -109,7 +111,7 @@ export class McpAuthGuard implements CanActivate {
         { userId, clientId },
         {
           $set: {
-            scopes: GRANTED_SCOPES,
+            scopes,
             lastSeenAt: new Date(),
             ...(client?.clientName ? { clientName: client.clientName } : {}),
           },
@@ -120,7 +122,18 @@ export class McpAuthGuard implements CanActivate {
 
     (request as McpAuthenticatedRequest).mcpUser = user;
     (request as McpAuthenticatedRequest).mcpToken = token;
-    (request as McpAuthenticatedRequest).mcpScopes = GRANTED_SCOPES;
+    (request as McpAuthenticatedRequest).mcpScopes = scopes;
     return true;
+  }
+
+  private parseScopes(scopeClaim: JWTPayload['scope']): McpScope[] {
+    const scopes = typeof scopeClaim === 'string' ? scopeClaim.split(' ') : [];
+    const granted = GRANTED_SCOPES.filter((scope) => scopes.includes(scope));
+    if (!granted.includes('pocketly:read')) {
+      throw new UnauthorizedException(
+        'Access token has no supported MCP scope',
+      );
+    }
+    return granted;
   }
 }

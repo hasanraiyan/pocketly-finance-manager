@@ -36,8 +36,7 @@ export interface McpToolContext {
   token: string;
   /**
    * Pocketly scopes this connection holds, decided in McpAuthGuard from
-   * Pocketly's own verification of the access token. See GRANTED_SCOPES
-   * there for why this is currently all-or-nothing.
+   * Pocketly's own verification of the access token.
    */
   scopes: McpScope[];
   services: McpToolServices;

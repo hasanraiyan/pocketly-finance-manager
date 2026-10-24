@@ -30,6 +30,14 @@ async function bootstrap() {
   app.enableCors({
     origin: corsOrigins,
     credentials: true,
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Mcp-Session-Id',
+      'Mcp-Protocol-Version',
+      'Accept',
+    ],
+    exposedHeaders: ['Mcp-Session-Id', 'WWW-Authenticate'],
   });
 
   app.setGlobalPrefix('api/v1', {

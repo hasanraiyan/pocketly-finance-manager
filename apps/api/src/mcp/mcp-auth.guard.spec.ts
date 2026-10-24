@@ -57,10 +57,18 @@ describe('McpAuthGuard', () => {
   });
 
   it('rejects requests with no bearer token', async () => {
-    await expect(
-      guard.canActivate(contextWithAuthHeader(undefined)),
-    ).rejects.toThrow(UnauthorizedException);
+    const context = contextWithAuthHeader(undefined);
+    await expect(guard.canActivate(context)).rejects.toThrow(
+      UnauthorizedException,
+    );
     expect(keys.verify).not.toHaveBeenCalled();
+    expect(context.switchToHttp().getResponse().setHeader).toHaveBeenCalledWith(
+      'WWW-Authenticate',
+      [
+        'Bearer',
+        'resource_metadata="http://localhost:4000/.well-known/oauth-protected-resource/mcp"',
+      ].join(' '),
+    );
   });
 
   it('rejects a token that fails signature verification', async () => {
@@ -95,6 +103,7 @@ describe('McpAuthGuard', () => {
       sub: 'user-1',
       client_id: 'client-1',
       iat: 2_000,
+      scope: 'pocketly:read',
     });
     revocationModel.exists.mockResolvedValue(null);
     usersService.findById.mockResolvedValue({ _id: 'user-1' });
@@ -105,7 +114,10 @@ describe('McpAuthGuard', () => {
   });
 
   it('rejects a valid token for a user with no Pocketly profile (deleted account)', async () => {
-    keys.verify.mockResolvedValue({ sub: 'user-1' });
+    keys.verify.mockResolvedValue({
+      sub: 'user-1',
+      scope: 'pocketly:read pocketly:write',
+    });
     usersService.findById.mockResolvedValue(null);
 
     await expect(
@@ -114,7 +126,10 @@ describe('McpAuthGuard', () => {
   });
 
   it('attaches the resolved user, token and scopes on success', async () => {
-    keys.verify.mockResolvedValue({ sub: 'user-1' });
+    keys.verify.mockResolvedValue({
+      sub: 'user-1',
+      scope: 'pocketly:read pocketly:write',
+    });
     const user = { _id: 'user-1' };
     usersService.findById.mockResolvedValue(user);
 
@@ -150,7 +165,11 @@ describe('McpAuthGuard', () => {
       connectionModel as unknown as Model<McpConnection>,
       clientModel as unknown as Model<OAuthClient>,
     );
-    keys.verify.mockResolvedValue({ sub: 'user-1', client_id: 'client-1' });
+    keys.verify.mockResolvedValue({
+      sub: 'user-1',
+      client_id: 'client-1',
+      scope: 'pocketly:read pocketly:write',
+    });
     usersService.findById.mockResolvedValue({ _id: 'user-1' });
 
     await expect(
@@ -171,7 +190,11 @@ describe('McpAuthGuard', () => {
   });
 
   it('falls back to no clientName when the client has been deregistered', async () => {
-    keys.verify.mockResolvedValue({ sub: 'user-1', client_id: 'client-1' });
+    keys.verify.mockResolvedValue({
+      sub: 'user-1',
+      client_id: 'client-1',
+      scope: 'pocketly:read pocketly:write',
+    });
     usersService.findById.mockResolvedValue({ _id: 'user-1' });
 
     await expect(
@@ -190,13 +213,52 @@ describe('McpAuthGuard', () => {
   });
 
   it('skips the connection upsert and revocation check when the token carries no client_id', async () => {
-    keys.verify.mockResolvedValue({ sub: 'user-1' });
+    keys.verify.mockResolvedValue({
+      sub: 'user-1',
+      scope: 'pocketly:read',
+    });
     usersService.findById.mockResolvedValue({ _id: 'user-1' });
 
     await expect(
       guard.canActivate(contextWithAuthHeader('Bearer token')),
     ).resolves.toBe(true);
     expect(revocationModel.exists).not.toHaveBeenCalled();
+    expect(connectionModel.updateOne).not.toHaveBeenCalled();
+  });
+
+  it('preserves read-only scope instead of granting write access', async () => {
+    keys.verify.mockResolvedValue({
+      sub: 'user-1',
+      client_id: 'client-1',
+      scope: 'pocketly:read',
+    });
+    usersService.findById.mockResolvedValue({ _id: 'user-1' });
+
+    await expect(
+      guard.canActivate(contextWithAuthHeader('Bearer good-token')),
+    ).resolves.toBe(true);
+    expect(connectionModel.updateOne).toHaveBeenCalledWith(
+      { userId: 'user-1', clientId: 'client-1' },
+      {
+        $set: {
+          scopes: ['pocketly:read'],
+          lastSeenAt: expect.any(Date) as Date,
+        },
+      },
+      { upsert: true },
+    );
+  });
+
+  it('rejects tokens without a supported read scope', async () => {
+    keys.verify.mockResolvedValue({
+      sub: 'user-1',
+      scope: 'openid',
+    });
+    usersService.findById.mockResolvedValue({ _id: 'user-1' });
+
+    await expect(
+      guard.canActivate(contextWithAuthHeader('Bearer good-token')),
+    ).rejects.toThrow(UnauthorizedException);
     expect(connectionModel.updateOne).not.toHaveBeenCalled();
   });
 });
